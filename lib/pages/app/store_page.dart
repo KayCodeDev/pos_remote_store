@@ -27,7 +27,7 @@ class _StorePageState extends State<StorePage> {
     _screens.addAll(<Widget>[
       const StoreListPage(),
       const StoreUpdatePage(),
-      if (widget.extra!['canRemote']) const RemotePage(),
+      // if (widget.extra!['canRemote']) const RemotePage(),
       const SettingPage()
     ]);
   }
@@ -100,20 +100,20 @@ class _StorePageState extends State<StorePage> {
                         color: kBaseGreenColor,
                       ),
               ),
-              if (widget.extra!['canRemote'])
-                const NavigationDestination(
-                  tooltip: '',
-                  icon: Icon(
-                    Icons.ads_click_outlined,
-                    size: 28,
-                  ),
-                  label: 'Remote',
-                  selectedIcon: Icon(
-                    Icons.ads_click_outlined,
-                    color: kBaseGreenColor,
-                    size: 28,
-                  ),
-                ),
+              // if (widget.extra!['canRemote'])
+              //   const NavigationDestination(
+              //     tooltip: '',
+              //     icon: Icon(
+              //       Icons.ads_click_outlined,
+              //       size: 28,
+              //     ),
+              //     label: 'Remote',
+              //     selectedIcon: Icon(
+              //       Icons.ads_click_outlined,
+              //       color: kBaseGreenColor,
+              //       size: 28,
+              //     ),
+              //   ),
               const NavigationDestination(
                 tooltip: '',
                 icon: Icon(

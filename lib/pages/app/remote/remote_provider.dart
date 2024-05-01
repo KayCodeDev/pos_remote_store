@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
+// import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 
 import '../../../core/models/model.dart';
 import '../../../core/providers/global_provider.dart';
@@ -13,7 +13,7 @@ class RemoteProvider extends ChangeNotifier {
       {required GlobalProvider this.globalProvider,
       required ApiRepository this.apiRepository});
 
-  final jitsiMeet = JitsiMeet();
+  // final jitsiMeet = JitsiMeet();
   bool _isGettingRemote = false;
 
   bool get isGettingRemote => _isGettingRemote;
@@ -40,12 +40,7 @@ class RemoteProvider extends ChangeNotifier {
         if (response['status'] == "success") {
           RemoteConnection connection =
               RemoteConnection.fromJson(response['data']['remote']);
-          // if(globalProvider!.deviceInfo!.manufacturer == "PAX"){
-          //   _handleValidateConnectionError({"message": "Remote"});
-          // }else {
-            join(connection);
-          // }
-
+          //   join(connection);
           _isGettingRemote = false;
           notifyListeners();
         } else {
@@ -64,67 +59,67 @@ class RemoteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void join(RemoteConnection connection) async {
-    var options = JitsiMeetConferenceOptions(
-      serverURL: "https://meet.jit.si",
-      room: "${connection.connectionId}",
-      configOverrides: {
-        "startWithAudioMuted": true,
-        "startWithVideoMuted": true,
-        "subject": "Remote Support",
-        "localSubject": "Remote Support",
-      },
-      featureFlags: {
-        FeatureFlags.androidScreenSharingEnabled: true,
-        FeatureFlags.unsafeRoomWarningEnabled: false,
-        FeatureFlags.addPeopleEnabled: false,
-        FeatureFlags.welcomePageEnabled: false,
-        FeatureFlags.preJoinPageEnabled: false,
-        FeatureFlags.resolution: FeatureFlagVideoResolutions.resolution720p,
-        FeatureFlags.audioFocusDisabled: false,
-        FeatureFlags.audioMuteButtonEnabled: false,
-        FeatureFlags.audioOnlyButtonEnabled: false,
-        FeatureFlags.calenderEnabled: false,
-        FeatureFlags.callIntegrationEnabled: false,
-        FeatureFlags.carModeEnabled: false,
-        FeatureFlags.closeCaptionsEnabled: false,
-        FeatureFlags.conferenceTimerEnabled: false,
-        FeatureFlags.chatEnabled: false,
-        FeatureFlags.filmstripEnabled: false,
-        FeatureFlags.fullScreenEnabled: true,
-        FeatureFlags.helpButtonEnabled: false,
-        FeatureFlags.inviteEnabled: false,
-        FeatureFlags.speakerStatsEnabled: false,
-        FeatureFlags.kickOutEnabled: false,
-        FeatureFlags.liveStreamingEnabled: false,
-        FeatureFlags.lobbyModeEnabled: false,
-        FeatureFlags.meetingNameEnabled: false,
-        FeatureFlags.meetingPasswordEnabled: false,
-        FeatureFlags.notificationEnabled: false,
-        FeatureFlags.overflowMenuEnabled: true,
-        FeatureFlags.pipEnabled: false,
-        FeatureFlags.pipWhileScreenSharingEnabled: false,
-        FeatureFlags.preJoinPageHideDisplayName: false,
-        FeatureFlags.raiseHandEnabled: false,
-        FeatureFlags.reactionsEnabled: false,
-        FeatureFlags.recordingEnabled: false,
-        FeatureFlags.replaceParticipant: false,
-        FeatureFlags.securityOptionEnabled: false,
-        FeatureFlags.serverUrlChangeEnabled: false,
-        FeatureFlags.settingsEnabled: false,
-        FeatureFlags.tileViewEnabled: false,
-        FeatureFlags.videoMuteEnabled: false,
-        FeatureFlags.videoShareEnabled: false,
-        FeatureFlags.toolboxEnabled: true,
-        FeatureFlags.iosRecordingEnabled: false,
-        FeatureFlags.iosScreenSharingEnabled: false,
-        FeatureFlags.toolboxAlwaysVisible: true,
-      },
-      userInfo:
-          JitsiMeetUserInfo(displayName: connection.terminal!.serialNumber),
-      // userInfo: JitsiMeetUserInfo(displayName: "Test Account"),
-    );
-    await jitsiMeet.join(options);
-    await jitsiMeet.toggleScreenShare(true);
-  }
+  // void join(RemoteConnection connection) async {
+  //   var options = JitsiMeetConferenceOptions(
+  //     serverURL: "https://meet.jit.si",
+  //     room: "${connection.connectionId}",
+  //     configOverrides: {
+  //       "startWithAudioMuted": true,
+  //       "startWithVideoMuted": true,
+  //       "subject": "Remote Support",
+  //       "localSubject": "Remote Support",
+  //     },
+  //     featureFlags: {
+  //       FeatureFlags.androidScreenSharingEnabled: true,
+  //       FeatureFlags.unsafeRoomWarningEnabled: false,
+  //       FeatureFlags.addPeopleEnabled: false,
+  //       FeatureFlags.welcomePageEnabled: false,
+  //       FeatureFlags.preJoinPageEnabled: false,
+  //       FeatureFlags.resolution: FeatureFlagVideoResolutions.resolution720p,
+  //       FeatureFlags.audioFocusDisabled: false,
+  //       FeatureFlags.audioMuteButtonEnabled: false,
+  //       FeatureFlags.audioOnlyButtonEnabled: false,
+  //       FeatureFlags.calenderEnabled: false,
+  //       FeatureFlags.callIntegrationEnabled: false,
+  //       FeatureFlags.carModeEnabled: false,
+  //       FeatureFlags.closeCaptionsEnabled: false,
+  //       FeatureFlags.conferenceTimerEnabled: false,
+  //       FeatureFlags.chatEnabled: false,
+  //       FeatureFlags.filmstripEnabled: false,
+  //       FeatureFlags.fullScreenEnabled: true,
+  //       FeatureFlags.helpButtonEnabled: false,
+  //       FeatureFlags.inviteEnabled: false,
+  //       FeatureFlags.speakerStatsEnabled: false,
+  //       FeatureFlags.kickOutEnabled: false,
+  //       FeatureFlags.liveStreamingEnabled: false,
+  //       FeatureFlags.lobbyModeEnabled: false,
+  //       FeatureFlags.meetingNameEnabled: false,
+  //       FeatureFlags.meetingPasswordEnabled: false,
+  //       FeatureFlags.notificationEnabled: false,
+  //       FeatureFlags.overflowMenuEnabled: true,
+  //       FeatureFlags.pipEnabled: false,
+  //       FeatureFlags.pipWhileScreenSharingEnabled: false,
+  //       FeatureFlags.preJoinPageHideDisplayName: false,
+  //       FeatureFlags.raiseHandEnabled: false,
+  //       FeatureFlags.reactionsEnabled: false,
+  //       FeatureFlags.recordingEnabled: false,
+  //       FeatureFlags.replaceParticipant: false,
+  //       FeatureFlags.securityOptionEnabled: false,
+  //       FeatureFlags.serverUrlChangeEnabled: false,
+  //       FeatureFlags.settingsEnabled: false,
+  //       FeatureFlags.tileViewEnabled: false,
+  //       FeatureFlags.videoMuteEnabled: false,
+  //       FeatureFlags.videoShareEnabled: false,
+  //       FeatureFlags.toolboxEnabled: true,
+  //       FeatureFlags.iosRecordingEnabled: false,
+  //       FeatureFlags.iosScreenSharingEnabled: false,
+  //       FeatureFlags.toolboxAlwaysVisible: true,
+  //     },
+  //     userInfo:
+  //         JitsiMeetUserInfo(displayName: connection.terminal!.serialNumber),
+  //     // userInfo: JitsiMeetUserInfo(displayName: "Test Account"),
+  //   );
+  //   await jitsiMeet.join(options);
+  //   await jitsiMeet.toggleScreenShare(true);
+  // }
 }

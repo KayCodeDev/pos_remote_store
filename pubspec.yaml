@@ -20,8 +20,6 @@ dependencies:
   cached_network_image: ^3.3.1
   jitsi_meet_flutter_sdk:
     git: https://github.com/kocallphoneng/jitsi-meet-flutter-sdk.git
-  #  flutter_sticky_header: ^0.6.5
-  #  connectivity_plus: ^6.0.2
   timeago: ^3.6.1
   sembast: ^3.7.1
   stomp_dart_client: ^1.0.3

@@ -60,13 +60,13 @@ Map<String, dynamic> _$$AppImplToJson(_$AppImpl instance) => <String, dynamic>{
       'name': instance.name,
       'packageName': instance.packageName,
       'icon': instance.icon,
-      'developer': instance.developer?.toJson(),
-      'distributor': instance.distributor?.toJson(),
+      'developer': instance.developer,
+      'distributor': instance.distributor,
       'description': instance.description,
-      'screenShots': instance.screenShots?.map((e) => e.toJson()).toList(),
-      'versions': instance.versions?.map((e) => e.toJson()).toList(),
-      'version': instance.version?.toJson(),
-      'category': instance.category?.toJson(),
+      'screenShots': instance.screenShots,
+      'versions': instance.versions,
+      'version': instance.version,
+      'category': instance.category,
       'appType': instance.appType,
       'downloadCount': instance.downloadCount,
       'permissions': instance.permissions,
@@ -140,13 +140,13 @@ Map<String, dynamic> _$$AppInstallingImplToJson(_$AppInstallingImpl instance) =>
       'name': instance.name,
       'packageName': instance.packageName,
       'icon': instance.icon,
-      'developer': instance.developer.toJson(),
-      'distributor': instance.distributor?.toJson(),
+      'developer': instance.developer,
+      'distributor': instance.distributor,
       'description': instance.description,
-      'screenShots': instance.screenShots?.map((e) => e.toJson()).toList(),
-      'versions': instance.versions?.map((e) => e.toJson()).toList(),
-      'version': instance.version?.toJson(),
-      'category': instance.category?.toJson(),
+      'screenShots': instance.screenShots,
+      'versions': instance.versions,
+      'version': instance.version,
+      'category': instance.category,
       'appType': instance.appType,
       'downloadCount': instance.downloadCount,
       'permissions': instance.permissions,
@@ -214,7 +214,7 @@ Map<String, dynamic> _$$DeveloperImplToJson(_$DeveloperImpl instance) =>
       'id': instance.id,
       'uuid': instance.uuid,
       'organizationName': instance.organizationName,
-      'country': instance.country?.toJson(),
+      'country': instance.country,
       'status': instance.status,
       'websiteUrl': instance.websiteUrl,
       'supportEmail': instance.supportEmail,
@@ -257,7 +257,7 @@ Map<String, dynamic> _$$DistributorImplToJson(_$DistributorImpl instance) =>
       'distributorName': instance.distributorName,
       'contactName': instance.contactName,
       'contactEmail': instance.contactEmail,
-      'country': instance.country?.toJson(),
+      'country': instance.country,
       'status': instance.status,
       'developerId': instance.developerId,
     };
@@ -328,79 +328,4 @@ Map<String, dynamic> _$$CategoryImplToJson(_$CategoryImpl instance) =>
       'uuid': instance.uuid,
       'name': instance.name,
       'status': instance.status,
-    };
-
-_$RemoteConnectionImpl _$$RemoteConnectionImplFromJson(
-        Map<String, dynamic> json) =>
-    _$RemoteConnectionImpl(
-      id: json['id'] as int?,
-      uuid: json['uuid'] as String?,
-      terminal: json['terminal'] == null
-          ? null
-          : RemoteTerminal.fromJson(json['terminal'] as Map<String, dynamic>),
-      remoteUser: json['remoteUser'] == null
-          ? null
-          : RemoteUser.fromJson(json['remoteUser'] as Map<String, dynamic>),
-      developer: json['developer'] == null
-          ? null
-          : Developer.fromJson(json['developer'] as Map<String, dynamic>),
-      connectionId: json['connectionId'] as String?,
-      status: json['status'] as String?,
-      createdAt: json['createdAt'] == null
-          ? null
-          : DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
-    );
-
-Map<String, dynamic> _$$RemoteConnectionImplToJson(
-        _$RemoteConnectionImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'uuid': instance.uuid,
-      'terminal': instance.terminal?.toJson(),
-      'remoteUser': instance.remoteUser?.toJson(),
-      'developer': instance.developer?.toJson(),
-      'connectionId': instance.connectionId,
-      'status': instance.status,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
-    };
-
-_$RemoteTerminalImpl _$$RemoteTerminalImplFromJson(Map<String, dynamic> json) =>
-    _$RemoteTerminalImpl(
-      id: json['id'] as int?,
-      uuid: json['uuid'] as String?,
-      serialNumber: json['serialNumber'] as String?,
-      deviceId: json['deviceId'] as String?,
-      status: json['status'] as String?,
-    );
-
-Map<String, dynamic> _$$RemoteTerminalImplToJson(
-        _$RemoteTerminalImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'uuid': instance.uuid,
-      'serialNumber': instance.serialNumber,
-      'deviceId': instance.deviceId,
-      'status': instance.status,
-    };
-
-_$RemoteUserImpl _$$RemoteUserImplFromJson(Map<String, dynamic> json) =>
-    _$RemoteUserImpl(
-      id: json['id'] as int?,
-      uuid: json['uuid'] as String?,
-      fullName: json['fullName'] as String?,
-      userType: json['userType'] as String?,
-      roleName: json['roleName'] as String?,
-    );
-
-Map<String, dynamic> _$$RemoteUserImplToJson(_$RemoteUserImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'uuid': instance.uuid,
-      'fullName': instance.fullName,
-      'userType': instance.userType,
-      'roleName': instance.roleName,
     };

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../../core/providers/global_provider.dart';
 import '../../utils/constant.dart';
-import 'remote/remote_page.dart';
 import 'setting/setting_page.dart';
 import 'store/list/store_list_page.dart';
 import 'store/update/store_update_page.dart';
@@ -27,7 +26,6 @@ class _StorePageState extends State<StorePage> {
     _screens.addAll(<Widget>[
       const StoreListPage(),
       const StoreUpdatePage(),
-      // if (widget.extra!['canRemote']) const RemotePage(),
       const SettingPage()
     ]);
   }
@@ -60,18 +58,6 @@ class _StorePageState extends State<StorePage> {
                   size: 28,
                 ),
               ),
-              // const NavigationDestination(
-              //     tooltip: '',
-              //     icon: ImageIcon(
-              //       AssetImage('assets/images/loader.png'),
-              //       size: 30,
-              //     ),
-              //     label: 'Store',
-              //     selectedIcon: ImageIcon(
-              //       AssetImage('assets/images/loader.png'),
-              //       size: 30,
-              //       color: kBaseGreenColor,
-              //     )),
               NavigationDestination(
                 tooltip: '',
                 icon: gp.updateCount > 0
@@ -100,20 +86,6 @@ class _StorePageState extends State<StorePage> {
                         color: kBaseGreenColor,
                       ),
               ),
-              // if (widget.extra!['canRemote'])
-              //   const NavigationDestination(
-              //     tooltip: '',
-              //     icon: Icon(
-              //       Icons.ads_click_outlined,
-              //       size: 28,
-              //     ),
-              //     label: 'Remote',
-              //     selectedIcon: Icon(
-              //       Icons.ads_click_outlined,
-              //       color: kBaseGreenColor,
-              //       size: 28,
-              //     ),
-              //   ),
               const NavigationDestination(
                 tooltip: '',
                 icon: Icon(

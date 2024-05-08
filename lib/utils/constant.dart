@@ -10,7 +10,6 @@ const kWSBaseEndpoint = "wss://store-api.itexapp.com/api/ws";
 
 const Color kBaseColor = Color(0xff002A4C);
 const Color kBaseGreenColor = Color(0xff39bd7c);
-const String appHiveBox="AppBox";
 
  MaterialColor kBaseMaterialColor = MaterialColor(
   kBaseColor.value, // Primary color value

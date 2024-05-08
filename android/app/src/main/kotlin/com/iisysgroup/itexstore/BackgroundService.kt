@@ -39,7 +39,7 @@ class BackgroundService : Service() {
 
 //    private val BASE_URL = "http://192.168.8.100:9090/api/v1/store"
 //    private val TCP_SERVER_IP = "192.168.8.100"
-//    private val TCP_SERVER_PORT = 9095
+//    private val TCP_SERVER_PORT = 9091
 
     private val CALL_HOME_ENDPOINT = "terminal/sync"
     private val UPDATE_TASK_ENDPOINT = "task/update"
@@ -160,13 +160,13 @@ class BackgroundService : Service() {
 
     private fun connectToTcpServer(storeFunctions: StoreFunctions) {
         try {
+            val sn: String? = storeFunctions.getSN()
             if (!connected) {
                 socket = Socket(InetAddress.getByName(TCP_SERVER_IP), TCP_SERVER_PORT)
                 reader = BufferedReader(InputStreamReader(socket!!.getInputStream()))
                 connected = true
-                val sn: String? = storeFunctions.getSN()
-                if (connected && socket != null) {
 
+                if (socket != null) {
                     val message =
                         """{"action":"joining", "serialNumber": "$sn"}"""
                     HelperUtil.sendTcpMessageToServer(message, socket!!)

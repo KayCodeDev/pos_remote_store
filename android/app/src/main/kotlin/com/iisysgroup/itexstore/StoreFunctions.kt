@@ -26,7 +26,8 @@ import kotlin.random.Random
 class StoreFunctions(private val context: Context) {
     private val packageManager: PackageManager = context.packageManager
     private val TAG = "StoreFunctions"
-    private val manufacturer = Build.BRAND.lowercase()
+    @SuppressLint("NewApi")
+    private val manufacturer = "${Build.BRAND}_${Build.MANUFACTURER}".lowercase()
 
     private val verifone: Verifone = Verifone(context)
     private val pax: Pax = Pax(context)
@@ -35,9 +36,9 @@ class StoreFunctions(private val context: Context) {
 
     init {
         when {
-            manufacturer.contains("qcom") -> pax.setInstance()
+            manufacturer.contains("qcom") || manufacturer.contains("pax") -> pax.setInstance()
             manufacturer.contains("verifone") -> verifone.bindAllServices()
-            manufacturer.contains("alps") -> topwise.bindService()
+            manufacturer.contains("alps") || manufacturer.contains("topwise") -> topwise.bindService()
             manufacturer.contains("horizonpay") -> horizon.bindService()
         }
     }
@@ -46,9 +47,9 @@ class StoreFunctions(private val context: Context) {
 //    @TargetApi(VERSION_CODES.DONUT)
     private fun getPlatform(): PlatformSdk? {
         val platformSdk: PlatformSdk? = when {
-            manufacturer.contains("qcom") -> pax
+            manufacturer.contains("qcom") || manufacturer.contains("pax") -> pax
             manufacturer.contains("verifone") -> verifone
-            manufacturer.contains("alps") -> topwise
+            manufacturer.contains("alps") || manufacturer.contains("topwise") -> topwise
             manufacturer.contains("horizonpay") -> horizon
             else -> null
         }

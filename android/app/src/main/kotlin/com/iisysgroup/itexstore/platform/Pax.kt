@@ -49,7 +49,7 @@ class Pax(private val context: Context) : PlatformSdk {
             "serialNumber" to getSerialNumber(),
             "batteryLevel" to HelperUtil.getBatteryLevel(context).toString(),
             "imei" to getSerialNumber(),
-            "manufacturer" to Build.MANUFACTURER,
+            "manufacturer" to "PAX",
             "model" to Build.MODEL,
             "osVersion" to "OS Version: ${Build.VERSION.SDK_INT} (API Level: ${Build.VERSION.RELEASE})",
             "sdkVersion" to Build.VERSION.SDK_INT.toString(),

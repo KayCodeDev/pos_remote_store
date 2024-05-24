@@ -113,7 +113,7 @@ class Verifone(private val context: Context) : PlatformSdk {
             "serialNumber" to deviceService?.getDeviceInfo()?.getSerialNo(),
             "batteryLevel" to deviceService?.getDeviceInfo()?.getBatteryLevel(),
             "imei" to deviceService?.getDeviceInfo()?.getIMEI(),
-            "manufacturer" to deviceService?.getDeviceInfo()?.getManufacture(),
+            "manufacturer" to "Verifone",
             "model" to deviceService?.getDeviceInfo()?.getModel(),
             "osVersion" to "OS Version: ${Build.VERSION.SDK_INT} (API Level: ${Build.VERSION.RELEASE})",
             "sdkVersion" to Build.VERSION.SDK_INT.toString(),

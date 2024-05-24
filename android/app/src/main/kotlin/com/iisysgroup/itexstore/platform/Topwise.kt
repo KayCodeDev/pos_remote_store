@@ -78,7 +78,7 @@ class Topwise(private val context: Context) : PlatformSdk {
             "serialNumber" to aidlSystem?.getSerialNo(),
             "batteryLevel" to HelperUtil.getBatteryLevel(context).toString(),
             "imei" to aidlSystem?.getIMEI(1),
-            "manufacturer" to aidlSystem?.getManufacture(),
+            "manufacturer" to "Topwise",
             "model" to aidlSystem?.getModel(),
             "osVersion" to "OS Version: ${Build.VERSION.SDK_INT} (API Level: ${Build.VERSION.RELEASE})",
             "sdkVersion" to Build.VERSION.SDK_INT.toString(),

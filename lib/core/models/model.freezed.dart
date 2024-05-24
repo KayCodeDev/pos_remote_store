@@ -2022,7 +2022,7 @@ mixin _$Developer {
   int? get id => throw _privateConstructorUsedError;
   String? get uuid => throw _privateConstructorUsedError;
   String? get organizationName => throw _privateConstructorUsedError;
-  Country? get country => throw _privateConstructorUsedError;
+  Map<String, dynamic>? get country => throw _privateConstructorUsedError;
   String? get status => throw _privateConstructorUsedError;
   String? get websiteUrl => throw _privateConstructorUsedError;
   String? get supportEmail => throw _privateConstructorUsedError;
@@ -2042,12 +2042,10 @@ abstract class $DeveloperCopyWith<$Res> {
       {int? id,
       String? uuid,
       String? organizationName,
-      Country? country,
+      Map<String, dynamic>? country,
       String? status,
       String? websiteUrl,
       String? supportEmail});
-
-  $CountryCopyWith<$Res>? get country;
 }
 
 /// @nodoc
@@ -2087,7 +2085,7 @@ class _$DeveloperCopyWithImpl<$Res, $Val extends Developer>
       country: freezed == country
           ? _value.country
           : country // ignore: cast_nullable_to_non_nullable
-              as Country?,
+              as Map<String, dynamic>?,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -2101,18 +2099,6 @@ class _$DeveloperCopyWithImpl<$Res, $Val extends Developer>
           : supportEmail // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $CountryCopyWith<$Res>? get country {
-    if (_value.country == null) {
-      return null;
-    }
-
-    return $CountryCopyWith<$Res>(_value.country!, (value) {
-      return _then(_value.copyWith(country: value) as $Val);
-    });
   }
 }
 
@@ -2128,13 +2114,10 @@ abstract class _$$DeveloperImplCopyWith<$Res>
       {int? id,
       String? uuid,
       String? organizationName,
-      Country? country,
+      Map<String, dynamic>? country,
       String? status,
       String? websiteUrl,
       String? supportEmail});
-
-  @override
-  $CountryCopyWith<$Res>? get country;
 }
 
 /// @nodoc
@@ -2170,9 +2153,9 @@ class __$$DeveloperImplCopyWithImpl<$Res>
           : organizationName // ignore: cast_nullable_to_non_nullable
               as String?,
       country: freezed == country
-          ? _value.country
+          ? _value._country
           : country // ignore: cast_nullable_to_non_nullable
-              as Country?,
+              as Map<String, dynamic>?,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -2196,10 +2179,11 @@ class _$DeveloperImpl with DiagnosticableTreeMixin implements _Developer {
       {this.id,
       this.uuid,
       this.organizationName,
-      this.country,
+      final Map<String, dynamic>? country,
       this.status,
       this.websiteUrl,
-      this.supportEmail});
+      this.supportEmail})
+      : _country = country;
 
   factory _$DeveloperImpl.fromJson(Map<String, dynamic> json) =>
       _$$DeveloperImplFromJson(json);
@@ -2210,8 +2194,16 @@ class _$DeveloperImpl with DiagnosticableTreeMixin implements _Developer {
   final String? uuid;
   @override
   final String? organizationName;
+  final Map<String, dynamic>? _country;
   @override
-  final Country? country;
+  Map<String, dynamic>? get country {
+    final value = _country;
+    if (value == null) return null;
+    if (_country is EqualUnmodifiableMapView) return _country;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
+
   @override
   final String? status;
   @override
@@ -2247,7 +2239,7 @@ class _$DeveloperImpl with DiagnosticableTreeMixin implements _Developer {
             (identical(other.uuid, uuid) || other.uuid == uuid) &&
             (identical(other.organizationName, organizationName) ||
                 other.organizationName == organizationName) &&
-            (identical(other.country, country) || other.country == country) &&
+            const DeepCollectionEquality().equals(other._country, _country) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.websiteUrl, websiteUrl) ||
                 other.websiteUrl == websiteUrl) &&
@@ -2257,8 +2249,15 @@ class _$DeveloperImpl with DiagnosticableTreeMixin implements _Developer {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, uuid, organizationName,
-      country, status, websiteUrl, supportEmail);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      uuid,
+      organizationName,
+      const DeepCollectionEquality().hash(_country),
+      status,
+      websiteUrl,
+      supportEmail);
 
   @JsonKey(ignore: true)
   @override
@@ -2279,7 +2278,7 @@ abstract class _Developer implements Developer {
       {final int? id,
       final String? uuid,
       final String? organizationName,
-      final Country? country,
+      final Map<String, dynamic>? country,
       final String? status,
       final String? websiteUrl,
       final String? supportEmail}) = _$DeveloperImpl;
@@ -2294,7 +2293,7 @@ abstract class _Developer implements Developer {
   @override
   String? get organizationName;
   @override
-  Country? get country;
+  Map<String, dynamic>? get country;
   @override
   String? get status;
   @override

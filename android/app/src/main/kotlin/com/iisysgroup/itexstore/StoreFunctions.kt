@@ -15,46 +15,23 @@ import java.util.Locale.ENGLISH
 import android.os.Build.VERSION_CODES
 import android.util.Log
 import com.iisysgroup.itexstore.platform.Horizon
-import com.iisysgroup.itexstore.platform.Pax
 import com.iisysgroup.itexstore.platform.PlatformSdk
-import com.iisysgroup.itexstore.platform.Topwise
-import com.iisysgroup.itexstore.platform.Verifone
 //import java.util.Random
 import kotlin.random.Random
 
 
+@SuppressLint("NewApi")
 class StoreFunctions(private val context: Context) {
     private val packageManager: PackageManager = context.packageManager
     private val TAG = "StoreFunctions"
-    @SuppressLint("NewApi")
-    private val manufacturer = "${Build.BRAND}_${Build.MANUFACTURER}".lowercase()
-
-    private val verifone: Verifone = Verifone(context)
-    private val pax: Pax = Pax(context)
-    private val topwise: Topwise = Topwise(context)
     private val horizon: Horizon = Horizon(context)
 
     init {
-        when {
-            manufacturer.contains("qcom") || manufacturer.contains("pax") -> pax.setInstance()
-            manufacturer.contains("verifone") -> verifone.bindAllServices()
-            manufacturer.contains("alps") || manufacturer.contains("topwise") -> topwise.bindService()
-            manufacturer.contains("horizonpay") -> horizon.bindService()
-        }
+            horizon.bindService()
     }
 
-    @SuppressLint("NewApi")
-//    @TargetApi(VERSION_CODES.DONUT)
     private fun getPlatform(): PlatformSdk? {
-        val platformSdk: PlatformSdk? = when {
-            manufacturer.contains("qcom") || manufacturer.contains("pax") -> pax
-            manufacturer.contains("verifone") -> verifone
-            manufacturer.contains("alps") || manufacturer.contains("topwise") -> topwise
-            manufacturer.contains("horizonpay") -> horizon
-            else -> null
-        }
-
-        return platformSdk;
+        return  horizon
     }
 
     fun getSN(): String? {

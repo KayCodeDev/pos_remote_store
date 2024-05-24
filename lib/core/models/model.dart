@@ -105,7 +105,7 @@ class Developer with _$Developer {
       {int? id,
       String? uuid,
       String? organizationName,
-      Country? country,
+      Map<String, dynamic>? country,
       String? status,
       String? websiteUrl,
       String? supportEmail}) = _Developer;

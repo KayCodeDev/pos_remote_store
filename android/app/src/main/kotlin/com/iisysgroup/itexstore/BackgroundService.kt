@@ -1,5 +1,6 @@
 package com.iisysgroup.itexstore
 
+import android.annotation.SuppressLint
 import com.iisysgroup.itexstore.R
 import android.annotation.TargetApi
 import android.app.*
@@ -30,7 +31,7 @@ import kotlin.random.Random
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
 
-@TargetApi(Build.VERSION_CODES.O)
+@SuppressLint("NewApi")
 class BackgroundService : Service() {
     private val TAG = "ITEXStoreBGS"
     private val BASE_URL = "https://store-api.itexapp.com/api/v1/store"
@@ -47,8 +48,8 @@ class BackgroundService : Service() {
 
     private val TOKEN =
         "q3QreaNLqJzSp5SGVw/dUH/zMQlVo1HthfXkkGS1iP1xKWe2WwLPOFd4PErm/makjhsE6nBxDMETeCY2CBZ81dlBiFn7CVCSridhn/BQwo7L2ZT9gZRV8RbyV9/IH4GZ+UZYHg=="
-    private val SECRET_KEY =
-        "WnxuisbwCzbX4S5BYPl/dnOF5c7Mf+mPqjxTx6dZXC2JizxVYcMOcVw3+7TcoryzU2s1yHcu+sTPZz8GOj2Du5H8FXv6bnFwjECugHBq/463BwCBJvw8uAMXmjbvj9P4lzb3HA=="
+//    private val SECRET_KEY =
+//        "WnxuisbwCzbX4S5BYPl/dnOF5c7Mf+mPqjxTx6dZXC2JizxVYcMOcVw3+7TcoryzU2s1yHcu+sTPZz8GOj2Du5H8FXv6bnFwjECugHBq/463BwCBJvw8uAMXmjbvj9P4lzb3HA=="
 
 
     private var socket: Socket? = null

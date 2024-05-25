@@ -1,61 +1,61 @@
 package com.iisysgroup.itexstore.platform
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
 import com.iisysgroup.itexstore.utils.HelperUtil
-import com.pax.dal.IDAL
-import com.pax.neptunelite.api.NeptuneLiteUser
-import com.pax.dal.entity.ETermInfoKey
+import com.pos.device.SDKException
+import com.pos.device.SDKManager
+import com.pos.device.SDKManagerCallback
+import com.pos.device.sys.SystemManager
+import com.pos.device.config.DevConfig
+import com.pos.device.rtc.RealTimeClock
 
-
-class Pax(private val context: Context) : PlatformSdk {
-    private val TAG = "Pax"
-    private var idal: IDAL? = null
+class Amp(private val context: Context) : PlatformSdk {
+    private val TAG = "Amp"
 
     fun setInstance() {
         try {
-//            idal = NeptuneLiteUser.getInstance().getDalWithProcessSafe(context)
-            idal = NeptuneLiteUser.getInstance().getDal(context)
+            SDKManager.init(context, sdkManagerCallback);
         } catch (e: Exception) {
             Log.d(TAG, "Exception from setInstance: ${e.message}")
         }
     }
 
-
-    @SuppressLint("NewApi")
-    override fun getSerialNumber(): String? {
-        var sn: String? = null
-        return try {
-            val map: Map<ETermInfoKey, String>? = idal?.getSys()?.getTermInfo()
-
-            if (map != null) {
-                sn = map[ETermInfoKey.SN]
+    private val sdkManagerCallback: SDKManagerCallback = object : SDKManagerCallback {
+        override
+        fun onFinish() {
+            try {
+                Log.d(TAG, "SDK Initialized")
+            } catch (e: SDKException) {
+                e.printStackTrace()
             }
+        }
+    }
 
-            sn
+    override fun getSerialNumber(): String? {
+
+        return try {
+            DevConfig.getSN()
         } catch (e: Exception) {
             Log.d(TAG, "Exception getSerialNumber : ${e.message}")
             null
         }
-
     }
 
-    @SuppressLint("NewApi")
     override fun getTerminalInfo(): Map<String, String?> {
         return mapOf(
             "serialNumber" to getSerialNumber(),
             "batteryLevel" to HelperUtil.getBatteryLevel(context).toString(),
             "imei" to getSerialNumber(),
-            "manufacturer" to Build.MANUFACTURER,
-            "model" to Build.MODEL,
+            "manufacturer" to "AMP",
+            "model" to DevConfig.getMachine(),
             "osVersion" to "OS Version: ${Build.VERSION.SDK_INT} (API Level: ${Build.VERSION.RELEASE})",
             "sdkVersion" to Build.VERSION.SDK_INT.toString(),
             "ram" to HelperUtil.getAvailableRam(context).toString(),
             "rom" to HelperUtil.getAvailableRom().toString(),
-            "firmware" to Build.VERSION.RELEASE,
+            "firmware" to DevConfig.getFirmwareVersion(),
             "batteryTemp" to HelperUtil.getBatteryTemperature(context).toString() + "°C",
             "networkType" to HelperUtil.getConnectionType(context)
         )
@@ -63,8 +63,8 @@ class Pax(private val context: Context) : PlatformSdk {
 
     override fun installApp(path: String, packageName: String): Boolean {
         return try {
-            val installed: Int = idal?.getSys()?.installApp(path)!!
-           installed != 1
+            val installed: Int = SystemManager.installApp(path)
+            installed == 0
         } catch (e: Exception) {
             Log.d(TAG, "Exception installApp : ${e.message}")
             false
@@ -74,18 +74,17 @@ class Pax(private val context: Context) : PlatformSdk {
 
     override fun rebootDevice(): Boolean {
         return try {
-            idal?.getSys()?.reboot()
+            SystemManager.reboot()
             true
         } catch (e: Exception) {
-            Log.d(TAG, "Exception installApp : ${e.message}")
+            Log.d(TAG, "Exception rebootDevice : ${e.message}")
             false
         }
-
     }
 
     override fun setTimeZone(tz: String): Boolean {
         return try {
-            idal?.getSys()?.setTimeZone(tz)
+            RealTimeClock.setAutoTimezone(context, true)
             true
         } catch (e: Exception) {
             Log.d(TAG, "Exception setTimeZone : ${e.message}")
@@ -95,28 +94,27 @@ class Pax(private val context: Context) : PlatformSdk {
 
     override fun shutdownDevice(): Boolean {
         return try {
-            idal?.getSys()?.shutdown()
+            SystemManager.shutdown()
             true
         } catch (e: Exception) {
-            Log.d(TAG, "Exception shutdownDevice : ${e.message}")
+            Log.d(TAG, "Exception shutdown : ${e.message}")
             false
         }
     }
 
-
     override fun uninstallApp(packageName: String): Boolean {
         return try {
-            val uninstalled: Int = idal?.getSys()?.uninstallApp(packageName)!!
-            uninstalled == 1
+            val uninstalled: Int = SystemManager.uninstallApp(packageName)
+            uninstalled == 0
         } catch (e: Exception) {
             Log.d(TAG, "Exception uninstallApp : ${e.message}")
             false
         }
-
     }
 
     override fun captureScreen(): Bitmap? {
         Log.d(TAG, "captureScreen not implemented")
         return null
     }
+
 }

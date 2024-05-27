@@ -522,7 +522,6 @@ class HelperUtil {
             }
         }
 
-        @SuppressLint("NewApi")
         private fun executeRequest(
             client: OkHttpClient,
             request: Request,
@@ -532,18 +531,8 @@ class HelperUtil {
             try {
                 val builder = request.newBuilder()
 
-
-                val manufacturer: String = Build.MANUFACTURER;
-                val brand: String = Build.BRAND;
-
-                val encodedString = Base64.encodeToString(("$manufacturer:$brand").toByteArray(), Base64.DEFAULT)
-
-                Log.d(TAG, encodedString)
-
                 builder.addHeader("x-api-key", token)
                 builder.addHeader("x-serial-number", serialNumber)
-                builder.addHeader("manufacturer",manufacturer )
-                builder.addHeader("brand", brand)
 
                 val newRequest = builder.build()
 

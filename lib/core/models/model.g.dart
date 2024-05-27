@@ -201,9 +201,7 @@ _$DeveloperImpl _$$DeveloperImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as int?,
       uuid: json['uuid'] as String?,
       organizationName: json['organizationName'] as String?,
-      country: json['country'] == null
-          ? null
-          : Country.fromJson(json['country'] as Map<String, dynamic>),
+      country: json['country'] as Map<String, dynamic>?,
       status: json['status'] as String?,
       websiteUrl: json['websiteUrl'] as String?,
       supportEmail: json['supportEmail'] as String?,

@@ -522,7 +522,6 @@ class HelperUtil {
             }
         }
 
-        @SuppressLint("NewApi")
         private fun executeRequest(
             client: OkHttpClient,
             request: Request,

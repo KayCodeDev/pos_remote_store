@@ -19,7 +19,7 @@ class App with _$App {
     String? name,
     String? packageName,
     String? icon,
-     Developer? developer,
+    Developer? developer,
     Distributor? distributor,
     String? description,
     List<AppScreenShot>? screenShots,
@@ -105,25 +105,12 @@ class Developer with _$Developer {
       {int? id,
       String? uuid,
       String? organizationName,
-      Map<String, dynamic>? country,
       String? status,
       String? websiteUrl,
       String? supportEmail}) = _Developer;
 
   factory Developer.fromJson(Map<String, dynamic> json) =>
       _$DeveloperFromJson(json);
-}
-
-@freezed
-class Country with _$Country {
-  factory Country(
-      {int? id,
-      String? countryName,
-      String? countryCode,
-      String? status}) = _Country;
-
-  factory Country.fromJson(Map<String, dynamic> json) =>
-      _$CountryFromJson(json);
 }
 
 @freezed
@@ -134,7 +121,6 @@ class Distributor with _$Distributor {
       String? distributorName,
       String? contactName,
       String? contactEmail,
-      Country? country,
       String? status,
       int? developerId}) = _Distributor;
 

@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SOCSI_SDK_K21" />
+    <uses-permission android:name="android.permission.SOCSI_SDK_SYS" />
     <uses-permission android:name="com.pax.permission.UPDATE_APP" />
     <uses-permission android:name="com.pax.permission.RECV_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

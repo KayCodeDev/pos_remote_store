@@ -201,7 +201,6 @@ _$DeveloperImpl _$$DeveloperImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as int?,
       uuid: json['uuid'] as String?,
       organizationName: json['organizationName'] as String?,
-      country: json['country'] as Map<String, dynamic>?,
       status: json['status'] as String?,
       websiteUrl: json['websiteUrl'] as String?,
       supportEmail: json['supportEmail'] as String?,
@@ -212,26 +211,9 @@ Map<String, dynamic> _$$DeveloperImplToJson(_$DeveloperImpl instance) =>
       'id': instance.id,
       'uuid': instance.uuid,
       'organizationName': instance.organizationName,
-      'country': instance.country,
       'status': instance.status,
       'websiteUrl': instance.websiteUrl,
       'supportEmail': instance.supportEmail,
-    };
-
-_$CountryImpl _$$CountryImplFromJson(Map<String, dynamic> json) =>
-    _$CountryImpl(
-      id: json['id'] as int?,
-      countryName: json['countryName'] as String?,
-      countryCode: json['countryCode'] as String?,
-      status: json['status'] as String?,
-    );
-
-Map<String, dynamic> _$$CountryImplToJson(_$CountryImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'countryName': instance.countryName,
-      'countryCode': instance.countryCode,
-      'status': instance.status,
     };
 
 _$DistributorImpl _$$DistributorImplFromJson(Map<String, dynamic> json) =>
@@ -241,9 +223,6 @@ _$DistributorImpl _$$DistributorImplFromJson(Map<String, dynamic> json) =>
       distributorName: json['distributorName'] as String?,
       contactName: json['contactName'] as String?,
       contactEmail: json['contactEmail'] as String?,
-      country: json['country'] == null
-          ? null
-          : Country.fromJson(json['country'] as Map<String, dynamic>),
       status: json['status'] as String?,
       developerId: json['developerId'] as int?,
     );
@@ -255,7 +234,6 @@ Map<String, dynamic> _$$DistributorImplToJson(_$DistributorImpl instance) =>
       'distributorName': instance.distributorName,
       'contactName': instance.contactName,
       'contactEmail': instance.contactEmail,
-      'country': instance.country,
       'status': instance.status,
       'developerId': instance.developerId,
     };

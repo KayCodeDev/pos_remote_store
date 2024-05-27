@@ -165,8 +165,6 @@ class StoreFunctions(private val context: Context) {
     }
 
     fun installApp(path: String?, packageName: String?): Boolean {
-        println(path)
-        println(packageName)
         return getPlatform()?.installApp(path!!, packageName!!) ?: false
     }
 

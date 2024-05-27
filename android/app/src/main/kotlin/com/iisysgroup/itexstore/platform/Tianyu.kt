@@ -1,55 +1,37 @@
 package com.iisysgroup.itexstore.platform
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
+import android.os.RemoteException
 import android.util.Log
 import com.iisysgroup.itexstore.utils.HelperUtil
-import com.pax.dal.IDAL
-import com.pax.neptunelite.api.NeptuneLiteUser
-import com.pax.dal.entity.ETermInfoKey
+import com.whty.smartpos.tysmartposapi.ITYSmartPosApi
 
 
-class Pax(private val context: Context) : PlatformSdk {
-    private val TAG = "Pax"
-    private var idal: IDAL? = null
+class Tianyu(private val context: Context) : PlatformSdk {
+    private val TAG = "Tianyu"
+    private var smartPosApi: ITYSmartPosApi? = null
 
     fun setInstance() {
-        try {
-//            idal = NeptuneLiteUser.getInstance().getDalWithProcessSafe(context)
-            idal = NeptuneLiteUser.getInstance().getDal(context)
-        } catch (e: Exception) {
-            Log.d(TAG, "Exception from setInstance: ${e.message}")
-        }
+        smartPosApi = ITYSmartPosApi.get(context)
     }
 
-
-    @SuppressLint("NewApi")
     override fun getSerialNumber(): String? {
-        var sn: String? = null
         return try {
-            val map: Map<ETermInfoKey, String>? = idal?.getSys()?.getTermInfo()
-
-            if (map != null) {
-                sn = map[ETermInfoKey.SN]
-            }
-
-            sn
+            smartPosApi?.getDeviceSN()
         } catch (e: Exception) {
             Log.d(TAG, "Exception getSerialNumber : ${e.message}")
             null
         }
-
     }
 
-    @SuppressLint("NewApi")
     override fun getTerminalInfo(): Map<String, String?> {
         return mapOf(
             "serialNumber" to getSerialNumber(),
             "batteryLevel" to HelperUtil.getBatteryLevel(context).toString(),
             "imei" to getSerialNumber(),
-            "manufacturer" to Build.MANUFACTURER,
+            "manufacturer" to "Tianyu",
             "model" to Build.MODEL,
             "osVersion" to "OS Version: ${Build.VERSION.SDK_INT} (API Level: ${Build.VERSION.RELEASE})",
             "sdkVersion" to Build.VERSION.SDK_INT.toString(),
@@ -63,56 +45,47 @@ class Pax(private val context: Context) : PlatformSdk {
 
     override fun installApp(path: String, packageName: String): Boolean {
         return try {
-            val installed: Int = idal?.getSys()?.installApp(path)!!
-           installed != 1
-        } catch (e: Exception) {
+            smartPosApi?.installApp(path)
+            true
+        } catch (e: RemoteException) {
             Log.d(TAG, "Exception installApp : ${e.message}")
             false
         }
-
     }
 
     override fun rebootDevice(): Boolean {
         return try {
-            idal?.getSys()?.reboot()
+            smartPosApi?.reboot();
             true
         } catch (e: Exception) {
-            Log.d(TAG, "Exception installApp : ${e.message}")
+            Log.d(TAG, "Exception rebootDevice : ${e.message}")
             false
         }
-
     }
 
     override fun setTimeZone(tz: String): Boolean {
         return try {
-            idal?.getSys()?.setTimeZone(tz)
+            smartPosApi?.setTimeZone(tz)
             true
-        } catch (e: Exception) {
+        } catch (e: RemoteException) {
             Log.d(TAG, "Exception setTimeZone : ${e.message}")
             false
         }
     }
 
     override fun shutdownDevice(): Boolean {
-        return try {
-            idal?.getSys()?.shutdown()
-            true
-        } catch (e: Exception) {
-            Log.d(TAG, "Exception shutdownDevice : ${e.message}")
-            false
-        }
+        Log.d(TAG, "shutdownDevice not implemented")
+        return false
     }
-
 
     override fun uninstallApp(packageName: String): Boolean {
         return try {
-            val uninstalled: Int = idal?.getSys()?.uninstallApp(packageName)!!
-            uninstalled == 1
-        } catch (e: Exception) {
-            Log.d(TAG, "Exception uninstallApp : ${e.message}")
+            smartPosApi?.uninstallApp(packageName)
+            true
+        } catch (e: RemoteException) {
+            Log.d(TAG, "Exception installApp : ${e.message}")
             false
         }
-
     }
 
     override fun captureScreen(): Bitmap? {

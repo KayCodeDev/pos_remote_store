@@ -2022,7 +2022,6 @@ mixin _$Developer {
   int? get id => throw _privateConstructorUsedError;
   String? get uuid => throw _privateConstructorUsedError;
   String? get organizationName => throw _privateConstructorUsedError;
-  Map<String, dynamic>? get country => throw _privateConstructorUsedError;
   String? get status => throw _privateConstructorUsedError;
   String? get websiteUrl => throw _privateConstructorUsedError;
   String? get supportEmail => throw _privateConstructorUsedError;
@@ -2042,7 +2041,6 @@ abstract class $DeveloperCopyWith<$Res> {
       {int? id,
       String? uuid,
       String? organizationName,
-      Map<String, dynamic>? country,
       String? status,
       String? websiteUrl,
       String? supportEmail});
@@ -2064,7 +2062,6 @@ class _$DeveloperCopyWithImpl<$Res, $Val extends Developer>
     Object? id = freezed,
     Object? uuid = freezed,
     Object? organizationName = freezed,
-    Object? country = freezed,
     Object? status = freezed,
     Object? websiteUrl = freezed,
     Object? supportEmail = freezed,
@@ -2082,10 +2079,6 @@ class _$DeveloperCopyWithImpl<$Res, $Val extends Developer>
           ? _value.organizationName
           : organizationName // ignore: cast_nullable_to_non_nullable
               as String?,
-      country: freezed == country
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>?,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -2114,7 +2107,6 @@ abstract class _$$DeveloperImplCopyWith<$Res>
       {int? id,
       String? uuid,
       String? organizationName,
-      Map<String, dynamic>? country,
       String? status,
       String? websiteUrl,
       String? supportEmail});
@@ -2134,7 +2126,6 @@ class __$$DeveloperImplCopyWithImpl<$Res>
     Object? id = freezed,
     Object? uuid = freezed,
     Object? organizationName = freezed,
-    Object? country = freezed,
     Object? status = freezed,
     Object? websiteUrl = freezed,
     Object? supportEmail = freezed,
@@ -2152,10 +2143,6 @@ class __$$DeveloperImplCopyWithImpl<$Res>
           ? _value.organizationName
           : organizationName // ignore: cast_nullable_to_non_nullable
               as String?,
-      country: freezed == country
-          ? _value._country
-          : country // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>?,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -2179,11 +2166,9 @@ class _$DeveloperImpl with DiagnosticableTreeMixin implements _Developer {
       {this.id,
       this.uuid,
       this.organizationName,
-      final Map<String, dynamic>? country,
       this.status,
       this.websiteUrl,
-      this.supportEmail})
-      : _country = country;
+      this.supportEmail});
 
   factory _$DeveloperImpl.fromJson(Map<String, dynamic> json) =>
       _$$DeveloperImplFromJson(json);
@@ -2194,16 +2179,6 @@ class _$DeveloperImpl with DiagnosticableTreeMixin implements _Developer {
   final String? uuid;
   @override
   final String? organizationName;
-  final Map<String, dynamic>? _country;
-  @override
-  Map<String, dynamic>? get country {
-    final value = _country;
-    if (value == null) return null;
-    if (_country is EqualUnmodifiableMapView) return _country;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(value);
-  }
-
   @override
   final String? status;
   @override
@@ -2213,7 +2188,7 @@ class _$DeveloperImpl with DiagnosticableTreeMixin implements _Developer {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Developer(id: $id, uuid: $uuid, organizationName: $organizationName, country: $country, status: $status, websiteUrl: $websiteUrl, supportEmail: $supportEmail)';
+    return 'Developer(id: $id, uuid: $uuid, organizationName: $organizationName, status: $status, websiteUrl: $websiteUrl, supportEmail: $supportEmail)';
   }
 
   @override
@@ -2224,7 +2199,6 @@ class _$DeveloperImpl with DiagnosticableTreeMixin implements _Developer {
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('uuid', uuid))
       ..add(DiagnosticsProperty('organizationName', organizationName))
-      ..add(DiagnosticsProperty('country', country))
       ..add(DiagnosticsProperty('status', status))
       ..add(DiagnosticsProperty('websiteUrl', websiteUrl))
       ..add(DiagnosticsProperty('supportEmail', supportEmail));
@@ -2239,7 +2213,6 @@ class _$DeveloperImpl with DiagnosticableTreeMixin implements _Developer {
             (identical(other.uuid, uuid) || other.uuid == uuid) &&
             (identical(other.organizationName, organizationName) ||
                 other.organizationName == organizationName) &&
-            const DeepCollectionEquality().equals(other._country, _country) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.websiteUrl, websiteUrl) ||
                 other.websiteUrl == websiteUrl) &&
@@ -2249,15 +2222,8 @@ class _$DeveloperImpl with DiagnosticableTreeMixin implements _Developer {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      uuid,
-      organizationName,
-      const DeepCollectionEquality().hash(_country),
-      status,
-      websiteUrl,
-      supportEmail);
+  int get hashCode => Object.hash(runtimeType, id, uuid, organizationName,
+      status, websiteUrl, supportEmail);
 
   @JsonKey(ignore: true)
   @override
@@ -2278,7 +2244,6 @@ abstract class _Developer implements Developer {
       {final int? id,
       final String? uuid,
       final String? organizationName,
-      final Map<String, dynamic>? country,
       final String? status,
       final String? websiteUrl,
       final String? supportEmail}) = _$DeveloperImpl;
@@ -2293,8 +2258,6 @@ abstract class _Developer implements Developer {
   @override
   String? get organizationName;
   @override
-  Map<String, dynamic>? get country;
-  @override
   String? get status;
   @override
   String? get websiteUrl;
@@ -2303,206 +2266,6 @@ abstract class _Developer implements Developer {
   @override
   @JsonKey(ignore: true)
   _$$DeveloperImplCopyWith<_$DeveloperImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-Country _$CountryFromJson(Map<String, dynamic> json) {
-  return _Country.fromJson(json);
-}
-
-/// @nodoc
-mixin _$Country {
-  int? get id => throw _privateConstructorUsedError;
-  String? get countryName => throw _privateConstructorUsedError;
-  String? get countryCode => throw _privateConstructorUsedError;
-  String? get status => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $CountryCopyWith<Country> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $CountryCopyWith<$Res> {
-  factory $CountryCopyWith(Country value, $Res Function(Country) then) =
-      _$CountryCopyWithImpl<$Res, Country>;
-  @useResult
-  $Res call(
-      {int? id, String? countryName, String? countryCode, String? status});
-}
-
-/// @nodoc
-class _$CountryCopyWithImpl<$Res, $Val extends Country>
-    implements $CountryCopyWith<$Res> {
-  _$CountryCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = freezed,
-    Object? countryName = freezed,
-    Object? countryCode = freezed,
-    Object? status = freezed,
-  }) {
-    return _then(_value.copyWith(
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int?,
-      countryName: freezed == countryName
-          ? _value.countryName
-          : countryName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      countryCode: freezed == countryCode
-          ? _value.countryCode
-          : countryCode // ignore: cast_nullable_to_non_nullable
-              as String?,
-      status: freezed == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$CountryImplCopyWith<$Res> implements $CountryCopyWith<$Res> {
-  factory _$$CountryImplCopyWith(
-          _$CountryImpl value, $Res Function(_$CountryImpl) then) =
-      __$$CountryImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {int? id, String? countryName, String? countryCode, String? status});
-}
-
-/// @nodoc
-class __$$CountryImplCopyWithImpl<$Res>
-    extends _$CountryCopyWithImpl<$Res, _$CountryImpl>
-    implements _$$CountryImplCopyWith<$Res> {
-  __$$CountryImplCopyWithImpl(
-      _$CountryImpl _value, $Res Function(_$CountryImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = freezed,
-    Object? countryName = freezed,
-    Object? countryCode = freezed,
-    Object? status = freezed,
-  }) {
-    return _then(_$CountryImpl(
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int?,
-      countryName: freezed == countryName
-          ? _value.countryName
-          : countryName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      countryCode: freezed == countryCode
-          ? _value.countryCode
-          : countryCode // ignore: cast_nullable_to_non_nullable
-              as String?,
-      status: freezed == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$CountryImpl with DiagnosticableTreeMixin implements _Country {
-  _$CountryImpl({this.id, this.countryName, this.countryCode, this.status});
-
-  factory _$CountryImpl.fromJson(Map<String, dynamic> json) =>
-      _$$CountryImplFromJson(json);
-
-  @override
-  final int? id;
-  @override
-  final String? countryName;
-  @override
-  final String? countryCode;
-  @override
-  final String? status;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Country(id: $id, countryName: $countryName, countryCode: $countryCode, status: $status)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Country'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('countryName', countryName))
-      ..add(DiagnosticsProperty('countryCode', countryCode))
-      ..add(DiagnosticsProperty('status', status));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CountryImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.countryName, countryName) ||
-                other.countryName == countryName) &&
-            (identical(other.countryCode, countryCode) ||
-                other.countryCode == countryCode) &&
-            (identical(other.status, status) || other.status == status));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, countryName, countryCode, status);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$CountryImplCopyWith<_$CountryImpl> get copyWith =>
-      __$$CountryImplCopyWithImpl<_$CountryImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$CountryImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _Country implements Country {
-  factory _Country(
-      {final int? id,
-      final String? countryName,
-      final String? countryCode,
-      final String? status}) = _$CountryImpl;
-
-  factory _Country.fromJson(Map<String, dynamic> json) = _$CountryImpl.fromJson;
-
-  @override
-  int? get id;
-  @override
-  String? get countryName;
-  @override
-  String? get countryCode;
-  @override
-  String? get status;
-  @override
-  @JsonKey(ignore: true)
-  _$$CountryImplCopyWith<_$CountryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -2517,7 +2280,6 @@ mixin _$Distributor {
   String? get distributorName => throw _privateConstructorUsedError;
   String? get contactName => throw _privateConstructorUsedError;
   String? get contactEmail => throw _privateConstructorUsedError;
-  Country? get country => throw _privateConstructorUsedError;
   String? get status => throw _privateConstructorUsedError;
   int? get developerId => throw _privateConstructorUsedError;
 
@@ -2539,11 +2301,8 @@ abstract class $DistributorCopyWith<$Res> {
       String? distributorName,
       String? contactName,
       String? contactEmail,
-      Country? country,
       String? status,
       int? developerId});
-
-  $CountryCopyWith<$Res>? get country;
 }
 
 /// @nodoc
@@ -2564,7 +2323,6 @@ class _$DistributorCopyWithImpl<$Res, $Val extends Distributor>
     Object? distributorName = freezed,
     Object? contactName = freezed,
     Object? contactEmail = freezed,
-    Object? country = freezed,
     Object? status = freezed,
     Object? developerId = freezed,
   }) {
@@ -2589,10 +2347,6 @@ class _$DistributorCopyWithImpl<$Res, $Val extends Distributor>
           ? _value.contactEmail
           : contactEmail // ignore: cast_nullable_to_non_nullable
               as String?,
-      country: freezed == country
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
-              as Country?,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -2602,18 +2356,6 @@ class _$DistributorCopyWithImpl<$Res, $Val extends Distributor>
           : developerId // ignore: cast_nullable_to_non_nullable
               as int?,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $CountryCopyWith<$Res>? get country {
-    if (_value.country == null) {
-      return null;
-    }
-
-    return $CountryCopyWith<$Res>(_value.country!, (value) {
-      return _then(_value.copyWith(country: value) as $Val);
-    });
   }
 }
 
@@ -2631,12 +2373,8 @@ abstract class _$$DistributorImplCopyWith<$Res>
       String? distributorName,
       String? contactName,
       String? contactEmail,
-      Country? country,
       String? status,
       int? developerId});
-
-  @override
-  $CountryCopyWith<$Res>? get country;
 }
 
 /// @nodoc
@@ -2655,7 +2393,6 @@ class __$$DistributorImplCopyWithImpl<$Res>
     Object? distributorName = freezed,
     Object? contactName = freezed,
     Object? contactEmail = freezed,
-    Object? country = freezed,
     Object? status = freezed,
     Object? developerId = freezed,
   }) {
@@ -2680,10 +2417,6 @@ class __$$DistributorImplCopyWithImpl<$Res>
           ? _value.contactEmail
           : contactEmail // ignore: cast_nullable_to_non_nullable
               as String?,
-      country: freezed == country
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
-              as Country?,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -2705,7 +2438,6 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
       this.distributorName,
       this.contactName,
       this.contactEmail,
-      this.country,
       this.status,
       this.developerId});
 
@@ -2723,15 +2455,13 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
   @override
   final String? contactEmail;
   @override
-  final Country? country;
-  @override
   final String? status;
   @override
   final int? developerId;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Distributor(id: $id, uuid: $uuid, distributorName: $distributorName, contactName: $contactName, contactEmail: $contactEmail, country: $country, status: $status, developerId: $developerId)';
+    return 'Distributor(id: $id, uuid: $uuid, distributorName: $distributorName, contactName: $contactName, contactEmail: $contactEmail, status: $status, developerId: $developerId)';
   }
 
   @override
@@ -2744,7 +2474,6 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
       ..add(DiagnosticsProperty('distributorName', distributorName))
       ..add(DiagnosticsProperty('contactName', contactName))
       ..add(DiagnosticsProperty('contactEmail', contactEmail))
-      ..add(DiagnosticsProperty('country', country))
       ..add(DiagnosticsProperty('status', status))
       ..add(DiagnosticsProperty('developerId', developerId));
   }
@@ -2762,7 +2491,6 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
                 other.contactName == contactName) &&
             (identical(other.contactEmail, contactEmail) ||
                 other.contactEmail == contactEmail) &&
-            (identical(other.country, country) || other.country == country) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.developerId, developerId) ||
                 other.developerId == developerId));
@@ -2771,7 +2499,7 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, uuid, distributorName,
-      contactName, contactEmail, country, status, developerId);
+      contactName, contactEmail, status, developerId);
 
   @JsonKey(ignore: true)
   @override
@@ -2794,7 +2522,6 @@ abstract class _Distributor implements Distributor {
       final String? distributorName,
       final String? contactName,
       final String? contactEmail,
-      final Country? country,
       final String? status,
       final int? developerId}) = _$DistributorImpl;
 
@@ -2811,8 +2538,6 @@ abstract class _Distributor implements Distributor {
   String? get contactName;
   @override
   String? get contactEmail;
-  @override
-  Country? get country;
   @override
   String? get status;
   @override

@@ -84,7 +84,7 @@ flutter {
 
 dependencies {
     implementation fileTree(dir: '../libs', include: ['*.jar'])
-    api files('../libs/SYD-SmartPOS-SDK V1.14.jar')
+    api files('../libs/SYD-SmartPOS-SDK_V1_14.jar')
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
     implementation 'androidx.core:core:1.12.0'
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

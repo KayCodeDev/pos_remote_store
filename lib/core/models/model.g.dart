@@ -7,7 +7,7 @@ part of 'model.dart';
 // **************************************************************************
 
 _$AppImpl _$$AppImplFromJson(Map<String, dynamic> json) => _$AppImpl(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       uuid: json['uuid'] as String?,
       status: json['status'] as String?,
       osType: json['osType'] as String?,
@@ -34,7 +34,7 @@ _$AppImpl _$$AppImplFromJson(Map<String, dynamic> json) => _$AppImpl(
           ? null
           : Category.fromJson(json['category'] as Map<String, dynamic>),
       appType: json['appType'] as String?,
-      downloadCount: json['downloadCount'] as int?,
+      downloadCount: (json['downloadCount'] as num?)?.toInt(),
       permissions: (json['permissions'] as List<dynamic>?)
           ?.map((e) => e as String?)
           .toList(),
@@ -60,13 +60,13 @@ Map<String, dynamic> _$$AppImplToJson(_$AppImpl instance) => <String, dynamic>{
       'name': instance.name,
       'packageName': instance.packageName,
       'icon': instance.icon,
-      'developer': instance.developer,
-      'distributor': instance.distributor,
+      'developer': instance.developer?.toJson(),
+      'distributor': instance.distributor?.toJson(),
       'description': instance.description,
-      'screenShots': instance.screenShots,
-      'versions': instance.versions,
-      'version': instance.version,
-      'category': instance.category,
+      'screenShots': instance.screenShots?.map((e) => e.toJson()).toList(),
+      'versions': instance.versions?.map((e) => e.toJson()).toList(),
+      'version': instance.version?.toJson(),
+      'category': instance.category?.toJson(),
       'appType': instance.appType,
       'downloadCount': instance.downloadCount,
       'permissions': instance.permissions,
@@ -88,7 +88,7 @@ const _$AppActionEnumMap = {
 
 _$AppInstallingImpl _$$AppInstallingImplFromJson(Map<String, dynamic> json) =>
     _$AppInstallingImpl(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       uuid: json['uuid'] as String?,
       status: json['status'] as String?,
       osType: json['osType'] as String?,
@@ -113,7 +113,7 @@ _$AppInstallingImpl _$$AppInstallingImplFromJson(Map<String, dynamic> json) =>
           ? null
           : Category.fromJson(json['category'] as Map<String, dynamic>),
       appType: json['appType'] as String?,
-      downloadCount: json['downloadCount'] as int?,
+      downloadCount: (json['downloadCount'] as num?)?.toInt(),
       permissions: (json['permissions'] as List<dynamic>?)
           ?.map((e) => e as String?)
           .toList(),
@@ -140,13 +140,13 @@ Map<String, dynamic> _$$AppInstallingImplToJson(_$AppInstallingImpl instance) =>
       'name': instance.name,
       'packageName': instance.packageName,
       'icon': instance.icon,
-      'developer': instance.developer,
-      'distributor': instance.distributor,
+      'developer': instance.developer.toJson(),
+      'distributor': instance.distributor?.toJson(),
       'description': instance.description,
-      'screenShots': instance.screenShots,
-      'versions': instance.versions,
-      'version': instance.version,
-      'category': instance.category,
+      'screenShots': instance.screenShots?.map((e) => e.toJson()).toList(),
+      'versions': instance.versions?.map((e) => e.toJson()).toList(),
+      'version': instance.version?.toJson(),
+      'category': instance.category?.toJson(),
       'appType': instance.appType,
       'downloadCount': instance.downloadCount,
       'permissions': instance.permissions,
@@ -198,7 +198,7 @@ Map<String, dynamic> _$$DeviceInfoImplToJson(_$DeviceInfoImpl instance) =>
 
 _$DeveloperImpl _$$DeveloperImplFromJson(Map<String, dynamic> json) =>
     _$DeveloperImpl(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       uuid: json['uuid'] as String?,
       organizationName: json['organizationName'] as String?,
       country: json['country'] == null
@@ -214,7 +214,7 @@ Map<String, dynamic> _$$DeveloperImplToJson(_$DeveloperImpl instance) =>
       'id': instance.id,
       'uuid': instance.uuid,
       'organizationName': instance.organizationName,
-      'country': instance.country,
+      'country': instance.country?.toJson(),
       'status': instance.status,
       'websiteUrl': instance.websiteUrl,
       'supportEmail': instance.supportEmail,
@@ -222,7 +222,7 @@ Map<String, dynamic> _$$DeveloperImplToJson(_$DeveloperImpl instance) =>
 
 _$CountryImpl _$$CountryImplFromJson(Map<String, dynamic> json) =>
     _$CountryImpl(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       countryName: json['countryName'] as String?,
       countryCode: json['countryCode'] as String?,
       status: json['status'] as String?,
@@ -238,7 +238,7 @@ Map<String, dynamic> _$$CountryImplToJson(_$CountryImpl instance) =>
 
 _$DistributorImpl _$$DistributorImplFromJson(Map<String, dynamic> json) =>
     _$DistributorImpl(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       uuid: json['uuid'] as String?,
       distributorName: json['distributorName'] as String?,
       contactName: json['contactName'] as String?,
@@ -247,7 +247,7 @@ _$DistributorImpl _$$DistributorImplFromJson(Map<String, dynamic> json) =>
           ? null
           : Country.fromJson(json['country'] as Map<String, dynamic>),
       status: json['status'] as String?,
-      developerId: json['developerId'] as int?,
+      developerId: (json['developerId'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$DistributorImplToJson(_$DistributorImpl instance) =>
@@ -257,17 +257,17 @@ Map<String, dynamic> _$$DistributorImplToJson(_$DistributorImpl instance) =>
       'distributorName': instance.distributorName,
       'contactName': instance.contactName,
       'contactEmail': instance.contactEmail,
-      'country': instance.country,
+      'country': instance.country?.toJson(),
       'status': instance.status,
       'developerId': instance.developerId,
     };
 
 _$AppScreenShotImpl _$$AppScreenShotImplFromJson(Map<String, dynamic> json) =>
     _$AppScreenShotImpl(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       uuid: json['uuid'] as String?,
       imageUrl: json['imageUrl'] as String?,
-      appId: json['appId'] as int?,
+      appId: (json['appId'] as num?)?.toInt(),
       size: json['size'] as String?,
     );
 
@@ -282,14 +282,14 @@ Map<String, dynamic> _$$AppScreenShotImplToJson(_$AppScreenShotImpl instance) =>
 
 _$AppVersionImpl _$$AppVersionImplFromJson(Map<String, dynamic> json) =>
     _$AppVersionImpl(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       uuid: json['uuid'] as String?,
       status: json['status'] as String?,
       version: json['version'] as String?,
       versionCode: json['versionCode'] as String?,
       size: json['size'] as String?,
       updateDescription: json['updateDescription'] as String?,
-      downloadCount: json['downloadCount'] as int?,
+      downloadCount: (json['downloadCount'] as num?)?.toInt(),
       downloadUrl: json['downloadUrl'] as String?,
       createdAt: json['createdAt'] == null
           ? null
@@ -316,7 +316,7 @@ Map<String, dynamic> _$$AppVersionImplToJson(_$AppVersionImpl instance) =>
 
 _$CategoryImpl _$$CategoryImplFromJson(Map<String, dynamic> json) =>
     _$CategoryImpl(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       uuid: json['uuid'] as String?,
       name: json['name'] as String?,
       status: json['status'] as String?,

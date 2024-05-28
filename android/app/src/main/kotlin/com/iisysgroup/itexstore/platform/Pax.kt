@@ -64,7 +64,7 @@ class Pax(private val context: Context) : PlatformSdk {
     override fun installApp(path: String, packageName: String): Boolean {
         return try {
             val installed: Int = idal?.getSys()?.installApp(path)!!
-           installed != 1
+           installed == 0
         } catch (e: Exception) {
             Log.d(TAG, "Exception installApp : ${e.message}")
             false
@@ -106,8 +106,8 @@ class Pax(private val context: Context) : PlatformSdk {
 
     override fun uninstallApp(packageName: String): Boolean {
         return try {
-            val uninstalled: Int = idal?.getSys()?.uninstallApp(packageName)!!
-            uninstalled == 1
+            val unInstalled: Int =  idal?.getSys()?.uninstallApp(packageName)!!
+            unInstalled == 0
         } catch (e: Exception) {
             Log.d(TAG, "Exception uninstallApp : ${e.message}")
             false

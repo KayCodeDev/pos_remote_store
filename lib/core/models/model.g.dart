@@ -60,13 +60,13 @@ Map<String, dynamic> _$$AppImplToJson(_$AppImpl instance) => <String, dynamic>{
       'name': instance.name,
       'packageName': instance.packageName,
       'icon': instance.icon,
-      'developer': instance.developer,
-      'distributor': instance.distributor,
+      'developer': instance.developer?.toJson(),
+      'distributor': instance.distributor?.toJson(),
       'description': instance.description,
-      'screenShots': instance.screenShots,
-      'versions': instance.versions,
-      'version': instance.version,
-      'category': instance.category,
+      'screenShots': instance.screenShots?.map((e) => e.toJson()).toList(),
+      'versions': instance.versions?.map((e) => e.toJson()).toList(),
+      'version': instance.version?.toJson(),
+      'category': instance.category?.toJson(),
       'appType': instance.appType,
       'downloadCount': instance.downloadCount,
       'permissions': instance.permissions,
@@ -140,13 +140,13 @@ Map<String, dynamic> _$$AppInstallingImplToJson(_$AppInstallingImpl instance) =>
       'name': instance.name,
       'packageName': instance.packageName,
       'icon': instance.icon,
-      'developer': instance.developer,
-      'distributor': instance.distributor,
+      'developer': instance.developer.toJson(),
+      'distributor': instance.distributor?.toJson(),
       'description': instance.description,
-      'screenShots': instance.screenShots,
-      'versions': instance.versions,
-      'version': instance.version,
-      'category': instance.category,
+      'screenShots': instance.screenShots?.map((e) => e.toJson()).toList(),
+      'versions': instance.versions?.map((e) => e.toJson()).toList(),
+      'version': instance.version?.toJson(),
+      'category': instance.category?.toJson(),
       'appType': instance.appType,
       'downloadCount': instance.downloadCount,
       'permissions': instance.permissions,
@@ -201,6 +201,9 @@ _$DeveloperImpl _$$DeveloperImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as int?,
       uuid: json['uuid'] as String?,
       organizationName: json['organizationName'] as String?,
+      country: json['country'] == null
+          ? null
+          : Country.fromJson(json['country'] as Map<String, dynamic>),
       status: json['status'] as String?,
       websiteUrl: json['websiteUrl'] as String?,
       supportEmail: json['supportEmail'] as String?,
@@ -211,9 +214,26 @@ Map<String, dynamic> _$$DeveloperImplToJson(_$DeveloperImpl instance) =>
       'id': instance.id,
       'uuid': instance.uuid,
       'organizationName': instance.organizationName,
+      'country': instance.country?.toJson(),
       'status': instance.status,
       'websiteUrl': instance.websiteUrl,
       'supportEmail': instance.supportEmail,
+    };
+
+_$CountryImpl _$$CountryImplFromJson(Map<String, dynamic> json) =>
+    _$CountryImpl(
+      id: json['id'] as int?,
+      countryName: json['countryName'] as String?,
+      countryCode: json['countryCode'] as String?,
+      status: json['status'] as String?,
+    );
+
+Map<String, dynamic> _$$CountryImplToJson(_$CountryImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'countryName': instance.countryName,
+      'countryCode': instance.countryCode,
+      'status': instance.status,
     };
 
 _$DistributorImpl _$$DistributorImplFromJson(Map<String, dynamic> json) =>
@@ -221,6 +241,9 @@ _$DistributorImpl _$$DistributorImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as int?,
       uuid: json['uuid'] as String?,
       distributorName: json['distributorName'] as String?,
+      country: json['country'] == null
+          ? null
+          : Country.fromJson(json['country'] as Map<String, dynamic>),
       contactName: json['contactName'] as String?,
       contactEmail: json['contactEmail'] as String?,
       status: json['status'] as String?,
@@ -232,6 +255,7 @@ Map<String, dynamic> _$$DistributorImplToJson(_$DistributorImpl instance) =>
       'id': instance.id,
       'uuid': instance.uuid,
       'distributorName': instance.distributorName,
+      'country': instance.country?.toJson(),
       'contactName': instance.contactName,
       'contactEmail': instance.contactEmail,
       'status': instance.status,

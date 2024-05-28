@@ -105,6 +105,7 @@ class Developer with _$Developer {
       {int? id,
       String? uuid,
       String? organizationName,
+      Country? country,
       String? status,
       String? websiteUrl,
       String? supportEmail}) = _Developer;
@@ -114,11 +115,24 @@ class Developer with _$Developer {
 }
 
 @freezed
+class Country with _$Country {
+  factory Country(
+      {int? id,
+      String? countryName,
+      String? countryCode,
+      String? status}) = _Country;
+
+  factory Country.fromJson(Map<String, dynamic> json) =>
+      _$CountryFromJson(json);
+}
+
+@freezed
 class Distributor with _$Distributor {
   factory Distributor(
       {int? id,
       String? uuid,
       String? distributorName,
+      Country? country,
       String? contactName,
       String? contactEmail,
       String? status,

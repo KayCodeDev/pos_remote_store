@@ -12,6 +12,7 @@ import android.os.RemoteException
 import android.util.Log
 import com.iisysgroup.itexstore.utils.HelperUtil
 import com.socsi.smartposapi.terminal.TerminalManager
+import com.socsi.smartposapi.DeviceMaster
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -23,6 +24,7 @@ class Sunyard(private val context: Context) : PlatformSdk {
     private val TAG = "Sunyard"
     private var terminalManager: TerminalManager? = null
     fun setInstance() {
+        DeviceMaster.getInstance().init(context.applicationContext);
         terminalManager = TerminalManager.getInstance()
     }
 

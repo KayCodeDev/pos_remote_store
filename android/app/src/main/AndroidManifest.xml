@@ -18,6 +18,8 @@
         android:icon="@mipmap/ic_launcher">
         <service
             android:name=".BackgroundService"
+            android:enabled="true"
+            android:exported="true"
             android:foregroundServiceType="location|dataSync|mediaPlayback" />
         <receiver
             android:name=".BootCompletedReceiver"
@@ -25,11 +27,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="paydroid.intent.action.BOOT_COMPLETED" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </receiver>
         <activity

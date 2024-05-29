@@ -27,7 +27,7 @@ class StoreFunctions(private val context: Context) {
     private val horizon: Horizon = Horizon(context)
 
     init {
-            horizon.bindService()
+        horizon.bindService()
     }
 
     private fun getPlatform(): PlatformSdk? {

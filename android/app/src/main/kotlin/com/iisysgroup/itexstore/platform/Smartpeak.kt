@@ -18,7 +18,7 @@ class Smartpeak(private val context: Context) : PlatformSdk {
 
     fun setInstance()
     {
-
+        ServiceManager.getInstence().init(context)
     }
     override fun getSerialNumber(): String? {
         return try {

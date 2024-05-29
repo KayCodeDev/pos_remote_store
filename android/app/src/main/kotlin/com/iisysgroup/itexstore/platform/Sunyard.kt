@@ -24,7 +24,7 @@ class Sunyard(private val context: Context) : PlatformSdk {
     private val TAG = "Sunyard"
     private var terminalManager: TerminalManager? = null
     fun setInstance() {
-//        DeviceMaster.getInstance().init(context.applicationContext);
+        DeviceMaster.getInstance().init(context.applicationContext);
         terminalManager = TerminalManager.getInstance()
     }
 

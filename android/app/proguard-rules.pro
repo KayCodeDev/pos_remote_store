@@ -1,0 +1,5 @@
+-keep class com.sunyard.**{*;}
+-keep class com.socsi.**{*;}
+-keep class android.serialport.**{*;}
+-keep class com.google.zxing.**{*;}
+-keep class socsi.middleware.**{*;}

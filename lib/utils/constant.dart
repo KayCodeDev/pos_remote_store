@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+const kAppName = "ITEXStore";
 const kDatabaseName = "ITEXStore_DBv1.db";
 const kBaseEndpoint = "https://store-api.itexapp.com";
 const kWSBaseEndpoint = "wss://store-api.itexapp.com/api/ws";

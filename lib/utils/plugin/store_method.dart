@@ -113,4 +113,13 @@ class StoreMethod {
       return false;
     }
   }
+
+  static Future<String?> requestSmartPermissions() async {
+    try {
+      return await _channel.invokeMethod('requestSmartPermissions');
+    } catch (e) {
+      debugPrint('Error requestSmartPermissions: $e');
+      return "";
+    }
+  }
 }

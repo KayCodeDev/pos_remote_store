@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../core/providers/global_provider.dart';
 import '../../core/services/navigation.dart';
 import '../../route/path.dart';
@@ -10,12 +11,25 @@ class InitProvider extends ChangeNotifier {
   InitProvider({required this.global});
 
   initState() async {
-
     await StoreMethod.requestLocationPermission();
-    await StoreMethod.initBackgroundService();
-
-    startService();
+    StoreMethod.requestSmartPermissions().then((result) async {
+      print("$result is required");
+      if (result == null) {
+        global.setShowInitErrorButton(false);
+        global.clearErrorMessage();
+        await StoreMethod.initBackgroundService();
+        startService();
+      } else {
+        global.handleError({
+          "message": result.isEmpty
+              ? "Error requesting permissions"
+              : "$result permission is required"
+        });
+        global.setShowInitErrorButton(true);
+      }
+    });
   }
+
   startService() async {
     global.setLoading(true);
     await global.initState();

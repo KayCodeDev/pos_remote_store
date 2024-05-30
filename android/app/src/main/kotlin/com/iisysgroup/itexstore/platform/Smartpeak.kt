@@ -11,14 +11,20 @@ import android.util.Log
 import java.io.File
 import java.util.TimeZone
 import com.basewin.services.ServiceManager;
+import com.iisysgroup.itexstore.platform.subs.SmartPermission
 import com.iisysgroup.itexstore.utils.HelperUtil
 
 class Smartpeak(private val context: Context) : PlatformSdk {
     private val TAG = "Smartpeak"
+    var hasPermission: Boolean = false;
 
     fun setInstance()
     {
-        ServiceManager.getInstence().init(context)
+        hasPermission =  SmartPermission(context).checkPermission()
+        Log.d(TAG, "Permission status $hasPermission")
+        if(hasPermission) {
+            ServiceManager.getInstence().init(context.applicationContext)
+        }
     }
     override fun getSerialNumber(): String? {
         return try {

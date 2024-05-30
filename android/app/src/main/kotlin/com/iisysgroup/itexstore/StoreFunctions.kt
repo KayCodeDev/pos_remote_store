@@ -16,6 +16,7 @@ import android.os.Build.VERSION_CODES
 import android.util.Log
 import com.iisysgroup.itexstore.platform.PlatformSdk
 import com.iisysgroup.itexstore.platform.Smartpeak
+import com.iisysgroup.itexstore.platform.subs.SmartPermission
 //import java.util.Random
 import kotlin.random.Random
 
@@ -30,7 +31,11 @@ class StoreFunctions(private val context: Context) {
     }
 
     private fun getPlatform(): PlatformSdk? {
-        return smartpeak;
+        return if (SmartPermission(context).checkPermission()) {
+            smartpeak
+        } else {
+            null
+        }
     }
 
     fun getSN(): String? {

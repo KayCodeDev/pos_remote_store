@@ -20,9 +20,7 @@ class Smartpeak(private val context: Context) : PlatformSdk {
 
     fun setInstance()
     {
-        hasPermission =  SmartPermission(context).checkPermission()
-        Log.d(TAG, "Permission status $hasPermission")
-        if(hasPermission) {
+        if(SmartPermission(context).checkPermission()) {
             ServiceManager.getInstence().init(context.applicationContext)
         }
     }

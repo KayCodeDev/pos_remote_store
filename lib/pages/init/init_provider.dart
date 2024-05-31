@@ -13,7 +13,6 @@ class InitProvider extends ChangeNotifier {
   initState() async {
     await StoreMethod.requestLocationPermission();
     StoreMethod.requestSmartPermissions().then((result) async {
-      print("$result is required");
       if (result == null) {
         global.setShowInitErrorButton(false);
         global.clearErrorMessage();

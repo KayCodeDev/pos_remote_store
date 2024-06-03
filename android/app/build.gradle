@@ -84,7 +84,8 @@ flutter {
 
 dependencies {
     implementation fileTree(dir: '../libs', include: ['*.jar'])
-    api files('../libs/horizonpay_smartpossdk_V1.6.210315.jar')
+    api files('../libs/horizonpay_smartpossdk_V1.17.240325.jar')
+    api files('../libs/horizon_utils_V1.9.jar')
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
     implementation 'androidx.core:core:1.12.0'
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

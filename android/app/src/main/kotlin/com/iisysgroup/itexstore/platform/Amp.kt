@@ -19,6 +19,7 @@ class Amp(private val context: Context) : PlatformSdk {
         try {
             SDKManager.init(context, sdkManagerCallback);
         } catch (e: Exception) {
+            e.printStackTrace()
             Log.d(TAG, "Exception from setInstance: ${e.message}")
         }
     }

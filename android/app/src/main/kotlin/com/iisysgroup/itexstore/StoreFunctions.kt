@@ -30,6 +30,11 @@ class StoreFunctions(private val context: Context) {
       verifone.bindAllServices()
     }
 
+    fun closeService()
+    {
+        verifone.unbindServices()
+    }
+
     private fun getPlatform(): PlatformSdk? {
         return verifone
     }

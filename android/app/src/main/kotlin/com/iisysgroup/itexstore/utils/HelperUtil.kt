@@ -109,7 +109,8 @@ class HelperUtil {
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             isDownloadCompleted = true
                             filePath =
-                                cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)).replace("file://", "")
+                                cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
+                                    .replace("file://", "")
                             cancelProgressNotification(context, notificationId)
                         }
 
@@ -281,24 +282,6 @@ class HelperUtil {
             return String(decryptedBytes)
         }
 
-//        @JvmStatic
-//        fun mapToString(map: Map<String, Any?>): String {
-//            val stringBuilder = StringBuilder()
-//            stringBuilder.append("{")
-//            for ((key, value) in map) {
-//                stringBuilder.append("$key=")
-//                appendValueToStringBuilder(value, stringBuilder)
-//                stringBuilder.append(", ")
-//            }
-//            // Remove the trailing comma and space if the map is not empty
-//            if (map.isNotEmpty()) {
-//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
-//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
-//            }
-//            stringBuilder.append("}")
-//            return stringBuilder.toString()
-//        }
-
         fun getDateTimeAsFileName(): String {
             val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
             val currentTime = Date()
@@ -411,12 +394,14 @@ class HelperUtil {
                     1f,
                     locationListener
                 )
+
                 locationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER,
                     28 * 60 * 1000L,
                     1f,
                     locationListener
                 )
+
             } catch (e: SecurityException) {
                 Log.d(TAG, "${e.message}")
             }
@@ -457,7 +442,11 @@ class HelperUtil {
                 "com.quicinc",
                 "com.qrd",
                 "com.socsi",
-                "com.qti"
+                "com.qti",
+                "jp.co.omronsoft.openwnn",
+                "jp.co.omronsoft.openwnn",
+                "com.svox.pico",
+                "com.oma.drm"
             )
             return system.any { packageName.contains(it) }
 //                    ||

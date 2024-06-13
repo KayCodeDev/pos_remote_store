@@ -10,57 +10,75 @@ import android.os.IBinder
 import android.os.RemoteException
 import android.util.Log
 import com.iisysgroup.itexstore.utils.HelperUtil
+import com.vfi.smartpos.deviceservice.aidl.IDeviceInfo
 import com.vfi.smartpos.deviceservice.aidl.IDeviceService
 import com.vfi.smartpos.system_service.aidl.IAppDeleteObserver
 import com.vfi.smartpos.system_service.aidl.IAppInstallObserver
 import com.vfi.smartpos.system_service.aidl.ISystemManager
+import com.vfi.smartpos.system_service.aidl.settings.ISettingsManager;
+
 import java.util.TimeZone
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CountDownLatch
 
 
 class Verifone(private val context: Context) : PlatformSdk {
     private val TAG = "Verifone"
-    private var deviceService: IDeviceService? = null
     private var systemManager: ISystemManager? = null
+    private var settingsManager: ISettingsManager? = null
+    private var deviceService: IDeviceService? = null
+    private var deviceInfo: IDeviceInfo? = null
+
     private var isBoundDS = false
     private var isBoundSM = false
 
     private val ACTION = "com.vfi.smartpos.system_service"
     private val PACKAGE = "com.vfi.smartpos.system_service"
     private val CLASSNAME = "com.vfi.smartpos.system_service.SystemService"
-    private val ACTION_X9SERVICE = "com.vfi.smartpos.device_service"
-    private val PACKAGE_X9SERVICE = "com.vfi.smartpos.deviceservice"
-    private val CLASSNAME_X9SERVICE = "com.verifone.smartpos.service.VerifoneDeviceService"
-
-    // private var serviceLatch = CountDownLatch(2)
+    val ACTION_X9SERVICE = "com.vfi.smartpos.device_service"
+    val PACKAGE_X9SERVICE = "com.vfi.smartpos.deviceservice"
+    val CLASSNAME_X9SERVICE = "com.verifone.smartpos.service.VerifoneDeviceService"
 
     private val serviceConnectionDS = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             deviceService = IDeviceService.Stub.asInterface(service)
-            isBoundDS = true
-            // serviceLatch.countDown()
+            try {
+                deviceService?.let {
+                    isBoundDS = true
+                    deviceInfo = it.getDeviceInfo()
+                }
+            } catch (e: RemoteException) {
+                e.printStackTrace()
+            }
+
+
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             deviceService = null
+            Log.d(TAG, "device service disconnected.");
         }
     }
 
     private val serviceConnectionSM = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             systemManager = ISystemManager.Stub.asInterface(service)
-            isBoundSM = true
-            // serviceLatch.countDown()
+            try {
+                systemManager?.let {
+                    isBoundSM = true
+                    settingsManager = it.getSettingsManager()
+                }
+
+            } catch (e: RemoteException) {
+                e.printStackTrace()
+            }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             systemManager = null
+            Log.d(TAG, "system service disconnected.")
         }
     }
-
-//    init {
-//
-//        // serviceLatch.await()
-//    }
 
     fun bindAllServices() {
         bindService(ACTION, PACKAGE_X9SERVICE, CLASSNAME_X9SERVICE, serviceConnectionDS)
@@ -73,7 +91,6 @@ class Verifone(private val context: Context) : PlatformSdk {
         className: String,
         serviceConnection: ServiceConnection
     ) {
-        Log.d(TAG, "Binding $action $packageName")
         val intent = Intent()
         intent.action = action;
         intent.setClassName(packageName, className);
@@ -84,11 +101,9 @@ class Verifone(private val context: Context) : PlatformSdk {
     fun unbindServices() {
         if (isBoundDS) {
             context.unbindService(serviceConnectionDS)
-            isBoundDS = false
         }
         if (isBoundSM) {
             context.unbindService(serviceConnectionSM)
-            isBoundSM = false
         }
     }
 
@@ -127,16 +142,23 @@ class Verifone(private val context: Context) : PlatformSdk {
 
     override fun installApp(path: String, packageName: String): Boolean {
         return try {
+            val latch = CountDownLatch(1)
+            var installResult = false
+
             val installAppObserver = object : IAppInstallObserver.Stub() {
                 override fun onInstallFinished(packageName: String?, returnCode: Int) {
                     Log.d(
                         TAG,
                         "App installed ${if (returnCode == 0) "Successfully" else "Failed"} : $packageName"
                     )
+                    installResult = returnCode == 0
+                    latch.countDown()
                 }
             }
+
             systemManager?.installApp(path, installAppObserver, packageName)
-            true
+            latch.await()
+            installResult
         } catch (e: Exception) {
             Log.d(TAG, "Exception installApp : ${e.message}")
             false
@@ -155,7 +177,7 @@ class Verifone(private val context: Context) : PlatformSdk {
 
     override fun setTimeZone(tz: String): Boolean {
         return try {
-            TimeZone.setDefault(TimeZone.getTimeZone(tz))
+            settingsManager?.setTimeZone(tz)
             true
         } catch (e: Exception) {
             Log.d(TAG, "Exception setTimeZone : ${e.message}")
@@ -176,17 +198,21 @@ class Verifone(private val context: Context) : PlatformSdk {
 
     override fun uninstallApp(packageName: String): Boolean {
         return try {
+            val latch = CountDownLatch(1)
+            var uninstallResult = false
             val uninstallAppObserver = object : IAppDeleteObserver.Stub() {
                 override fun onDeleteFinished(packageName: String, returnCode: Int) {
                     Log.d(
                         TAG,
                         "App uninstalled ${if (returnCode == 0) "Successfully" else "Failed"} : $packageName"
                     )
-
+                    uninstallResult = returnCode == 0
+                    latch.countDown()
                 }
             }
             systemManager?.uninstallApp(packageName, uninstallAppObserver)
-            true
+            latch.await()
+            uninstallResult
         } catch (e: RemoteException) {
             false
         }

@@ -17,7 +17,6 @@ class Pax(private val context: Context) : PlatformSdk {
 
     fun setInstance() {
         try {
-//            idal = NeptuneLiteUser.getInstance().getDalWithProcessSafe(context)
             idal = NeptuneLiteUser.getInstance().getDal(context)
         } catch (e: Exception) {
             Log.d(TAG, "Exception from setInstance: ${e.message}")

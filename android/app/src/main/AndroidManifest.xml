@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:networkSecurityConfig="@xml/network_security_config"
         android:label="ITEX Store"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -23,7 +24,7 @@
             android:name=".BackgroundService"
             android:foregroundServiceType="location|dataSync|mediaPlayback" />
         <receiver
-            android:name=".BootCompletedReceiver"
+            android:name=".BroadcastListener"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

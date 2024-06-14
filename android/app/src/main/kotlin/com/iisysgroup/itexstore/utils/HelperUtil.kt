@@ -109,7 +109,8 @@ class HelperUtil {
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             isDownloadCompleted = true
                             filePath =
-                                cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)).replace("file://", "")
+                                cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
+                                    .replace("file://", "")
                             cancelProgressNotification(context, notificationId)
                         }
 
@@ -405,18 +406,22 @@ class HelperUtil {
 
             // Request single location update
             try {
-                locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER,
-                    28 * 60 * 1000L,
-                    1f,
-                    locationListener
-                )
-                locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    28 * 60 * 1000L,
-                    1f,
-                    locationListener
-                )
+                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    locationManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER,
+                        28 * 60 * 1000L,
+                        1f,
+                        locationListener
+                    )
+                }
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    locationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER,
+                        28 * 60 * 1000L,
+                        1f,
+                        locationListener
+                    )
+                }
             } catch (e: SecurityException) {
                 Log.d(TAG, "${e.message}")
             }
@@ -457,11 +462,19 @@ class HelperUtil {
                 "com.quicinc",
                 "com.qrd",
                 "com.socsi",
-                "com.qti"
+                "com.qti",
+                "com.sprd",
+                "com.paxdroid",
+                "com.unisoc",
+                "com.spreadtrum",
+                "com.pax.AR8_base_display",
+                "com.pax.ipp",
+                "com.pax.daemon",
+                "com.pax.webview",
+                "com.pax.otaupdate",
+                "com.pax.sdl"
             )
             return system.any { packageName.contains(it) }
-//                    ||
-//             packageManager.getLaunchIntentForPackage(packageName) == null
         }
 
         fun isServiceRunning(serviceClass: Class<*>, context: Context): Boolean {
@@ -483,12 +496,6 @@ class HelperUtil {
             val map = HashMap<String, Any?>()
             map["name"] = packageManager.getApplicationLabel(app)
             map["package_name"] = app.packageName
-//            map["icon"] =
-//                if (withIcon) Base64.encodeToString(
-//                    drawableToByteArray(app.loadIcon(packageManager)),
-//                    Base64.DEFAULT
-//                )
-//                else null
             val packageInfo = packageManager.getPackageInfo(app.packageName, 0)
             map["version_name"] = packageInfo.versionName
             map["version_code"] = getVersionCode(packageInfo)
@@ -546,6 +553,7 @@ class HelperUtil {
                     return Gson().fromJson(responseBody, mapType)
                 }
             } catch (e: IOException) {
+                e.printStackTrace()
                 Log.d(TAG, "Exception sending request : ${e.message}")
             }
             return null

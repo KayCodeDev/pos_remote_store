@@ -29,6 +29,11 @@ class StoreFunctions(private val context: Context) {
         pax.setInstance()
     }
 
+    fun closeService()
+    {
+
+    }
+
     private fun getPlatform(): PlatformSdk? {
         return pax
     }

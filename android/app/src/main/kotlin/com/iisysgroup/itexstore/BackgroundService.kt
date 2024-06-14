@@ -33,13 +33,13 @@ import kotlinx.coroutines.delay
 @TargetApi(Build.VERSION_CODES.O)
 class BackgroundService : Service() {
     private val TAG = "ITEXStoreBGS"
-    private val BASE_URL = "https://store-api.itexapp.com/api/v1/store"
-    private val TCP_SERVER_IP = "store-api.itexapp.com"
-    private val TCP_SERVER_PORT = 9091
-
-//    private val BASE_URL = "http://192.168.8.100:9090/api/v1/store"
-//    private val TCP_SERVER_IP = "192.168.8.100"
+//    private val BASE_URL = "https://store-api.itexapp.com/api/v1/store"
+//    private val TCP_SERVER_IP = "store-api.itexapp.com"
 //    private val TCP_SERVER_PORT = 9091
+
+    private val BASE_URL = "http://192.168.8.100:9090/api/v1/store"
+    private val TCP_SERVER_IP = "192.168.8.100"
+    private val TCP_SERVER_PORT = 9091
 
     private val CALL_HOME_ENDPOINT = "terminal/sync"
     private val UPDATE_TASK_ENDPOINT = "task/update"
@@ -330,7 +330,7 @@ class BackgroundService : Service() {
 
                 val status = if (result) "DONE" else "FAILED"
                 val message =
-                    if (result) "Completed" else "${map["taskType"]} not implemented by OEM"
+                    if (result) "Completed" else "${map["taskType"]} failed or not implemented by OEM"
                 updateTask(serialNumber!!, map, status, message, imageFile)
 
             }
@@ -402,5 +402,6 @@ class BackgroundService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(runnable)
+        storeFunctions.closeService()
     }
 }

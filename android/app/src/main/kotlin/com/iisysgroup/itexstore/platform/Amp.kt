@@ -24,6 +24,11 @@ class Amp(private val context: Context) : PlatformSdk {
         }
     }
 
+    fun closeInstance()
+    {
+        SDKManager.release()
+    }
+
     private val sdkManagerCallback: SDKManagerCallback = object : SDKManagerCallback {
         override
         fun onFinish() {

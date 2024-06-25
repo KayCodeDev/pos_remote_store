@@ -36,6 +36,9 @@ class MainActivity: FlutterActivity(){
                             } else {
                                 this.startService(serviceIntent)
                             }
+
+                            val networkMonitor = NetworkMonitor(this)
+                            networkMonitor.register()
                             result.success(true)
                         }else{
                             result.success(true)

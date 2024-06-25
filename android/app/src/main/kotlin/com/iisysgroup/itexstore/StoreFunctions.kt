@@ -29,6 +29,10 @@ class StoreFunctions(private val context: Context) {
         amp.setInstance()
     }
 
+    fun closeService() {
+        amp.closeInstance()
+    }
+
     private fun getPlatform(): PlatformSdk? {
         return amp;
     }

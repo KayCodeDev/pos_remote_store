@@ -5,13 +5,16 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.RemoteException
 import android.util.Log
-import java.util.TimeZone
 import com.iisysgroup.itexstore.utils.HelperUtil
 import com.nexgo.oaf.apiv3.APIProxy
 import com.nexgo.oaf.apiv3.DeviceEngine
-import com.nexgo.oaf.apiv3.DeviceInfo;
+import com.nexgo.oaf.apiv3.DeviceInfo
 import com.nexgo.oaf.apiv3.OnAppOperatListener
 import com.nexgo.oaf.apiv3.platform.Platform
+import java.util.TimeZone
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+
 
 class Nexgo(private val context: Context) : PlatformSdk {
     private val TAG = "Nexgo"
@@ -56,16 +59,21 @@ class Nexgo(private val context: Context) : PlatformSdk {
         )
     }
 
-    override fun installApp(path: String, packageName: String): Boolean {
+    override suspend fun installApp(path: String, packageName: String): Boolean {
         return try {
-            val installAppObserver = object : OnAppOperatListener {
-                override fun onOperatResult(i: Int) {
-                    Log.d(TAG, "installApp ret :{} $i")
+            suspendCancellableCoroutine<Boolean> { continuation ->
+                val installAppObserver = object : OnAppOperatListener {
+                    override fun onOperatResult(result: Int) {
+                        if (result == 0) {
+                            continuation.resume(true)
+                        } else {
+                            continuation.resume(false)
+                        }
+                    }
                 }
-            }
 
-            platform?.installApp(path, installAppObserver)
-            true
+                platform?.installApp(path, installAppObserver)
+            }
         } catch (e: RemoteException) {
             Log.d(TAG, "Exception installApp : ${e.message}")
             false
@@ -96,22 +104,27 @@ class Nexgo(private val context: Context) : PlatformSdk {
         return try {
             platform?.shutDownDevice()
             true
-        } catch (e: RemoteException) {
+        } catch (e: Exception) {
             Log.d(TAG, "Exception shutdownDevice: ${e.message}")
             false
         }
     }
 
-    override fun uninstallApp(packageName: String): Boolean {
+    override suspend fun uninstallApp(packageName: String): Boolean {
         return try {
-            val unInstallAppObserver = object : OnAppOperatListener {
-                override fun onOperatResult(i: Int) {
-                    Log.d(TAG, "unInstallApp ret :{} $i")
+            suspendCancellableCoroutine<Boolean> { continuation ->
+                val unInstallAppObserver = object : OnAppOperatListener {
+                    override fun onOperatResult(result: Int) {
+                        if (result == 0) {
+                            continuation.resume(true)
+                        } else {
+                            continuation.resume(false)
+                        }
+                    }
                 }
-            }
 
-            platform?.uninstallApp(packageName, unInstallAppObserver)
-            true
+                platform?.uninstallApp(packageName, unInstallAppObserver)
+            }
         } catch (e: RemoteException) {
             Log.d(TAG, "Exception uninstallApp : ${e.message}")
             false

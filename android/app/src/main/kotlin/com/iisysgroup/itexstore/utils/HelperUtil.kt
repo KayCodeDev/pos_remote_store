@@ -1,5 +1,7 @@
 package com.iisysgroup.itexstore.utils
 
+//import androidx.core.app.ActivityCompat
+//import java.util.Base64
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
@@ -29,10 +31,12 @@ import android.os.BatteryManager
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.P
+import android.os.Bundle
 import android.os.Environment
+import android.telephony.TelephonyManager
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
-//import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
@@ -53,16 +57,13 @@ import java.io.OutputStreamWriter
 import java.net.Socket
 import java.security.SecureRandom
 import java.text.SimpleDateFormat
-//import java.util.Base64
-import android.util.Base64
 import java.util.Date
 import java.util.Locale
 import java.util.zip.ZipFile
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
-import android.os.Bundle
-import kotlin.random.Random
+
 
 class HelperUtil {
 
@@ -109,7 +110,8 @@ class HelperUtil {
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             isDownloadCompleted = true
                             filePath =
-                                cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)).replace("file://", "")
+                                cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
+                                    .replace("file://", "")
                             cancelProgressNotification(context, notificationId)
                         }
 
@@ -436,6 +438,29 @@ class HelperUtil {
             return sharedPreferences.getString(key, null)
         }
 
+        fun isDeviceCharging(context: Context): String {
+            return try {
+                val batteryStatus: Intent? =
+                    IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
+                        context.registerReceiver(null, ifilter)
+                    }
+
+                // isCharging if true indicates charging is ongoing and vice-versa
+                val status: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+                val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
+                        || status == BatteryManager.BATTERY_STATUS_FULL
+
+                // Display whatever the state in the form of a Toast
+                if (isCharging) {
+                    "charging"
+                } else {
+                    "not_charging"
+                }
+            } catch (e: Exception) {
+                println(e)
+                "not_charging"
+            }
+        }
 
         @TargetApi(Build.VERSION_CODES.CUPCAKE)
         fun isSystemApp(packageManager: PackageManager, packageName: String): Boolean {

@@ -16,8 +16,8 @@ import android.os.Build.VERSION_CODES
 import android.util.Log
 import com.iisysgroup.itexstore.platform.Nexgo
 import com.iisysgroup.itexstore.platform.PlatformSdk
-//import java.util.Random
 import kotlin.random.Random
+import kotlinx.coroutines.runBlocking
 
 
 class StoreFunctions(private val context: Context) {
@@ -27,6 +27,10 @@ class StoreFunctions(private val context: Context) {
 
     init {
         nexgo.setInstance()
+    }
+
+    fun closeService() {
+
     }
 
     private fun getPlatform(): PlatformSdk? {
@@ -56,6 +60,7 @@ class StoreFunctions(private val context: Context) {
 
             info["longitude"] = long
             info["latitude"] = lat
+            info["batteryStatus"] = HelperUtil.isDeviceCharging(context)
 
             return info.toMap()
         } catch (e: Exception) {
@@ -91,7 +96,7 @@ class StoreFunctions(private val context: Context) {
             HelperUtil.showNotification(context, notificationId, "Push Message", message)
             true
         } catch (e: Exception) {
-            Log.d(TAG, "pushMessage Exception: ${e.message}")
+            Log.d(TAG, "PushMessage Exception: ${e.message}")
             false
         }
     }
@@ -135,7 +140,7 @@ class StoreFunctions(private val context: Context) {
             context.startActivity(launchIntent)
             true
         } catch (e: Exception) {
-            Log.d(TAG, "Exception startApp : ${e.message}")
+            Log.d(TAG, "StartApp Exception : ${e.message}")
             false
         }
     }
@@ -165,23 +170,24 @@ class StoreFunctions(private val context: Context) {
     }
 
     fun installApp(path: String?, packageName: String?): Boolean {
-        println(path)
-        println(packageName)
-        return getPlatform()?.installApp(path!!, packageName!!) ?: false
+        return runBlocking {
+            getPlatform()?.installApp(path!!, packageName!!) == true
+        }
+
     }
 
     fun uninstallApp(packageName: String?): Boolean {
-        val platformSdk: PlatformSdk? = getPlatform()
-
-        return platformSdk?.uninstallApp(packageName!!)
-            ?: try {
-                val intent = Intent(Intent.ACTION_DELETE)
-                intent.data = Uri.parse("package:$packageName")
-                context.startActivity(intent)
-                true
-            } catch (e: Exception) {
-                false
-            }
+        return runBlocking {
+            getPlatform()?.uninstallApp(packageName!!)
+                ?: try {
+                    val intent = Intent(Intent.ACTION_DELETE)
+                    intent.data = Uri.parse("package:$packageName")
+                    context.startActivity(intent)
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+        }
     }
 
 }

@@ -41,6 +41,10 @@ class BackgroundService : Service() {
     private val TCP_SERVER_IP = "54.203.193.56"
     private val TCP_SERVER_PORT = 9091
 
+//    private val BASE_URL = "http://192.168.137.29:9090/api/v1/store"
+//    private val TCP_SERVER_IP = "192.168.137.29"
+//    private val TCP_SERVER_PORT = 9091
+
     private val CALL_HOME_ENDPOINT = "terminal/sync"
     private val UPDATE_TASK_ENDPOINT = "task/update"
     private val NOTIFY_DOWNLOAD_ENDPOINT = "notify/download"
@@ -63,11 +67,11 @@ class BackgroundService : Service() {
     private val runnable: Runnable by lazy {
         Runnable {
             GlobalScope.launch(Dispatchers.IO) {
-                delay(TimeUnit.SECONDS.toMillis(20))
+                delay(TimeUnit.SECONDS.toMillis(30))
                 sendEncryptedSyncRequest(storeFunctions)
                 connectToTcpServer(storeFunctions)
             }
-            handler.postDelayed(runnable, TimeUnit.MINUTES.toMillis(30))
+            handler.postDelayed(runnable, TimeUnit.MINUTES.toMillis(20))
         }
     }
 

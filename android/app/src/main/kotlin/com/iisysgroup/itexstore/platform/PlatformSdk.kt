@@ -7,7 +7,7 @@ interface PlatformSdk {
 
     fun getTerminalInfo(): Map<String, String?>
 
-    fun installApp(path:String, packageName : String ) : Boolean
+    suspend fun installApp(path:String, packageName : String ) : Boolean
 
     fun rebootDevice(): Boolean
 
@@ -15,7 +15,7 @@ interface PlatformSdk {
 
     fun shutdownDevice(): Boolean
 
-    fun uninstallApp(packageName: String) : Boolean
+    suspend fun uninstallApp(packageName: String) : Boolean
 
     fun captureScreen () : Bitmap?
 

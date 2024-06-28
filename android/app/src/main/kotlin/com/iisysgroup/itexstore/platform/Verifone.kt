@@ -16,10 +16,8 @@ import com.vfi.smartpos.system_service.aidl.IAppDeleteObserver
 import com.vfi.smartpos.system_service.aidl.IAppInstallObserver
 import com.vfi.smartpos.system_service.aidl.ISystemManager
 import com.vfi.smartpos.system_service.aidl.settings.ISettingsManager;
-
-import java.util.TimeZone
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CountDownLatch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 
 class Verifone(private val context: Context) : PlatformSdk {
@@ -140,25 +138,21 @@ class Verifone(private val context: Context) : PlatformSdk {
         )
     }
 
-    override fun installApp(path: String, packageName: String): Boolean {
+    override suspend fun installApp(path: String, packageName: String): Boolean {
         return try {
-            val latch = CountDownLatch(1)
-            var installResult = false
-
-            val installAppObserver = object : IAppInstallObserver.Stub() {
-                override fun onInstallFinished(packageName: String?, returnCode: Int) {
-                    Log.d(
-                        TAG,
-                        "App installed ${if (returnCode == 0) "Successfully" else "Failed"} : $packageName"
-                    )
-                    installResult = returnCode == 0
-                    latch.countDown()
+            suspendCancellableCoroutine<Boolean> { continuation ->
+                val installAppObserver = object : IAppInstallObserver.Stub() {
+                    override fun onInstallFinished(packageName: String?, returnCode: Int) {
+                        if (returnCode == 0) {
+                            continuation.resume(true)
+                        } else {
+                            continuation.resume(false)
+                        }
+                    }
                 }
-            }
 
-            systemManager?.installApp(path, installAppObserver, packageName)
-            latch.await()
-            installResult
+                systemManager?.installApp(path, installAppObserver, packageName)
+            }
         } catch (e: Exception) {
             Log.d(TAG, "Exception installApp : ${e.message}")
             false
@@ -196,23 +190,21 @@ class Verifone(private val context: Context) : PlatformSdk {
 
     }
 
-    override fun uninstallApp(packageName: String): Boolean {
+    override suspend fun uninstallApp(packageName: String): Boolean {
         return try {
-            val latch = CountDownLatch(1)
-            var uninstallResult = false
-            val uninstallAppObserver = object : IAppDeleteObserver.Stub() {
-                override fun onDeleteFinished(packageName: String, returnCode: Int) {
-                    Log.d(
-                        TAG,
-                        "App uninstalled ${if (returnCode == 0) "Successfully" else "Failed"} : $packageName"
-                    )
-                    uninstallResult = returnCode == 0
-                    latch.countDown()
+            suspendCancellableCoroutine<Boolean> { continuation ->
+                val uninstallAppObserver = object : IAppDeleteObserver.Stub() {
+                    override fun onDeleteFinished(packageName: String, returnCode: Int) {
+                        if (returnCode == 0) {
+                            continuation.resume(true)
+                        } else {
+                            continuation.resume(false)
+                        }
+                    }
                 }
+
+                systemManager?.uninstallApp(packageName, uninstallAppObserver)
             }
-            systemManager?.uninstallApp(packageName, uninstallAppObserver)
-            latch.await()
-            uninstallResult
         } catch (e: RemoteException) {
             false
         }

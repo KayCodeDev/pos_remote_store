@@ -421,6 +421,29 @@ class HelperUtil {
             return sharedPreferences.getString(key, null)
         }
 
+        fun isDeviceCharging(context: Context): String {
+            return try {
+                val batteryStatus: Intent? =
+                    IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
+                        context.registerReceiver(null, ifilter)
+                    }
+
+                // isCharging if true indicates charging is ongoing and vice-versa
+                val status: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+                val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
+                        || status == BatteryManager.BATTERY_STATUS_FULL
+
+                // Display whatever the state in the form of a Toast
+                if (isCharging) {
+                    "charging"
+                } else {
+                    "not_charging"
+                }
+            } catch (e: Exception) {
+                println(e)
+                "not_charging"
+            }
+        }
 
         @TargetApi(Build.VERSION_CODES.CUPCAKE)
         fun isSystemApp(packageManager: PackageManager, packageName: String): Boolean {

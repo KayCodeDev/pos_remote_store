@@ -18,7 +18,7 @@ import com.iisysgroup.itexstore.platform.PlatformSdk
 import com.iisysgroup.itexstore.platform.Verifone
 //import java.util.Random
 import kotlin.random.Random
-
+import kotlinx.coroutines.runBlocking
 
 class StoreFunctions(private val context: Context) {
     private val packageManager: PackageManager = context.packageManager
@@ -27,11 +27,10 @@ class StoreFunctions(private val context: Context) {
 
 
     init {
-      verifone.bindAllServices()
+        verifone.bindAllServices()
     }
 
-    fun closeService()
-    {
+    fun closeService() {
         verifone.unbindServices()
     }
 
@@ -62,6 +61,7 @@ class StoreFunctions(private val context: Context) {
 
             info["longitude"] = long
             info["latitude"] = lat
+            info["batteryStatus"] = HelperUtil.isDeviceCharging(context)
 
             return info.toMap()
         } catch (e: Exception) {
@@ -171,23 +171,25 @@ class StoreFunctions(private val context: Context) {
     }
 
     fun installApp(path: String?, packageName: String?): Boolean {
-        println(path)
-        println(packageName)
-        return getPlatform()?.installApp(path!!, packageName!!) ?: false
+        return runBlocking {
+            getPlatform()?.installApp(path!!, packageName!!) == true
+        }
     }
 
     fun uninstallApp(packageName: String?): Boolean {
-        val platformSdk: PlatformSdk? = getPlatform()
+        return runBlocking {
+            val platformSdk: PlatformSdk? = getPlatform()
 
-        return platformSdk?.uninstallApp(packageName!!)
-            ?: try {
-                val intent = Intent(Intent.ACTION_DELETE)
-                intent.data = Uri.parse("package:$packageName")
-                context.startActivity(intent)
-                true
-            } catch (e: Exception) {
-                false
-            }
+            platformSdk?.uninstallApp(packageName!!)
+                ?: try {
+                    val intent = Intent(Intent.ACTION_DELETE)
+                    intent.data = Uri.parse("package:$packageName")
+                    context.startActivity(intent)
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+        }
     }
 
 }

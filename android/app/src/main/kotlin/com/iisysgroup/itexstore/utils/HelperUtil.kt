@@ -388,20 +388,22 @@ class HelperUtil {
 
             // Request single location update
             try {
-                locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER,
-                    28 * 60 * 1000L,
-                    1f,
-                    locationListener
-                )
-
-                locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    28 * 60 * 1000L,
-                    1f,
-                    locationListener
-                )
-
+                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    locationManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER,
+                        28 * 60 * 1000L,
+                        1f,
+                        locationListener
+                    )
+                }
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    locationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER,
+                        28 * 60 * 1000L,
+                        1f,
+                        locationListener
+                    )
+                }
             } catch (e: SecurityException) {
                 Log.d(TAG, "${e.message}")
             }

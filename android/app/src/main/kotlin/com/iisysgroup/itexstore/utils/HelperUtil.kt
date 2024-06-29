@@ -477,6 +477,28 @@ class HelperUtil {
             return system.any { packageName.contains(it) }
         }
 
+        fun isDeviceCharging(context: Context): String {
+            return try {
+                val batteryStatus: Intent? =
+                    IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
+                        context.registerReceiver(null, ifilter)
+                    }
+
+                val status: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+                val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
+                        || status == BatteryManager.BATTERY_STATUS_FULL
+
+                if (isCharging) {
+                    "charging"
+                } else {
+                    "not_charging"
+                }
+            } catch (e: Exception) {
+                println(e)
+                "not_charging"
+            }
+        }
+
         fun isServiceRunning(serviceClass: Class<*>, context: Context): Boolean {
             val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             for (service in manager.getRunningServices(Integer.MAX_VALUE)) {

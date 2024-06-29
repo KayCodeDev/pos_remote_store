@@ -61,6 +61,7 @@ class StoreFunctions(private val context: Context) {
 
             info["longitude"] = long
             info["latitude"] = lat
+            info["batteryStatus"] = HelperUtil.isDeviceCharging(context)
 
             return info.toMap()
         } catch (e: Exception) {

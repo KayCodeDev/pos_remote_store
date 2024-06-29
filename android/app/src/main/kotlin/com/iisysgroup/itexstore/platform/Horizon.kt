@@ -117,8 +117,8 @@ class Horizon(private val context: Context) : PlatformSdk {
     }
 
     override fun shutdownDevice(): Boolean {
-        Log.d(TAG, "shutdownDevice not implemented")
-        return false
+        Log.d(TAG, "shutdownDevice not implemented, rather ebooting ")
+        return rebootDevice()
     }
 
     override fun uninstallApp(packageName: String): Boolean {

@@ -445,7 +445,6 @@ class HelperUtil {
         @TargetApi(Build.VERSION_CODES.CUPCAKE)
         fun isSystemApp(packageManager: PackageManager, packageName: String): Boolean {
             val system = arrayOf(
-                "com.iisysgroup.itexstore",
                 "org.codeaurora.bluetooth",
                 "com.qapp.secprotect",
                 "org.codeaurora.ims",

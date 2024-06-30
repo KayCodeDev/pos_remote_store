@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:itexstore_agent/core/providers/global_provider.dart';
 
 class AboutSheet extends StatefulWidget {
-  const AboutSheet({super.key});
+  final GlobalProvider? gp;
+  const AboutSheet({super.key, this.gp});
 
   @override
   State<AboutSheet> createState() => _AboutSheetState();
@@ -20,6 +22,10 @@ class _AboutSheetState extends State<AboutSheet> {
           "ITEX Store",
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          "${widget.gp?.storeInfo!.name} v${widget.gp?.storeInfo!.versionName}",
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),
         const Text(

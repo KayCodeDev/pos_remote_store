@@ -62,6 +62,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import kotlin.random.Random
 
 class HelperUtil {
@@ -308,12 +309,21 @@ class HelperUtil {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val networkInfo = connectivityManager.activeNetworkInfo
 
+            var networkType: String
+
             if (networkInfo != null && networkInfo.isConnected) {
-                return when (networkInfo.type) {
+                networkType = when (networkInfo.type) {
                     ConnectivityManager.TYPE_WIFI -> "wifi"
                     ConnectivityManager.TYPE_MOBILE -> "mobile"
                     else -> "unknown"
                 }
+
+                if (networkType == "mobile") {
+                    val simInfo = getSimInfo(context)
+                    networkType = "$networkType||$simInfo"
+                }
+
+                return networkType
             }
             return "not_connected"
         }
@@ -423,6 +433,25 @@ class HelperUtil {
             return sharedPreferences.getString(key, null)
         }
 
+        private fun getSimInfo(context: Context): String {
+            try {
+                val telephonyManager =
+                    context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+                // Get Mobile Network Operator Name
+                val operatorName = telephonyManager.networkOperatorName ?: "--"
+
+                // Get SIM Mobile Number (this might not always work due to restrictions and carrier settings)
+                val simNumber = telephonyManager.line1Number ?: "--"
+
+                // Display or use the information as needed
+                return "$operatorName/$simNumber"
+            } catch (e: Exception) {
+                e.message?.let { Log.e(TAG, it) }
+                return "--/--"
+            }
+        }
+
         fun isDeviceCharging(context: Context): String {
             return try {
                 val batteryStatus: Intent? =
@@ -430,12 +459,10 @@ class HelperUtil {
                         context.registerReceiver(null, ifilter)
                     }
 
-                // isCharging if true indicates charging is ongoing and vice-versa
                 val status: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
                 val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
                         || status == BatteryManager.BATTERY_STATUS_FULL
 
-                // Display whatever the state in the form of a Toast
                 if (isCharging) {
                     "charging"
                 } else {
@@ -450,7 +477,6 @@ class HelperUtil {
         @TargetApi(Build.VERSION_CODES.CUPCAKE)
         fun isSystemApp(packageManager: PackageManager, packageName: String): Boolean {
             val system = arrayOf(
-                "com.iisysgroup.itexstore",
                 "org.codeaurora.bluetooth",
                 "com.qapp.secprotect",
                 "org.codeaurora.ims",
@@ -474,8 +500,6 @@ class HelperUtil {
                 "com.oma.drm"
             )
             return system.any { packageName.contains(it) }
-//                    ||
-//             packageManager.getLaunchIntentForPackage(packageName) == null
         }
 
         fun isServiceRunning(serviceClass: Class<*>, context: Context): Boolean {
@@ -497,12 +521,6 @@ class HelperUtil {
             val map = HashMap<String, Any?>()
             map["name"] = packageManager.getApplicationLabel(app)
             map["package_name"] = app.packageName
-//            map["icon"] =
-//                if (withIcon) Base64.encodeToString(
-//                    drawableToByteArray(app.loadIcon(packageManager)),
-//                    Base64.DEFAULT
-//                )
-//                else null
             val packageInfo = packageManager.getPackageInfo(app.packageName, 0)
             map["version_name"] = packageInfo.versionName
             map["version_code"] = getVersionCode(packageInfo)

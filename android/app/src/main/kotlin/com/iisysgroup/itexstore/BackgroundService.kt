@@ -41,8 +41,8 @@ class BackgroundService : Service() {
     private val TCP_SERVER_IP = "54.203.193.56"
     private val TCP_SERVER_PORT = 9091
 
-//    private val BASE_URL = "http://192.168.137.29:9090/api/v1/store"
-//    private val TCP_SERVER_IP = "192.168.137.29"
+//    private val BASE_URL = "http://192.168.8.100:9090/api/v1/store"
+//    private val TCP_SERVER_IP = "192.168.8.100"
 //    private val TCP_SERVER_PORT = 9091
 
     private val CALL_HOME_ENDPOINT = "terminal/sync"
@@ -330,11 +330,16 @@ class BackgroundService : Service() {
                         }
                         result = imageFile != null
                     }
+
+                    "PUSH_PARAMETERS" -> {
+                        val parameters: Map<String, Any?> = (map["parameters"] as Map<String, Any?>)
+                        result = storeFunctions.sendParameters (context, parameters)
+                    }
                 }
 
                 val status = if (result) "DONE" else "FAILED"
                 val message =
-                    if (result) "Completed" else "${map["taskType"]} failed or not implemented by OEM"
+                    if (result) "Completed" else "${map["taskType"]} failed or not implemented by OEM or client app"
                 updateTask(serialNumber!!, map, status, message, imageFile)
 
             }

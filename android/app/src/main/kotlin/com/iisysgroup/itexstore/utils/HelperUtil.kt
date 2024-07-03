@@ -62,6 +62,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import kotlin.random.Random
 
 class HelperUtil {
@@ -282,24 +283,6 @@ class HelperUtil {
             return String(decryptedBytes)
         }
 
-//        @JvmStatic
-//        fun mapToString(map: Map<String, Any?>): String {
-//            val stringBuilder = StringBuilder()
-//            stringBuilder.append("{")
-//            for ((key, value) in map) {
-//                stringBuilder.append("$key=")
-//                appendValueToStringBuilder(value, stringBuilder)
-//                stringBuilder.append(", ")
-//            }
-//            // Remove the trailing comma and space if the map is not empty
-//            if (map.isNotEmpty()) {
-//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
-//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
-//            }
-//            stringBuilder.append("}")
-//            return stringBuilder.toString()
-//        }
-
         fun getDateTimeAsFileName(): String {
             val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
             val currentTime = Date()
@@ -326,12 +309,21 @@ class HelperUtil {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val networkInfo = connectivityManager.activeNetworkInfo
 
+            var networkType: String
+
             if (networkInfo != null && networkInfo.isConnected) {
-                return when (networkInfo.type) {
+                networkType = when (networkInfo.type) {
                     ConnectivityManager.TYPE_WIFI -> "wifi"
                     ConnectivityManager.TYPE_MOBILE -> "mobile"
                     else -> "unknown"
                 }
+
+                if (networkType == "mobile") {
+                    val simInfo = getSimInfo(context)
+                    networkType = "$networkType$simInfo"
+                }
+
+                return networkType
             }
             return "not_connected"
         }
@@ -441,6 +433,46 @@ class HelperUtil {
             return sharedPreferences.getString(key, null)
         }
 
+        private fun getSimInfo(context: Context): String {
+            try {
+                val telephonyManager =
+                    context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+                // Get Mobile Network Operator Name
+                val operatorName = telephonyManager.networkOperatorName ?: "--"
+
+                // Get SIM Mobile Number (this might not always work due to restrictions and carrier settings)
+                val simNumber = telephonyManager.line1Number ?: "--"
+
+                // Display or use the information as needed
+                return "||$operatorName||$simNumber"
+            } catch (e: Exception) {
+                e.message?.let { Log.e(TAG, it) }
+                return "||--||--"
+            }
+        }
+
+        fun isDeviceCharging(context: Context): String {
+            return try {
+                val batteryStatus: Intent? =
+                    IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
+                        context.registerReceiver(null, ifilter)
+                    }
+
+                val status: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+                val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
+                        || status == BatteryManager.BATTERY_STATUS_FULL
+
+                if (isCharging) {
+                    "charging"
+                } else {
+                    "not_charging"
+                }
+            } catch (e: Exception) {
+                println(e)
+                "not_charging"
+            }
+        }
 
         @TargetApi(Build.VERSION_CODES.CUPCAKE)
         fun isSystemApp(packageManager: PackageManager, packageName: String): Boolean {
@@ -474,28 +506,6 @@ class HelperUtil {
                 "com.pax.sdl"
             )
             return system.any { packageName.contains(it) }
-        }
-
-        fun isDeviceCharging(context: Context): String {
-            return try {
-                val batteryStatus: Intent? =
-                    IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
-                        context.registerReceiver(null, ifilter)
-                    }
-
-                val status: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
-                val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
-                        || status == BatteryManager.BATTERY_STATUS_FULL
-
-                if (isCharging) {
-                    "charging"
-                } else {
-                    "not_charging"
-                }
-            } catch (e: Exception) {
-                println(e)
-                "not_charging"
-            }
         }
 
         fun isServiceRunning(serviceClass: Class<*>, context: Context): Boolean {
@@ -550,6 +560,7 @@ class HelperUtil {
             }
         }
 
+        @SuppressLint("NewApi")
         private fun executeRequest(
             client: OkHttpClient,
             request: Request,
@@ -558,6 +569,7 @@ class HelperUtil {
         ): Map<String, Any>? {
             try {
                 val builder = request.newBuilder()
+
 
                 builder.addHeader("x-api-key", token)
                 builder.addHeader("x-serial-number", serialNumber)
@@ -574,7 +586,6 @@ class HelperUtil {
                     return Gson().fromJson(responseBody, mapType)
                 }
             } catch (e: IOException) {
-                e.printStackTrace()
                 Log.d(TAG, "Exception sending request : ${e.message}")
             }
             return null
@@ -608,41 +619,6 @@ class HelperUtil {
             drawable.draw(canvas)
             return bitmap
         }
-
-//        private fun appendValueToStringBuilder(value: Any?, stringBuilder: StringBuilder) {
-//            when (value) {
-//                is Map<*, *> -> {
-//                    val mapString = mapToString(value as Map<String, String?>)
-//                    stringBuilder.append(mapString)
-//                }
-//
-//                is List<*> -> {
-//                    val listString = listToString(value as List<Map<String, Any?>>)
-//                    stringBuilder.append(listString)
-//                }
-//
-//                else -> {
-//                    stringBuilder.append(value?.toString())
-//                }
-//            }
-//        }
-
-//        private fun listToString(list: List<Map<String, Any?>>): String {
-//            val stringBuilder = StringBuilder()
-//            stringBuilder.append("[")
-//            for (item in list) {
-//                appendValueToStringBuilder(item, stringBuilder)
-//                stringBuilder.append(", ")
-//            }
-//            // Remove the trailing comma and space if the list is not empty
-//            if (list.isNotEmpty()) {
-//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
-//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
-//            }
-//            stringBuilder.append("]")
-//            return stringBuilder.toString()
-//        }
-
 
         private fun isFlutterApp(entries: List<String>): Boolean {
             return contains(entries, "/flutter_assets/")

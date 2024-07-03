@@ -25,6 +25,7 @@ class _AboutSheetState extends State<AboutSheet> {
         ),
         Text(
           "${widget.gp?.storeInfo!.name} v${widget.gp?.storeInfo!.versionName}",
+          textAlign: TextAlign.center,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 10),

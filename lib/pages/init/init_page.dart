@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/providers/global_provider.dart';
 import '../../utils/components/buttons.dart';
 import '../../utils/components/loader.dart';
+import '../../utils/constant.dart';
 import '../widgets/base_provider_widget.dart';
 import 'init_provider.dart';
 
@@ -81,24 +82,23 @@ class _InitPageState extends State<InitPage> {
                   children: [
                     const Icon(Icons.info, color: Colors.red, size: 70),
                     const SizedBox(height: 20),
-                    Text(
-                      model.global.errorMessage!,
-                      textAlign: TextAlign.center,
-                    ),
+                    Container(
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        child: Text(
+                          model.global.errorMessage!,
+                          textAlign: TextAlign.center,
+                        )),
                     const SizedBox(height: 10),
-                    if (model.global.errorMessage!
-                        .toLowerCase()
-                        .contains("no internet connection"))
+                    if (model.global.showInitErrorButton)
                       OutlinedButton(
                         onPressed: () {
-                          model.startService();
+                          model.initState();
                         },
                         style: outlinedButton,
                         child: const Text("Try Again"),
-                      )
+                      ),
                   ]))),
-      model.global.storeInfo != null
-          ? Container(
+      Container(
         padding: const EdgeInsets.symmetric(vertical: 15),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,13 +107,14 @@ class _InitPageState extends State<InitPage> {
             Image.asset("assets/images/loader.png", height: 20),
             const SizedBox(width: 10),
             Text(
-              "${model.global.storeInfo!.name} v${model.global.storeInfo!.versionName}",
+              model.global.storeInfo != null
+                  ? "${model.global.storeInfo!.name} v${model.global.storeInfo!.versionName}"
+                  : kAppName,
               style: const TextStyle(fontWeight: FontWeight.w600),
             )
           ],
         ),
       )
-          : Container()
     ]);
   }
 }

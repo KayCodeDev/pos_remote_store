@@ -445,10 +445,10 @@ class HelperUtil {
                 val simNumber = telephonyManager.line1Number ?: "--"
 
                 // Display or use the information as needed
-                return "$operatorName/$simNumber"
+                return "$operatorName||$simNumber"
             } catch (e: Exception) {
                 e.message?.let { Log.e(TAG, it) }
-                return "--/--"
+                return "--||--"
             }
         }
 

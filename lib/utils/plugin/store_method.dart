@@ -105,15 +105,6 @@ class StoreMethod {
     }
   }
 
-  static Future<bool> requestLocationPermission() async {
-    try {
-      return await _channel.invokeMethod('requestLocationPermission');
-    } catch (e) {
-      debugPrint('Error requestLocationPermission: $e');
-      return false;
-    }
-  }
-
   static Future<String?> requestSmartPermissions() async {
     try {
       return await _channel.invokeMethod('requestSmartPermissions');

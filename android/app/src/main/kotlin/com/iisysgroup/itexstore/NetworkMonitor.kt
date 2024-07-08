@@ -9,7 +9,6 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.util.Log
-import com.iisysgroup.itexstore.utils.HelperUtil
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class NetworkMonitor(private val context: Context) {

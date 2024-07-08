@@ -34,7 +34,6 @@ class InitProvider extends ChangeNotifier {
 // }
 
   initState() async {
-    await StoreMethod.requestLocationPermission();
     StoreMethod.requestSmartPermissions().then((result) async {
       if (result == null) {
         global.setShowInitErrorButton(false);
@@ -45,7 +44,7 @@ class InitProvider extends ChangeNotifier {
         global.handleError({
           "message": result.isEmpty
               ? "Error requesting permissions"
-              : "$result permission is required"
+              : "${result.replaceAll("android.permission.", "")} permission is required"
         });
         global.setShowInitErrorButton(true);
       }

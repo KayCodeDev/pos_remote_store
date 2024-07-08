@@ -382,8 +382,8 @@ class HelperUtil {
             }
 
             val locationListener = object : LocationListener {
-                @SuppressLint("MissingPermission")
                 override fun onLocationChanged(location: Location) {
+                    println(location)
                     saveToSharedPrefs(
                         context,
                         "location",
@@ -401,16 +401,25 @@ class HelperUtil {
                 if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                     locationManager.requestLocationUpdates(
                         LocationManager.NETWORK_PROVIDER,
-                        28 * 60 * 1000L,
-                        1f,
+                        10 * 60 * 1000L,
+                        0f,
                         locationListener
                     )
+                }
+                if (locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
+                    locationManager.requestLocationUpdates(
+                        LocationManager.PASSIVE_PROVIDER,
+                        10 * 60 * 1000L,
+                        0f,
+                        locationListener
+                    )
+
                 }
                 if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     locationManager.requestLocationUpdates(
                         LocationManager.GPS_PROVIDER,
-                        28 * 60 * 1000L,
-                        1f,
+                        10 * 60 * 1000L,
+                        0f,
                         locationListener
                     )
                 }

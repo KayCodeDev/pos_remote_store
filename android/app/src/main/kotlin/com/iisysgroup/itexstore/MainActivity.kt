@@ -14,7 +14,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity(){
+class MainActivity : FlutterActivity() {
     private val CHANNEL = "itexstore_methods"
     private lateinit var storeFunctions: StoreFunctions
     private val TAG = "MainActivity"
@@ -31,18 +31,12 @@ class MainActivity: FlutterActivity(){
                 "initBackgroundService" -> {
                     try {
                         val serviceIntent = Intent(this, BackgroundService::class.java)
-                        if(!HelperUtil.isServiceRunning(BackgroundService::class.java, this)) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                this.startForegroundService(serviceIntent)
-                            } else {
-                                this.startService(serviceIntent)
-                            }
-                            val networkMonitor = NetworkMonitor(this)
-                            networkMonitor.register()
-                            result.success(true)
-                        }else{
-                            result.success(true)
-                        }
+                        stopService(serviceIntent)
+                        startService(serviceIntent)
+                        val networkMonitor = NetworkMonitor(this)
+                        networkMonitor.register()
+                        result.success(true)
+
                     } catch (e: Exception) {
                         Log.d(TAG, "Exception on initBackgroundService: ${e.message}")
                         result.success(false)
@@ -108,10 +102,6 @@ class MainActivity: FlutterActivity(){
                     result.success(storeFunctions.installApp(path, packageName))
                 }
 
-                "requestLocationPermission" -> {
-                    requestLocationPermission(result)
-                }
-
                 "requestSmartPermissions" -> {
                     requestSmartPermissions(result)
                 }
@@ -124,43 +114,6 @@ class MainActivity: FlutterActivity(){
         }
     }
 
-
-    private fun requestLocationPermission(result: MethodChannel.Result) {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            result.success(true)
-        } else {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                1
-            )
-            result.success(false)
-        }
-    }
-
-//    private fun requestSmartPermissions(result: MethodChannel.Result) {
-//        val permissions = SmartPermission(this).permissionList
-//        permissions.forEach { p ->
-//            if (ContextCompat.checkSelfPermission(
-//                    this,
-//                    p
-//                ) != PackageManager.PERMISSION_GRANTED
-//            ) {
-//                Log.d(TAG, "$p Not Granted")
-//                ActivityCompat.requestPermissions(this, arrayOf(p), 1)
-//                result.success(p)
-//                return
-//            } else {
-//                Log.d(TAG, "$p Granted")
-//            }
-//        }
-//
-//        result.success(null)
-//    }
 
     private fun requestSmartPermissions(result: MethodChannel.Result) {
         val permissions = SmartPermission(this).permissionList

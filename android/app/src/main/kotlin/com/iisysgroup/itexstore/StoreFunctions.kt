@@ -180,7 +180,6 @@ class StoreFunctions(private val context: Context) {
     fun uninstallApp(packageName: String?): Boolean {
         return runBlocking {
             val platformSdk: PlatformSdk? = getPlatform()
-
             platformSdk?.uninstallApp(packageName!!)
                 ?: try {
                     val intent = Intent(Intent.ACTION_DELETE)
@@ -199,7 +198,7 @@ class StoreFunctions(private val context: Context) {
         intent.component = ComponentName(packageName, "$packageName.ITEXStoreParams")
 
         for (param in params.entries.iterator()) {
-            intent.putExtra(param.key  , param.value as String)
+            intent.putExtra(param.key, param.value as String)
         }
 
         return try {

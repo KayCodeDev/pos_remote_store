@@ -6,10 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 
-//import androidx.core.content.ContextCompat
-
 class BroadcastListener : BroadcastReceiver() {
-    val TAG = "BroadcastListener"
     override fun onReceive(context: Context, intent: Intent) {
         val serviceIntent = Intent(context, BackgroundService::class.java)
         context.stopService(serviceIntent)

@@ -120,6 +120,7 @@ class Navigation<T, U> {
         context: navigationKey.currentContext!,
         builder: (_) => Dialog.fullscreen(
           child: Scaffold(
+
             // extendBody: false,
             // appBar: AppBar(
             //   title: Text(title),

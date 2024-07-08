@@ -8,6 +8,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.iisysgroup.itexstore.platform.subs.SmartPermission
 import com.iisysgroup.itexstore.utils.HelperUtil
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -107,9 +108,10 @@ class MainActivity: FlutterActivity(){
                     result.success(storeFunctions.installApp(path, packageName))
                 }
 
-                "requestLocationPermission" -> {
-                    requestLocationPermission(result)
+                "requestSmartPermissions" -> {
+                    requestSmartPermissions(result)
                 }
+
 
                 else -> {
                     result.notImplemented()
@@ -119,22 +121,22 @@ class MainActivity: FlutterActivity(){
     }
 
 
-    private fun requestLocationPermission(result: MethodChannel.Result) {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            result.success(true)
+
+
+    private fun requestSmartPermissions(result: MethodChannel.Result) {
+        val permissions = SmartPermission(this).permissionList
+        val permissionsToRequest = permissions.filter { p ->
+            ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (permissionsToRequest.isNotEmpty()) {
+            Log.d(TAG, "Requesting permissions: $permissionsToRequest")
+            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), 1)
+            result.success(permissionsToRequest.first())
         } else {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                1
-            )
-            result.success(false)
+            Log.d(TAG, "All permissions granted")
+            result.success(null)
         }
     }
-
 
 }

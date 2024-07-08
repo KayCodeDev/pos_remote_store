@@ -320,7 +320,7 @@ class HelperUtil {
 
                 if (networkType == "mobile") {
                     val simInfo = getSimInfo(context)
-                    networkType = "$networkType$simInfo"
+                    networkType = "$networkType||$simInfo"
                 }
 
                 return networkType
@@ -382,7 +382,6 @@ class HelperUtil {
             }
 
             val locationListener = object : LocationListener {
-                @SuppressLint("MissingPermission")
                 override fun onLocationChanged(location: Location) {
                     saveToSharedPrefs(
                         context,
@@ -401,17 +400,34 @@ class HelperUtil {
                 if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                     locationManager.requestLocationUpdates(
                         LocationManager.NETWORK_PROVIDER,
-                        28 * 60 * 1000L,
-                        1f,
+                        0L, 0f,
                         locationListener
+                    )
+                }
+                if (locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
+                    locationManager.requestLocationUpdates(
+                        LocationManager.PASSIVE_PROVIDER,
+                        0L, 0f,
+                        locationListener
+                    )
+
+                    locationManager.requestSingleUpdate(
+                        LocationManager.PASSIVE_PROVIDER,
+                        locationListener,
+                        null
                     )
                 }
                 if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     locationManager.requestLocationUpdates(
                         LocationManager.GPS_PROVIDER,
-                        28 * 60 * 1000L,
-                        1f,
+                        0L, 0f,
                         locationListener
+                    )
+
+                    locationManager.requestSingleUpdate(
+                        LocationManager.GPS_PROVIDER,
+                        locationListener,
+                        null
                     )
                 }
             } catch (e: SecurityException) {
@@ -445,10 +461,10 @@ class HelperUtil {
                 val simNumber = telephonyManager.line1Number ?: "--"
 
                 // Display or use the information as needed
-                return "||$operatorName||$simNumber"
+                return "$operatorName||$simNumber"
             } catch (e: Exception) {
                 e.message?.let { Log.e(TAG, it) }
-                return "||--||--"
+                return "--||--"
             }
         }
 
@@ -619,6 +635,41 @@ class HelperUtil {
             drawable.draw(canvas)
             return bitmap
         }
+
+//        private fun appendValueToStringBuilder(value: Any?, stringBuilder: StringBuilder) {
+//            when (value) {
+//                is Map<*, *> -> {
+//                    val mapString = mapToString(value as Map<String, String?>)
+//                    stringBuilder.append(mapString)
+//                }
+//
+//                is List<*> -> {
+//                    val listString = listToString(value as List<Map<String, Any?>>)
+//                    stringBuilder.append(listString)
+//                }
+//
+//                else -> {
+//                    stringBuilder.append(value?.toString())
+//                }
+//            }
+//        }
+
+//        private fun listToString(list: List<Map<String, Any?>>): String {
+//            val stringBuilder = StringBuilder()
+//            stringBuilder.append("[")
+//            for (item in list) {
+//                appendValueToStringBuilder(item, stringBuilder)
+//                stringBuilder.append(", ")
+//            }
+//            // Remove the trailing comma and space if the list is not empty
+//            if (list.isNotEmpty()) {
+//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
+//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
+//            }
+//            stringBuilder.append("]")
+//            return stringBuilder.toString()
+//        }
+
 
         private fun isFlutterApp(entries: List<String>): Boolean {
             return contains(entries, "/flutter_assets/")

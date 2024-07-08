@@ -2517,8 +2517,8 @@ mixin _$Distributor {
   String? get uuid => throw _privateConstructorUsedError;
   String? get distributorName => throw _privateConstructorUsedError;
   String? get contactName => throw _privateConstructorUsedError;
-  Country? get country => throw _privateConstructorUsedError;
   String? get contactEmail => throw _privateConstructorUsedError;
+  Country? get country => throw _privateConstructorUsedError;
   String? get status => throw _privateConstructorUsedError;
   int? get developerId => throw _privateConstructorUsedError;
 
@@ -2539,8 +2539,8 @@ abstract class $DistributorCopyWith<$Res> {
       String? uuid,
       String? distributorName,
       String? contactName,
-      Country? country,
       String? contactEmail,
+      Country? country,
       String? status,
       int? developerId});
 
@@ -2564,8 +2564,8 @@ class _$DistributorCopyWithImpl<$Res, $Val extends Distributor>
     Object? uuid = freezed,
     Object? distributorName = freezed,
     Object? contactName = freezed,
-    Object? country = freezed,
     Object? contactEmail = freezed,
+    Object? country = freezed,
     Object? status = freezed,
     Object? developerId = freezed,
   }) {
@@ -2586,14 +2586,14 @@ class _$DistributorCopyWithImpl<$Res, $Val extends Distributor>
           ? _value.contactName
           : contactName // ignore: cast_nullable_to_non_nullable
               as String?,
-      country: freezed == country
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
-              as Country?,
       contactEmail: freezed == contactEmail
           ? _value.contactEmail
           : contactEmail // ignore: cast_nullable_to_non_nullable
               as String?,
+      country: freezed == country
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
+              as Country?,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -2631,8 +2631,8 @@ abstract class _$$DistributorImplCopyWith<$Res>
       String? uuid,
       String? distributorName,
       String? contactName,
-      Country? country,
       String? contactEmail,
+      Country? country,
       String? status,
       int? developerId});
 
@@ -2655,8 +2655,8 @@ class __$$DistributorImplCopyWithImpl<$Res>
     Object? uuid = freezed,
     Object? distributorName = freezed,
     Object? contactName = freezed,
-    Object? country = freezed,
     Object? contactEmail = freezed,
+    Object? country = freezed,
     Object? status = freezed,
     Object? developerId = freezed,
   }) {
@@ -2677,14 +2677,14 @@ class __$$DistributorImplCopyWithImpl<$Res>
           ? _value.contactName
           : contactName // ignore: cast_nullable_to_non_nullable
               as String?,
-      country: freezed == country
-          ? _value.country
-          : country // ignore: cast_nullable_to_non_nullable
-              as Country?,
       contactEmail: freezed == contactEmail
           ? _value.contactEmail
           : contactEmail // ignore: cast_nullable_to_non_nullable
               as String?,
+      country: freezed == country
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
+              as Country?,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -2705,8 +2705,8 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
       this.uuid,
       this.distributorName,
       this.contactName,
-      this.country,
       this.contactEmail,
+      this.country,
       this.status,
       this.developerId});
 
@@ -2722,9 +2722,9 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
   @override
   final String? contactName;
   @override
-  final Country? country;
-  @override
   final String? contactEmail;
+  @override
+  final Country? country;
   @override
   final String? status;
   @override
@@ -2732,7 +2732,7 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Distributor(id: $id, uuid: $uuid, distributorName: $distributorName, contactName: $contactName, country: $country, contactEmail: $contactEmail, status: $status, developerId: $developerId)';
+    return 'Distributor(id: $id, uuid: $uuid, distributorName: $distributorName, contactName: $contactName, contactEmail: $contactEmail, country: $country, status: $status, developerId: $developerId)';
   }
 
   @override
@@ -2744,8 +2744,8 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
       ..add(DiagnosticsProperty('uuid', uuid))
       ..add(DiagnosticsProperty('distributorName', distributorName))
       ..add(DiagnosticsProperty('contactName', contactName))
-      ..add(DiagnosticsProperty('country', country))
       ..add(DiagnosticsProperty('contactEmail', contactEmail))
+      ..add(DiagnosticsProperty('country', country))
       ..add(DiagnosticsProperty('status', status))
       ..add(DiagnosticsProperty('developerId', developerId));
   }
@@ -2761,9 +2761,9 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
                 other.distributorName == distributorName) &&
             (identical(other.contactName, contactName) ||
                 other.contactName == contactName) &&
-            (identical(other.country, country) || other.country == country) &&
             (identical(other.contactEmail, contactEmail) ||
                 other.contactEmail == contactEmail) &&
+            (identical(other.country, country) || other.country == country) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.developerId, developerId) ||
                 other.developerId == developerId));
@@ -2772,7 +2772,7 @@ class _$DistributorImpl with DiagnosticableTreeMixin implements _Distributor {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, uuid, distributorName,
-      contactName, country, contactEmail, status, developerId);
+      contactName, contactEmail, country, status, developerId);
 
   @JsonKey(ignore: true)
   @override
@@ -2794,8 +2794,8 @@ abstract class _Distributor implements Distributor {
       final String? uuid,
       final String? distributorName,
       final String? contactName,
-      final Country? country,
       final String? contactEmail,
+      final Country? country,
       final String? status,
       final int? developerId}) = _$DistributorImpl;
 
@@ -2811,9 +2811,9 @@ abstract class _Distributor implements Distributor {
   @override
   String? get contactName;
   @override
-  Country? get country;
-  @override
   String? get contactEmail;
+  @override
+  Country? get country;
   @override
   String? get status;
   @override

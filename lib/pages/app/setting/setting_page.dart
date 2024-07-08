@@ -18,13 +18,13 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     return Consumer<GlobalProvider>(
         builder: (_, gp, __) => Scaffold(
-              appBar: AppBar(
-                backgroundColor: Colors.white,
-                automaticallyImplyLeading: false,
-                title: const Text("Setting"),
-              ),
-              body: _buildBody(gp),
-            ));
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            automaticallyImplyLeading: false,
+            title: const Text("Setting"),
+          ),
+          body: _buildBody(gp),
+        ));
   }
 
   Widget _buildBody(GlobalProvider gp) {

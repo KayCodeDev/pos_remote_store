@@ -62,6 +62,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.os.Bundle
+import android.os.CancellationSignal
 import android.telephony.TelephonyManager
 import kotlin.random.Random
 
@@ -395,38 +396,42 @@ class HelperUtil {
                 override fun onProviderEnabled(provider: String) {}
                 override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
             }
+            var locationProvider: String? = null
+            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                locationProvider = LocationManager.NETWORK_PROVIDER
+            } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                locationProvider = LocationManager.GPS_PROVIDER
+            }
 
-            // Request single location update
+
             try {
-                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER,
-                        10 * 60 * 1000L,
-                        0f,
-                        locationListener
-                    )
-                }
-                if (locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
-                    locationManager.requestLocationUpdates(
-                        LocationManager.PASSIVE_PROVIDER,
-                        10 * 60 * 1000L,
-                        0f,
-                        locationListener
-                    )
 
-                }
-                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+                if (locationProvider != null) {
+                    val lastKnownLocation = locationManager.getLastKnownLocation(locationProvider)
+                    if (lastKnownLocation != null) {
+                        locationListener.onLocationChanged(lastKnownLocation)
+                    } else {
+                        locationManager.requestSingleUpdate(
+                            locationProvider,
+                            locationListener,
+                            null
+                        )
+                    }
+
                     locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
+                        locationProvider,
                         10 * 60 * 1000L,
                         0f,
                         locationListener
                     )
                 }
+
             } catch (e: SecurityException) {
                 Log.d(TAG, "${e.message}")
             }
         }
+
 
         fun saveToSharedPrefs(context: Context, key: String, value: String) {
             val sharedPreferences: SharedPreferences =

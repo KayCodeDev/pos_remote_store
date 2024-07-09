@@ -8,8 +8,8 @@ const kDatabaseName = "ITEXStore_DBv1.db";
 const kBaseEndpoint = "http://54.203.193.56:9090";
 const kWSBaseEndpoint = "ws://54.203.193.56:9090/api/ws";
 
-// const kBaseEndpoint = "http://192.168.181.37:9090";
-// const kWSBaseEndpoint = "ws://192.168.181.37:9090/api/ws";
+// const kBaseEndpoint = "http://192.168.45.37:9090";
+// const kWSBaseEndpoint = "ws://192.168.45.37:9090/api/ws";
 
 const Color kBaseColor = Color(0xff002A4C);
 const Color kBaseGreenColor = Color(0xff39bd7c);

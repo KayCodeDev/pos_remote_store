@@ -8,7 +8,7 @@ import android.os.Build
 @TargetApi(Build.VERSION_CODES.DONUT)
 class SmartPermission(private val context: Context) {
 
-    val permissionList = arrayOf(
+    val permissionList = mutableListOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.FOREGROUND_SERVICE,

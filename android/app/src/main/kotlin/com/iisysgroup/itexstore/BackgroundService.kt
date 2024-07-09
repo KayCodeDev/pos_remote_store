@@ -33,13 +33,13 @@ import kotlinx.coroutines.delay
 @TargetApi(Build.VERSION_CODES.O)
 class BackgroundService : Service() {
     private val TAG = "ITEXStoreBGS"
-//    private val BASE_URL = "https://store-api.itexapp.com/api/v1/store"
-//    private val TCP_SERVER_IP = "store-api.itexapp.com"
-//    private val TCP_SERVER_PORT = 9091
-
-    private val BASE_URL = "http://54.203.193.56:9090/api/v1/store"
-    private val TCP_SERVER_IP = "54.203.193.56"
+    private val BASE_URL = "https://store-api.itexapp.com/api/v1/store"
+    private val TCP_SERVER_IP = "store-api.itexapp.com"
     private val TCP_SERVER_PORT = 9091
+
+//    private val BASE_URL = "http://54.203.193.56:9090/api/v1/store"
+//    private val TCP_SERVER_IP = "54.203.193.56"
+//    private val TCP_SERVER_PORT = 9091
 
 //    private val BASE_URL = "http://192.168.181.37:9090/api/v1/store"
 //    private val TCP_SERVER_IP = "192.168.181.37"
@@ -79,7 +79,6 @@ class BackgroundService : Service() {
         super.onCreate()
         context = this
         storeFunctions = StoreFunctions(this)
-        HelperUtil.listenToLocation(this)
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -87,6 +86,7 @@ class BackgroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        HelperUtil.listenToLocation(this)
         handler.post(runnable)
         startForegroundService()
         return START_STICKY

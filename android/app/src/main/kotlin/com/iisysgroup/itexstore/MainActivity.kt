@@ -125,6 +125,9 @@ class MainActivity: FlutterActivity(){
 
     private fun requestSmartPermissions(result: MethodChannel.Result) {
         val permissions = SmartPermission(this).permissionList
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            permissions.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
         val permissionsToRequest = permissions.filter { p ->
             ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED
         }

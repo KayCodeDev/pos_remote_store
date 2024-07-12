@@ -373,13 +373,10 @@ class HelperUtil {
         fun listenToLocation(context: Context) {
             val locationManager =
                 context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            if (ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
+            val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val isNetworkEnabled =
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
 
             val locationListener = object : LocationListener {
                 override fun onLocationChanged(location: Location) {
@@ -394,40 +391,45 @@ class HelperUtil {
                 override fun onProviderEnabled(provider: String) {}
                 override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
             }
-            var locationProvider: String? = null
-            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                locationProvider = LocationManager.NETWORK_PROVIDER
-            } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                locationProvider = LocationManager.GPS_PROVIDER
-            }
-
 
             try {
-                if (locationProvider != null) {
-                    val lastKnownLocation = locationManager.getLastKnownLocation(locationProvider)
-                    if (lastKnownLocation != null) {
-                        locationListener.onLocationChanged(lastKnownLocation)
-                    } else {
-                        locationManager.requestSingleUpdate(
-                            locationProvider,
-                            locationListener,
-                            null
-                        )
-                    }
-
-                    locationManager.requestLocationUpdates(
-                        locationProvider,
-                        10 * 60 * 1000L,
-                        0f,
-                        locationListener
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
                     )
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
+                    val lastKnownLocation =
+                        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                            ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                    lastKnownLocation?.let {
+                        locationListener.onLocationChanged(it)
+                    }
+                    when {
+                        isGpsEnabled -> {
+                            locationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                5 * 60 * 1000L,
+                                10f,
+                                locationListener
+                            )
+                        }
+
+                        isNetworkEnabled -> {
+                            locationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                5 * 60 * 1000L,
+                                10f,
+                                locationListener
+                            )
+                        }
+                    }
                 }
 
             } catch (e: SecurityException) {
                 Log.d(TAG, "${e.message}")
             }
         }
-
 
         fun saveToSharedPrefs(context: Context, key: String, value: String) {
             val sharedPreferences: SharedPreferences =

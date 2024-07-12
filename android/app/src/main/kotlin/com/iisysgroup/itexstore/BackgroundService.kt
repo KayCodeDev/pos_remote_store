@@ -279,6 +279,7 @@ class BackgroundService : Service() {
                                 val apk: File = File(path)
                                 if (apk.exists()) {
                                     storeFunctions.installApp(path, packageName)
+                                    Thread.sleep(10000)
                                     if (checkSameVersion(version, packageName)) {
                                         reportDownload(appUuid!!, versionUuid!!)
                                         true
@@ -339,9 +340,13 @@ class BackgroundService : Service() {
 
                 val status = if (result) "DONE" else "FAILED"
                 val message =
-                    if (result) "Completed" else "${map["taskType"]} failed or not implemented by OEM or client app"
+                    if (result) "Completed" else "${map["taskType"]} failed or not supported by OEM"
                 updateTask(serialNumber!!, map, status, message, imageFile)
 
+                if (result && arrayOf("PUSH_APP", "UNINSTALL_APP").contains(map["taskType"])) {
+                    Thread.sleep(3000)
+                    sendEncryptedSyncRequest(storeFunctions)
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Exception handleServerTask: ${e.message}")

@@ -1,7 +1,8 @@
 package com.iisysgroup.itexstore
 
-import android.annotation.SuppressLint
+//import java.util.Random
 import android.annotation.TargetApi
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
@@ -9,14 +10,15 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
-import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-import com.iisysgroup.itexstore.utils.HelperUtil
-import java.util.Locale.ENGLISH
 import android.os.Build.VERSION_CODES
+import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import android.util.Log
 import com.iisysgroup.itexstore.platform.Morefun
+import com.iisysgroup.itexstore.platform.Pax
 import com.iisysgroup.itexstore.platform.PlatformSdk
-//import java.util.Random
+import com.iisysgroup.itexstore.utils.HelperUtil
+import kotlinx.coroutines.runBlocking
+import java.util.Locale.ENGLISH
 import kotlin.random.Random
 
 
@@ -25,8 +27,13 @@ class StoreFunctions(private val context: Context) {
     private val TAG = "StoreFunctions"
     private val morefun: Morefun = Morefun(context)
 
+
     init {
         morefun.bindService()
+    }
+
+    fun closeService() {
+        morefun.unbindService()
     }
 
     private fun getPlatform(): PlatformSdk? {
@@ -56,6 +63,7 @@ class StoreFunctions(private val context: Context) {
 
             info["longitude"] = long
             info["latitude"] = lat
+            info["batteryStatus"] = HelperUtil.isDeviceCharging(context)
 
             return info.toMap()
         } catch (e: Exception) {
@@ -165,12 +173,11 @@ class StoreFunctions(private val context: Context) {
     }
 
     fun installApp(path: String?, packageName: String?): Boolean {
-        println(path)
-        println(packageName)
-        return getPlatform()?.installApp(path!!, packageName!!) ?: false
+        return getPlatform()?.installApp(path!!, packageName!!) == true
     }
 
     fun uninstallApp(packageName: String?): Boolean {
+
         val platformSdk: PlatformSdk? = getPlatform()
 
         return platformSdk?.uninstallApp(packageName!!)
@@ -182,6 +189,26 @@ class StoreFunctions(private val context: Context) {
             } catch (e: Exception) {
                 false
             }
+
     }
+
+    fun sendParameters(context: Context, params: Map<String, Any?>): Boolean {
+        val intent = Intent()
+        val packageName = params["packageName"] as String
+        intent.component = ComponentName(packageName, "$packageName.ITEXStoreParams")
+
+        for (param in params.entries.iterator()) {
+            intent.putExtra(param.key, param.value as String)
+        }
+
+        return try {
+            val componentName = context.startService(intent)
+            componentName != null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
 
 }

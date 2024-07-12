@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import '../../utils/enums.dart';
 
 part 'model.freezed.dart';
-
 part 'model.g.dart';
 
 @freezed
@@ -132,14 +131,15 @@ class Distributor with _$Distributor {
       {int? id,
       String? uuid,
       String? distributorName,
-      Country? country,
       String? contactName,
       String? contactEmail,
+      Country? country,
       String? status,
       int? developerId}) = _Distributor;
 
   factory Distributor.fromJson(Map<String, dynamic> json) =>
       _$DistributorFromJson(json);
+
 }
 
 @freezed
@@ -173,6 +173,7 @@ class AppVersion with _$AppVersion {
 
   factory AppVersion.fromJson(Map<String, dynamic> json) =>
       _$AppVersionFromJson(json);
+
 }
 
 @freezed
@@ -186,4 +187,5 @@ class Category with _$Category {
 
   factory Category.fromJson(Map<String, dynamic> json) =>
       _$CategoryFromJson(json);
+
 }

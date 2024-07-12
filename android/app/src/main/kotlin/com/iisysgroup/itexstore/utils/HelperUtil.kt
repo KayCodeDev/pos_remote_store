@@ -8,6 +8,7 @@ import android.app.DownloadManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -62,11 +63,11 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.os.Bundle
+import android.telephony.TelephonyManager
+import com.iisysgroup.itexstore.MainActivity
 import kotlin.random.Random
 
 class HelperUtil {
-
-
     companion object {
         var client: OkHttpClient = OkHttpClient()
         private val TAG = "HelperUtil"
@@ -109,7 +110,8 @@ class HelperUtil {
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             isDownloadCompleted = true
                             filePath =
-                                cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)).replace("file://", "")
+                                cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
+                                    .replace("file://", "")
                             cancelProgressNotification(context, notificationId)
                         }
 
@@ -217,42 +219,39 @@ class HelperUtil {
             content: String,
             progress: Int = -1
         ) {
-            if (SDK_INT >= Build.VERSION_CODES.O) {
-                val channelName = "ITEX Store Push"
-                val notificationChannel =
-                    NotificationChannel(
-                        ChannelID,
-                        channelName,
-                        NotificationManager.IMPORTANCE_NONE
-                    )
-                val manager = context.getSystemService(NotificationManager::class.java)
-                manager.createNotificationChannel(notificationChannel)
-
-                val notification = Notification.Builder(context, ChannelID)
-                    .setContentTitle(title)
-                    .setContentText(content)
-                    .setSmallIcon(R.drawable.logo)
-
-
-                if (progress >= 0) {
-                    notification.setProgress(100, progress, false)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    notificationId.toString(),
+                    "ITEX Store Notification",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = "ITEX Store Notification"
                 }
 
-                manager.notify(notificationId, notification.build())
-            } else {
-                val notificationManager =
+                val notificationManager: NotificationManager =
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                val notification = NotificationCompat.Builder(context, ChannelID)
-                    .setContentTitle(title)
-                    .setContentText(content)
-                    .setSmallIcon(R.drawable.logo)
-
-                if (progress >= 0) {
-                    notification.setProgress(100, progress, false)
-                }
-
-                notificationManager.notify(notificationId, notification.build())
+                notificationManager.createNotificationChannel(channel)
             }
+
+            val notificationIntent = Intent(context, MainActivity::class.java)
+            val pendingIntent = PendingIntent.getActivity(
+                context,
+                0,
+                notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            val notification = NotificationCompat.Builder(context, notificationId.toString())
+                .setContentTitle(title)
+                .setContentText(content)
+                .setSmallIcon(R.drawable.logo)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .build()
+
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.notify(1, notification)
         }
 
         @SuppressLint("NewApi")
@@ -281,24 +280,6 @@ class HelperUtil {
             return String(decryptedBytes)
         }
 
-//        @JvmStatic
-//        fun mapToString(map: Map<String, Any?>): String {
-//            val stringBuilder = StringBuilder()
-//            stringBuilder.append("{")
-//            for ((key, value) in map) {
-//                stringBuilder.append("$key=")
-//                appendValueToStringBuilder(value, stringBuilder)
-//                stringBuilder.append(", ")
-//            }
-//            // Remove the trailing comma and space if the map is not empty
-//            if (map.isNotEmpty()) {
-//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
-//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
-//            }
-//            stringBuilder.append("}")
-//            return stringBuilder.toString()
-//        }
-
         fun getDateTimeAsFileName(): String {
             val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
             val currentTime = Date()
@@ -325,12 +306,21 @@ class HelperUtil {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val networkInfo = connectivityManager.activeNetworkInfo
 
+            var networkType: String
+
             if (networkInfo != null && networkInfo.isConnected) {
-                return when (networkInfo.type) {
+                networkType = when (networkInfo.type) {
                     ConnectivityManager.TYPE_WIFI -> "wifi"
                     ConnectivityManager.TYPE_MOBILE -> "mobile"
                     else -> "unknown"
                 }
+
+                if (networkType == "mobile") {
+                    val simInfo = getSimInfo(context)
+                    networkType = "$networkType||$simInfo"
+                }
+
+                return networkType
             }
             return "not_connected"
         }
@@ -377,19 +367,16 @@ class HelperUtil {
             return batteryLevel
         }
 
+
         fun listenToLocation(context: Context) {
             val locationManager =
                 context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            if (ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
+            val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val isNetworkEnabled =
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
 
             val locationListener = object : LocationListener {
-                @SuppressLint("MissingPermission")
                 override fun onLocationChanged(location: Location) {
                     saveToSharedPrefs(
                         context,
@@ -403,20 +390,40 @@ class HelperUtil {
                 override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
             }
 
-            // Request single location update
             try {
-                locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER,
-                    28 * 60 * 1000L,
-                    1f,
-                    locationListener
-                )
-                locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    28 * 60 * 1000L,
-                    1f,
-                    locationListener
-                )
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
+                    val lastKnownLocation =
+                        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                            ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                    lastKnownLocation?.let {
+                        locationListener.onLocationChanged(it)
+                    }
+                    when {
+                        isGpsEnabled -> {
+                            locationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                5 * 60 * 1000L,
+                                10f,
+                                locationListener
+                            )
+                        }
+
+                        isNetworkEnabled -> {
+                            locationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                5 * 60 * 1000L,
+                                10f,
+                                locationListener
+                            )
+                        }
+                    }
+                }
+
             } catch (e: SecurityException) {
                 Log.d(TAG, "${e.message}")
             }
@@ -436,32 +443,76 @@ class HelperUtil {
             return sharedPreferences.getString(key, null)
         }
 
+        private fun getSimInfo(context: Context): String {
+            try {
+                val telephonyManager =
+                    context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+                // Get Mobile Network Operator Name
+                val operatorName = telephonyManager.networkOperatorName ?: "--"
+
+                // Get SIM Mobile Number (this might not always work due to restrictions and carrier settings)
+                val simNumber = telephonyManager.line1Number ?: "--"
+
+                // Display or use the information as needed
+                return "$operatorName||$simNumber"
+            } catch (e: Exception) {
+                e.message?.let { Log.e(TAG, it) }
+                return "--||--"
+            }
+        }
+
+        fun isDeviceCharging(context: Context): String {
+            return try {
+                val batteryStatus: Intent? =
+                    IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
+                        context.registerReceiver(null, ifilter)
+                    }
+
+                val status: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+                val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
+                        || status == BatteryManager.BATTERY_STATUS_FULL
+
+                if (isCharging) {
+                    "charging"
+                } else {
+                    "not_charging"
+                }
+            } catch (e: Exception) {
+                println(e)
+                "not_charging"
+            }
+        }
 
         @TargetApi(Build.VERSION_CODES.CUPCAKE)
         fun isSystemApp(packageManager: PackageManager, packageName: String): Boolean {
             val system = arrayOf(
-                "com.iisysgroup.itexstore",
                 "org.codeaurora.bluetooth",
-                "com.qapp.secprotect",
-                "org.codeaurora.ims",
-                "org.codeaurora.btmultisim",
-                "com.oma.drm.server",
-                "socsi.middleware.apkverifyservice",
+                "com.basewin.scanservice",
+                "org.codeaurora.snapcam",
+                "com.basewin.screenrecorder",
+                "com.basewin.smartpeak.security.manage.service",
+                "com.pos.mdmservice",
+                "com.basewin.smartpeakautocheck",
+                "com.assistant",
+                "com.cyanogenmod.filemanager",
+                "com.dsi.ant.server",
+                "com.basewin.mdm",
+                "com.bw.ledservice",
+                "com.odm.spupdate",
+                "cn.basewin.securitydefensesystem2",
+                "com.odm.firmware.updater",
+                "org.codeaurora.gallery",
                 "com.qualcomm",
                 "com.android",
-                "com.google",
-                "com.verifone",
-                "com.example",
-                "com.qcom",
-                "android",
-                "com.quicinc",
-                "com.qrd",
-                "com.socsi",
-                "com.qti"
+
+                "com.mdm.location",
+                "com.basewin.pinpadtest",
+                "com.bw.configservice",
+                "com.bw.security.center",
+                "org.codeaurora.dialer"
             )
             return system.any { packageName.contains(it) }
-//                    ||
-//             packageManager.getLaunchIntentForPackage(packageName) == null
         }
 
         fun isServiceRunning(serviceClass: Class<*>, context: Context): Boolean {
@@ -483,12 +534,6 @@ class HelperUtil {
             val map = HashMap<String, Any?>()
             map["name"] = packageManager.getApplicationLabel(app)
             map["package_name"] = app.packageName
-//            map["icon"] =
-//                if (withIcon) Base64.encodeToString(
-//                    drawableToByteArray(app.loadIcon(packageManager)),
-//                    Base64.DEFAULT
-//                )
-//                else null
             val packageInfo = packageManager.getPackageInfo(app.packageName, 0)
             map["version_name"] = packageInfo.versionName
             map["version_code"] = getVersionCode(packageInfo)
@@ -531,6 +576,7 @@ class HelperUtil {
         ): Map<String, Any>? {
             try {
                 val builder = request.newBuilder()
+
 
                 builder.addHeader("x-api-key", token)
                 builder.addHeader("x-serial-number", serialNumber)

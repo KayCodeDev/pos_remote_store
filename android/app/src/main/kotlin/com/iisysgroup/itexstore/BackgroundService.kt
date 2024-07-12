@@ -1,5 +1,7 @@
 package com.iisysgroup.itexstore
 
+//import java.time.Duration
+
 import com.iisysgroup.itexstore.R
 import android.annotation.TargetApi
 import android.app.*
@@ -11,24 +13,23 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.iisysgroup.itexstore.utils.HelperUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-//import java.time.Duration
 import java.io.BufferedReader
+import java.io.File
+import java.io.IOException
 import java.io.InputStreamReader
 import java.net.InetAddress
 import java.net.Socket
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import java.io.File
 import java.util.concurrent.Executors
-import androidx.core.app.NotificationCompat
-import java.io.IOException
-import kotlin.random.Random
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.delay
+import androidx.core.app.NotificationCompat
+
 
 @TargetApi(Build.VERSION_CODES.O)
 class BackgroundService : Service() {
@@ -37,8 +38,12 @@ class BackgroundService : Service() {
     private val TCP_SERVER_IP = "store-api.itexapp.com"
     private val TCP_SERVER_PORT = 9091
 
-//    private val BASE_URL = "http://192.168.8.100:9090/api/v1/store"
-//    private val TCP_SERVER_IP = "192.168.8.100"
+//    private val BASE_URL = "http://54.203.193.56:9090/api/v1/store"
+//    private val TCP_SERVER_IP = "54.203.193.56"
+//    private val TCP_SERVER_PORT = 9091
+
+//    private val BASE_URL = "http://192.168.181.37:9090/api/v1/store"
+//    private val TCP_SERVER_IP = "192.168.181.37"
 //    private val TCP_SERVER_PORT = 9091
 
     private val CALL_HOME_ENDPOINT = "terminal/sync"
@@ -59,6 +64,7 @@ class BackgroundService : Service() {
 
     private lateinit var context: Context
     private lateinit var storeFunctions: StoreFunctions
+    private val CHANNEL_ID = "ForegroundServiceChannel"
 
     private val runnable: Runnable by lazy {
         Runnable {
@@ -67,7 +73,7 @@ class BackgroundService : Service() {
                 sendEncryptedSyncRequest(storeFunctions)
                 connectToTcpServer(storeFunctions)
             }
-            handler.postDelayed(runnable, TimeUnit.MINUTES.toMillis(30))
+            handler.postDelayed(runnable, TimeUnit.MINUTES.toMillis(20))
         }
     }
 
@@ -75,6 +81,7 @@ class BackgroundService : Service() {
         super.onCreate()
         context = this
         storeFunctions = StoreFunctions(this)
+        createNotificationChannel()
         HelperUtil.listenToLocation(this)
     }
 
@@ -89,34 +96,31 @@ class BackgroundService : Service() {
     }
 
     private fun startForegroundService() {
+        val notificationIntent = Intent(this, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
+
+        val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("ITEX Store")
+            .setContentText("ITEX Store is running")
+            .setSmallIcon(R.drawable.logo)
+            .setSilent(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        startForeground(1, notification)
+    }
+
+    private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelName = "ITEX Store Notification"
-            val notificationChannel =
-                NotificationChannel(
-                    HelperUtil.ChannelID,
-                    channelName,
-                    NotificationManager.IMPORTANCE_NONE
-                )
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(notificationChannel)
-
-            val notificationId: Int = Random.nextInt(0, 1000)
-            val notification = Notification.Builder(this, HelperUtil.ChannelID)
-                .setContentTitle("ITEX Store")
-                .setContentText("ITEX Store is running")
-                .setSmallIcon(R.drawable.logo)
-                .build()
-
-            startForeground(notificationId, notification)
-        } else {
-            val notificationId: Int = Random.nextInt(0, 1000)
-            val notification = NotificationCompat.Builder(this, HelperUtil.ChannelID)
-                .setContentTitle("ITEX Store")
-                .setContentText("ITEX Store is running")
-                .setSmallIcon(R.drawable.logo)
-                .build()
-
-            startForeground(notificationId, notification)
+            val serviceChannel = NotificationChannel(
+                CHANNEL_ID,
+                "ITEX Store Notification",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val manager = getSystemService(
+                NotificationManager::class.java
+            )
+            manager?.createNotificationChannel(serviceChannel)
         }
     }
 
@@ -175,7 +179,7 @@ class BackgroundService : Service() {
                 val heartbeatThread = Thread {
                     try {
                         while (connected && socket != null) {
-                            Thread.sleep(600000)
+                            Thread.sleep(300000)
                             val heartbeatMessage =
                                 """{"action":"heartbeat", "serialNumber": "$sn"}"""
                             HelperUtil.sendTcpMessageToServer(heartbeatMessage, socket!!)
@@ -262,7 +266,8 @@ class BackgroundService : Service() {
                         val sameVersion: Boolean = checkSameVersion(version, packageName)
 
                         if (!sameVersion) {
-                            val fileNamePath = "${appName}_${versionUuid}.apk"
+                            val fileNamePath =
+                                "${packageName?.replace(".", "_")}_${versionUuid}.apk"
                             val fileName = "$appName v$versionName"
                             val path: String? =
                                 HelperUtil.downloadFile(
@@ -275,6 +280,7 @@ class BackgroundService : Service() {
                                 val apk: File = File(path)
                                 if (apk.exists()) {
                                     storeFunctions.installApp(path, packageName)
+                                    Thread.sleep(30000)
                                     if (checkSameVersion(version, packageName)) {
                                         reportDownload(appUuid!!, versionUuid!!)
                                         true
@@ -326,13 +332,24 @@ class BackgroundService : Service() {
                         }
                         result = imageFile != null
                     }
+
+                    "PUSH_PARAMETERS" -> {
+                        val parameters: Map<String, Any?> = (map["parameters"] as Map<String, Any?>)
+                        result = storeFunctions.sendParameters(context, parameters)
+                    }
                 }
 
                 val status = if (result) "DONE" else "FAILED"
+
+
                 val message =
-                    if (result) "Completed" else "${map["taskType"]} not implemented by OEM"
+                    if (result) "Completed" else "${map["taskType"]} failed or not supported by OEM"
                 updateTask(serialNumber!!, map, status, message, imageFile)
 
+                if (result && arrayOf("PUSH_APP", "UNINSTALL_APP").contains(map["taskType"])) {
+                    Thread.sleep(3000)
+                    sendEncryptedSyncRequest(storeFunctions)
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Exception handleServerTask: ${e.message}")
@@ -402,5 +419,6 @@ class BackgroundService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(runnable)
+        storeFunctions.closeService()
     }
 }

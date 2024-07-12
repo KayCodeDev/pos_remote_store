@@ -19,10 +19,14 @@ class SmartPermission(private val context: Context) {
         }
     }
 
-    val permissionList = arrayOf(
+    val permissionList = mutableListOf(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.WAKE_LOCK,
+        Manifest.permission.READ_PHONE_NUMBERS,
         "com.pos.permission.SECURITY",
         "com.pos.permission.ACCESSORY_DATETIME",
         "com.pos.permission.ACCESSORY_LED",

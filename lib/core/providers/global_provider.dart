@@ -164,11 +164,11 @@ class GlobalProvider extends ChangeNotifier {
   Future<void> getAppsFromApi() async {
     if (_deviceInfo!.serialNumber != null) {
       Map<String, dynamic>? response =
-          await apiRepository?.getApps(_deviceInfo!.serialNumber!);
+      await apiRepository?.getApps(_deviceInfo!.serialNumber!);
       if (response!['status'] == "success") {
         _updateCount = 0;
         List<App> apps =
-            response['data']['apps'].map<App>((a) => App.fromJson(a)).toList();
+        response['data']['apps'].map<App>((a) => App.fromJson(a)).toList();
 
         await _sortApps(apps);
 
@@ -195,7 +195,7 @@ class GlobalProvider extends ChangeNotifier {
       InstalledAppInfo? exist;
       try {
         exist = _installedAppList.firstWhere(
-          (a) => a.packageName == app.packageName,
+              (a) => a.packageName == app.packageName,
         );
       } catch (e) {
         exist = null;
@@ -229,8 +229,8 @@ class GlobalProvider extends ChangeNotifier {
       _searchableStoreList.clear();
       _searchableStoreList.addAll(_storeList
           .where((b) =>
-              b.name!.toLowerCase().contains(query) ||
-              b.packageName!.toLowerCase().contains(query))
+      b.name!.toLowerCase().contains(query) ||
+          b.packageName!.toLowerCase().contains(query))
           .toList());
       notifyListeners();
     }
@@ -293,7 +293,7 @@ class GlobalProvider extends ChangeNotifier {
         InstalledAppInfo? installed;
         try {
           installed = _installedAppList.firstWhere(
-            (a) {
+                (a) {
               return a.packageName == _appInstalling!.packageName!;
             },
           );
@@ -434,10 +434,10 @@ class GlobalProvider extends ChangeNotifier {
                 onWebSocketError: (dynamic error) =>
                     debugPrint(error.toString()),
                 webSocketConnectHeaders: {
-              'Connection': 'Upgrade',
-              'Upgrade': 'websocket',
-              // 'Host': 'localhost:8090'
-            }));
+                  'Connection': 'Upgrade',
+                  'Upgrade': 'websocket',
+                  // 'Host': 'localhost:8090'
+                }));
 
         stompClient!.activate();
       }

@@ -26,7 +26,6 @@ class SmartPermission(private val context: Context) {
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.READ_PHONE_STATE,
         Manifest.permission.WAKE_LOCK,
-        Manifest.permission.READ_PHONE_NUMBERS,
         "com.pos.permission.SECURITY",
         "com.pos.permission.ACCESSORY_DATETIME",
         "com.pos.permission.ACCESSORY_LED",

@@ -1,7 +1,5 @@
 package com.iisysgroup.itexstore.utils
 
-//import androidx.core.app.ActivityCompat
-//import java.util.Base64
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
@@ -31,12 +29,10 @@ import android.os.BatteryManager
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.P
-import android.os.Bundle
 import android.os.Environment
-import android.telephony.TelephonyManager
-import android.util.Base64
 import android.util.Log
 import android.widget.Toast
+//import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
@@ -57,13 +53,17 @@ import java.io.OutputStreamWriter
 import java.net.Socket
 import java.security.SecureRandom
 import java.text.SimpleDateFormat
+//import java.util.Base64
+import android.util.Base64
 import java.util.Date
 import java.util.Locale
 import java.util.zip.ZipFile
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
-
+import android.os.Bundle
+import android.telephony.TelephonyManager
+import kotlin.random.Random
 
 class HelperUtil {
 
@@ -283,24 +283,6 @@ class HelperUtil {
             return String(decryptedBytes)
         }
 
-//        @JvmStatic
-//        fun mapToString(map: Map<String, Any?>): String {
-//            val stringBuilder = StringBuilder()
-//            stringBuilder.append("{")
-//            for ((key, value) in map) {
-//                stringBuilder.append("$key=")
-//                appendValueToStringBuilder(value, stringBuilder)
-//                stringBuilder.append(", ")
-//            }
-//            // Remove the trailing comma and space if the map is not empty
-//            if (map.isNotEmpty()) {
-//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
-//                stringBuilder.deleteCharAt(stringBuilder.length - 1)
-//            }
-//            stringBuilder.append("}")
-//            return stringBuilder.toString()
-//        }
-
         fun getDateTimeAsFileName(): String {
             val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
             val currentTime = Date()
@@ -327,12 +309,21 @@ class HelperUtil {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val networkInfo = connectivityManager.activeNetworkInfo
 
+            var networkType: String
+
             if (networkInfo != null && networkInfo.isConnected) {
-                return when (networkInfo.type) {
+                networkType = when (networkInfo.type) {
                     ConnectivityManager.TYPE_WIFI -> "wifi"
                     ConnectivityManager.TYPE_MOBILE -> "mobile"
                     else -> "unknown"
                 }
+
+                if (networkType == "mobile") {
+                    val simInfo = getSimInfo(context)
+                    networkType = "$networkType||$simInfo"
+                }
+
+                return networkType
             }
             return "not_connected"
         }
@@ -382,16 +373,12 @@ class HelperUtil {
         fun listenToLocation(context: Context) {
             val locationManager =
                 context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            if (ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
+            val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val isNetworkEnabled =
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
 
             val locationListener = object : LocationListener {
-                @SuppressLint("MissingPermission")
                 override fun onLocationChanged(location: Location) {
                     saveToSharedPrefs(
                         context,
@@ -405,24 +392,40 @@ class HelperUtil {
                 override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
             }
 
-            // Request single location update
             try {
-                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER,
-                        28 * 60 * 1000L,
-                        1f,
-                        locationListener
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
                     )
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
+                    val lastKnownLocation =
+                        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                            ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                    lastKnownLocation?.let {
+                        locationListener.onLocationChanged(it)
+                    }
+                    when {
+                        isGpsEnabled -> {
+                            locationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                5 * 60 * 1000L,
+                                10f,
+                                locationListener
+                            )
+                        }
+
+                        isNetworkEnabled -> {
+                            locationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                5 * 60 * 1000L,
+                                10f,
+                                locationListener
+                            )
+                        }
+                    }
                 }
-                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        28 * 60 * 1000L,
-                        1f,
-                        locationListener
-                    )
-                }
+
             } catch (e: SecurityException) {
                 Log.d(TAG, "${e.message}")
             }
@@ -442,6 +445,25 @@ class HelperUtil {
             return sharedPreferences.getString(key, null)
         }
 
+        private fun getSimInfo(context: Context): String {
+            try {
+                val telephonyManager =
+                    context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+                // Get Mobile Network Operator Name
+                val operatorName = telephonyManager.networkOperatorName ?: "--"
+
+                // Get SIM Mobile Number (this might not always work due to restrictions and carrier settings)
+                val simNumber = telephonyManager.line1Number ?: "--"
+
+                // Display or use the information as needed
+                return "$operatorName||$simNumber"
+            } catch (e: Exception) {
+                e.message?.let { Log.e(TAG, it) }
+                return "--||--"
+            }
+        }
+
         fun isDeviceCharging(context: Context): String {
             return try {
                 val batteryStatus: Intent? =
@@ -449,12 +471,10 @@ class HelperUtil {
                         context.registerReceiver(null, ifilter)
                     }
 
-                // isCharging if true indicates charging is ongoing and vice-versa
                 val status: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
                 val isCharging: Boolean = status == BatteryManager.BATTERY_STATUS_CHARGING
                         || status == BatteryManager.BATTERY_STATUS_FULL
 
-                // Display whatever the state in the form of a Toast
                 if (isCharging) {
                     "charging"
                 } else {
@@ -469,28 +489,25 @@ class HelperUtil {
         @TargetApi(Build.VERSION_CODES.CUPCAKE)
         fun isSystemApp(packageManager: PackageManager, packageName: String): Boolean {
             val system = arrayOf(
-                "com.iisysgroup.itexstore",
-                "org.codeaurora.bluetooth",
-                "com.qapp.secprotect",
-                "org.codeaurora.ims",
-                "org.codeaurora.btmultisim",
-                "com.oma.drm.server",
-                "socsi.middleware.apkverifyservice",
-                "com.qualcomm",
-                "com.android",
-                "com.google",
-                "com.verifone",
-                "com.example",
-                "com.qcom",
-                "android",
-                "com.quicinc",
-                "com.qrd",
-                "com.socsi",
-                "com.qti"
+                "com.xinguodu.ctlxgdlog",
+                "com.nexgo.param",
+                "com.nexgo.splog",
+                "com.fibocom.tcptool",
+                "com.softwinner.explore",
+                "com.xgd.ophelp",
+                "com.xgd.update",
+                "com.fibocom.autommi",
+                "com.xgd.mapservice",
+                "com.nexgo.cameradecode.service",
+                "com.xgd.startupdateactivity",
+                "com.dsi.ant.server",
+                "cn.gosomo.evt",
+                "jp.co.omronsoft.openwnn",
+                "com.xgd.securitycheck",
+                "com.nexgo.hardwaretest",
+                "com.xgd.possystemservice"
             )
             return system.any { packageName.contains(it) }
-//                    ||
-//             packageManager.getLaunchIntentForPackage(packageName) == null
         }
 
         fun isServiceRunning(serviceClass: Class<*>, context: Context): Boolean {
@@ -512,12 +529,6 @@ class HelperUtil {
             val map = HashMap<String, Any?>()
             map["name"] = packageManager.getApplicationLabel(app)
             map["package_name"] = app.packageName
-//            map["icon"] =
-//                if (withIcon) Base64.encodeToString(
-//                    drawableToByteArray(app.loadIcon(packageManager)),
-//                    Base64.DEFAULT
-//                )
-//                else null
             val packageInfo = packageManager.getPackageInfo(app.packageName, 0)
             map["version_name"] = packageInfo.versionName
             map["version_code"] = getVersionCode(packageInfo)
@@ -560,6 +571,7 @@ class HelperUtil {
         ): Map<String, Any>? {
             try {
                 val builder = request.newBuilder()
+
 
                 builder.addHeader("x-api-key", token)
                 builder.addHeader("x-serial-number", serialNumber)

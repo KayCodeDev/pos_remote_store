@@ -92,8 +92,8 @@ class Nexgo(private val context: Context) : PlatformSdk {
 
     override fun setTimeZone(tz: String): Boolean {
         return try {
-            TimeZone.setDefault(TimeZone.getTimeZone(tz))
-            true
+            Log.d(TAG, "setTimeZone not supported by OEM")
+            false
         } catch (e: RemoteException) {
             Log.d(TAG, "Exception setTimeZone : ${e.message}")
             false

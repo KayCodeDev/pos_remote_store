@@ -1,7 +1,8 @@
 package com.iisysgroup.itexstore
 
-import android.annotation.SuppressLint
+//import java.util.Random
 import android.annotation.TargetApi
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
@@ -9,15 +10,15 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
-import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-import com.iisysgroup.itexstore.utils.HelperUtil
-import java.util.Locale.ENGLISH
 import android.os.Build.VERSION_CODES
+import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import android.util.Log
 import com.iisysgroup.itexstore.platform.Nexgo
 import com.iisysgroup.itexstore.platform.PlatformSdk
-import kotlin.random.Random
+import com.iisysgroup.itexstore.utils.HelperUtil
 import kotlinx.coroutines.runBlocking
+import java.util.Locale.ENGLISH
+import kotlin.random.Random
 
 
 class StoreFunctions(private val context: Context) {
@@ -25,16 +26,16 @@ class StoreFunctions(private val context: Context) {
     private val TAG = "StoreFunctions"
     private val nexgo: Nexgo = Nexgo(context)
 
+
     init {
         nexgo.setInstance()
     }
 
     fun closeService() {
-
     }
 
     private fun getPlatform(): PlatformSdk? {
-        return nexgo;
+        return nexgo
     }
 
     fun getSN(): String? {
@@ -96,7 +97,7 @@ class StoreFunctions(private val context: Context) {
             HelperUtil.showNotification(context, notificationId, "Push Message", message)
             true
         } catch (e: Exception) {
-            Log.d(TAG, "PushMessage Exception: ${e.message}")
+            Log.d(TAG, "pushMessage Exception: ${e.message}")
             false
         }
     }
@@ -140,7 +141,7 @@ class StoreFunctions(private val context: Context) {
             context.startActivity(launchIntent)
             true
         } catch (e: Exception) {
-            Log.d(TAG, "StartApp Exception : ${e.message}")
+            Log.d(TAG, "Exception startApp : ${e.message}")
             false
         }
     }
@@ -173,12 +174,13 @@ class StoreFunctions(private val context: Context) {
         return runBlocking {
             getPlatform()?.installApp(path!!, packageName!!) == true
         }
-
     }
 
     fun uninstallApp(packageName: String?): Boolean {
         return runBlocking {
-            getPlatform()?.uninstallApp(packageName!!)
+            val platformSdk: PlatformSdk? = getPlatform()
+
+            platformSdk?.uninstallApp(packageName!!)
                 ?: try {
                     val intent = Intent(Intent.ACTION_DELETE)
                     intent.data = Uri.parse("package:$packageName")
@@ -188,6 +190,26 @@ class StoreFunctions(private val context: Context) {
                     false
                 }
         }
+
     }
+
+    fun sendParameters(context: Context, params: Map<String, Any?>): Boolean {
+        val intent = Intent()
+        val packageName = params["packageName"] as String
+        intent.component = ComponentName(packageName, "$packageName.ITEXStoreParams")
+
+        for (param in params.entries.iterator()) {
+            intent.putExtra(param.key, param.value as String)
+        }
+
+        return try {
+            val componentName = context.startService(intent)
+            componentName != null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
 
 }

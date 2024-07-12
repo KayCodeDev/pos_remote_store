@@ -9,7 +9,6 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.util.Log
-import com.iisysgroup.itexstore.utils.HelperUtil
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class NetworkMonitor(private val context: Context) {
@@ -25,7 +24,10 @@ class NetworkMonitor(private val context: Context) {
                 networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
 
             if (hasInternet) {
+                Log.d(TAG, "Internet available")
+//                if (!HelperUtil.isServiceRunning(BackgroundService::class.java, context) ) {
                 if(!thereIsInternet){
+                    Log.d(TAG, "Stop and starting a new instance of ITEXStore")
                     val serviceIntent = Intent(context, BackgroundService::class.java)
                     context.stopService(serviceIntent)
                     context.startService(serviceIntent)
@@ -37,10 +39,12 @@ class NetworkMonitor(private val context: Context) {
         override fun onLost(network: Network) {
             super.onLost(network)
             thereIsInternet = false
+            Log.d(TAG, "Internet lost")
         }
     }
 
     fun register() {
+        Log.d(TAG, "Registering network monitor")
         val networkRequest = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()

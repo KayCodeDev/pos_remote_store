@@ -410,7 +410,7 @@ class HelperUtil {
                         isGpsEnabled -> {
                             locationManager.requestLocationUpdates(
                                 LocationManager.GPS_PROVIDER,
-                                5 * 60 * 1000L,
+                                18 * 60 * 1000L,
                                 10f,
                                 locationListener
                             )
@@ -419,7 +419,7 @@ class HelperUtil {
                         isNetworkEnabled -> {
                             locationManager.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
-                                5 * 60 * 1000L,
+                                18 * 60 * 1000L,
                                 10f,
                                 locationListener
                             )

@@ -598,6 +598,7 @@ class HelperUtil {
                     return Gson().fromJson(responseBody, mapType)
                 }
             } catch (e: IOException) {
+                println(e)
                 Log.d(TAG, "Exception sending request : ${e.message}")
             }
             return null

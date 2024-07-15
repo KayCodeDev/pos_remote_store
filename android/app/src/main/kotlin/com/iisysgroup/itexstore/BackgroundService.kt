@@ -226,6 +226,7 @@ class BackgroundService : Service() {
                 }
             }
         } catch (e: Exception) {
+            println(e)
             Log.e(TAG, "Error connecting to TCP server: ${e.message}")
             connected = false
         } finally {

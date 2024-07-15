@@ -52,7 +52,6 @@ class Api {
     if (await StoreMethod.isNetworkConnected()) {
       Map<String, dynamic> headers =
       await _getHeaders();
-
       try {
         response = await dio.get(url, options: Options(headers: headers));
         return _handleDioResponse(response);

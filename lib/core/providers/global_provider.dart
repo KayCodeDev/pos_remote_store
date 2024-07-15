@@ -152,6 +152,7 @@ class GlobalProvider extends ChangeNotifier {
 
   Future<void> getApps() async {
     List<App> apps = await dbRepository!.getApps();
+
     if (apps.isNotEmpty) {
       await _sortApps(apps);
       _developer = await dbRepository!.getAccount();
@@ -165,6 +166,7 @@ class GlobalProvider extends ChangeNotifier {
     if (_deviceInfo!.serialNumber != null) {
       Map<String, dynamic>? response =
       await apiRepository?.getApps(_deviceInfo!.serialNumber!);
+
       if (response!['status'] == "success") {
         _updateCount = 0;
         List<App> apps =

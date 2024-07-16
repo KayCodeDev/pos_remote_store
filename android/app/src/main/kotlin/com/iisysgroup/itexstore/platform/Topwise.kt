@@ -14,7 +14,8 @@ import com.topwise.cloudpos.aidl.AidlDeviceService
 import com.topwise.cloudpos.aidl.system.AidlSystem
 import com.topwise.cloudpos.aidl.system.InstallAppObserver
 import com.topwise.cloudpos.aidl.system.UninstallAppObserver
-
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 import java.util.TimeZone
 
 class Topwise(private val context: Context) : PlatformSdk {
@@ -48,7 +49,7 @@ class Topwise(private val context: Context) : PlatformSdk {
 //        // serviceLatch.await()
 //    }
 
-     fun bindService() {
+    fun bindService() {
         val intent = Intent()
         intent.action = ACTION;
         intent.setClassName(PACKAGE, CLASS_NAME);
@@ -90,19 +91,21 @@ class Topwise(private val context: Context) : PlatformSdk {
         )
     }
 
-    override fun installApp(path: String, packageName: String): Boolean {
+    override suspend fun installApp(path: String, packageName: String): Boolean {
         return try {
-            val installAppObserver = object : InstallAppObserver.Stub() {
-                override fun onInstallFinished() {
-                    Log.d(TAG, "App installed successfully")
-                }
+            suspendCancellableCoroutine<Boolean> { continuation ->
+                val installAppObserver = object : InstallAppObserver.Stub() {
+                    override fun onInstallFinished() {
+                        continuation.resume(true)
+                    }
 
-                override fun onInstallError(errorCode: Int) {
-                    Log.d(TAG, "Exception installing app $packageName : $errorCode")
+                    override fun onInstallError(errorCode: Int) {
+                        Log.d(TAG, "Exception installing app $packageName : $errorCode")
+                        continuation.resume(false)
+                    }
                 }
+                aidlSystem?.installApp(path, installAppObserver)
             }
-            aidlSystem?.installApp(path, installAppObserver)
-            true
         } catch (e: RemoteException) {
             Log.d(TAG, "Exception installApp : ${e.message}")
             false
@@ -135,19 +138,21 @@ class Topwise(private val context: Context) : PlatformSdk {
         return false
     }
 
-    override fun uninstallApp(packageName: String): Boolean {
+    override suspend fun uninstallApp(packageName: String): Boolean {
         return try {
-            val uninstallAppObserver = object : UninstallAppObserver.Stub() {
-                override fun onUninstallFinished() {
-                    Log.d(TAG, "App uninstalled successfully")
-                }
+            suspendCancellableCoroutine<Boolean> { continuation ->
+                val uninstallAppObserver = object : UninstallAppObserver.Stub() {
+                    override fun onUninstallFinished() {
+                        continuation.resume(true)
+                    }
 
-                override fun onUninstallError(errorCode: Int) {
-                    Log.d(TAG, "Exception uninstalling app $packageName : $errorCode")
+                    override fun onUninstallError(errorCode: Int) {
+                        Log.d(TAG, "Exception uninstalling app $packageName : $errorCode")
+                        continuation.resume(false)
+                    }
                 }
+                aidlSystem?.uninstallApp(packageName, uninstallAppObserver)
             }
-            aidlSystem?.uninstallApp(packageName, uninstallAppObserver)
-            true
         } catch (e: RemoteException) {
             Log.d(TAG, "Exception uninstallApp : ${e.message}")
             false

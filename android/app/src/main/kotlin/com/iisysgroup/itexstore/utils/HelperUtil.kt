@@ -505,7 +505,10 @@ class HelperUtil {
                 "jp.co.omronsoft.openwnn",
                 "com.xgd.securitycheck",
                 "com.nexgo.hardwaretest",
-                "com.xgd.possystemservice"
+                "com.xgd.possystemservice",
+                "com.android",
+                "android.ext",
+                "com.qualcomm"
             )
             return system.any { packageName.contains(it) }
         }

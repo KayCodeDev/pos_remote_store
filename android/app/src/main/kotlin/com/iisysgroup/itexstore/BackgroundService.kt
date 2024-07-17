@@ -29,17 +29,27 @@ import java.io.IOException
 import kotlin.random.Random
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
+import org.eclipse.paho.android.service.MqttAndroidClient
+import org.eclipse.paho.client.mqttv3.*
 
 @TargetApi(Build.VERSION_CODES.O)
 class BackgroundService : Service() {
     private val TAG = "ITEXStoreBGS"
+    private lateinit var mqttClient: MqttAndroidClient
+
     private val BASE_URL = "https://store-api.itexapp.com/api/v1/store"
     private val TCP_SERVER_IP = "store-api.itexapp.com"
     private val TCP_SERVER_PORT = 9091
+    private val MQTT_SERVER_URL = "tcp://store-api.itexapp.com:1883"
+    private val MQTT_USERNAME = "itexstore_mqtt_broker"
+    private val MQTT_PASSWORD = "0qf+8T5siJbBC1+UBICv8U13qPlxpPWxBAyY2xO5"
 
 //    private val BASE_URL = "http://54.203.193.56:9090/api/v1/store"
 //    private val TCP_SERVER_IP = "54.203.193.56"
 //    private val TCP_SERVER_PORT = 9091
+//    private val MQTT_SERVER_URL = "tcp://54.203.193.56:1883"
+//    private val MQTT_USERNAME = "itexstore_mqtt_broker"
+//    private val MQTT_PASSWORD = "0qf+8T5siJbBC1+UBICv8U13qPlxpPWxBAyY2xO5"
 
 //    private val BASE_URL = "http://192.168.45.37:9090/api/v1/store"
 //    private val TCP_SERVER_IP = "192.168.45.37"
@@ -49,6 +59,9 @@ class BackgroundService : Service() {
     private val UPDATE_TASK_ENDPOINT = "task/update"
     private val NOTIFY_DOWNLOAD_ENDPOINT = "notify/download"
 
+
+
+    private val MQTT_CLIENT_ID = "AndroidClient"
     private val TOKEN =
         "q3QreaNLqJzSp5SGVw/dUH/zMQlVo1HthfXkkGS1iP1xKWe2WwLPOFd4PErm/makjhsE6nBxDMETeCY2CBZ81dlBiFn7CVCSridhn/BQwo7L2ZT9gZRV8RbyV9/IH4GZ+UZYHg=="
     private val SECRET_KEY =

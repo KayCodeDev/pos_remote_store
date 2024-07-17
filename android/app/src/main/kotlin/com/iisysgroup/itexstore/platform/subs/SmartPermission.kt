@@ -10,6 +10,7 @@ class SmartPermission(private val context: Context) {
 
     val permissionList = mutableListOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.INTERNET,
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.RECEIVE_BOOT_COMPLETED,
         Manifest.permission.READ_PHONE_STATE,

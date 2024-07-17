@@ -10,7 +10,7 @@ class Api {
   Dio dio = Dio(BaseOptions(
     baseUrl: "$kBaseEndpoint/api/v1/store/",
     receiveTimeout: const Duration(seconds: 30),
-    connectTimeout: const Duration(seconds: 30),
+    connectTimeout: const Duration(seconds: 60),
     responseType: ResponseType.json,
   ));
 
@@ -53,10 +53,14 @@ class Api {
       Map<String, dynamic> headers =
       await _getHeaders();
 
+      print(headers);
+
       try {
         response = await dio.get(url, options: Options(headers: headers));
+        print(response);
         return _handleDioResponse(response);
       } on DioException catch (e) {
+        print(e);
         return _handleDioResponse(e);
       }
     } else {

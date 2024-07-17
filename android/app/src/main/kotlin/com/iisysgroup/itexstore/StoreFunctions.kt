@@ -13,7 +13,6 @@ import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import android.util.Log
-import com.iisysgroup.itexstore.platform.Pax
 import com.iisysgroup.itexstore.platform.PlatformSdk
 import com.iisysgroup.itexstore.platform.Topwise
 import com.iisysgroup.itexstore.utils.HelperUtil

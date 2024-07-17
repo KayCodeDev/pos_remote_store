@@ -36,7 +36,7 @@ class BackgroundService : Service() {
     private val BASE_URL = "https://store-api.itexapp.com/api/v1/store"
     private val TCP_SERVER_IP = "store-api.itexapp.com"
     private val TCP_SERVER_PORT = 9091
-
+//
 //    private val BASE_URL = "http://54.203.193.56:9090/api/v1/store"
 //    private val TCP_SERVER_IP = "54.203.193.56"
 //    private val TCP_SERVER_PORT = 9091

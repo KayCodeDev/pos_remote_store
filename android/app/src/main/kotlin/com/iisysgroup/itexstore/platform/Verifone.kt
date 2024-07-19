@@ -11,6 +11,7 @@ import android.os.RemoteException
 import android.util.Log
 import com.iisysgroup.itexstore.utils.HelperUtil
 import com.vfi.smartpos.deviceservice.aidl.IDeviceInfo
+import com.vfi.smartpos.deviceservice.aidl.IPrinter
 import com.vfi.smartpos.deviceservice.aidl.IDeviceService
 import com.vfi.smartpos.system_service.aidl.IAppDeleteObserver
 import com.vfi.smartpos.system_service.aidl.IAppInstallObserver
@@ -26,6 +27,7 @@ class Verifone(private val context: Context) : PlatformSdk {
     private var settingsManager: ISettingsManager? = null
     private var deviceService: IDeviceService? = null
     private var deviceInfo: IDeviceInfo? = null
+    private var printer: IPrinter? = null
 
     private var isBoundDS = false
     private var isBoundSM = false
@@ -44,6 +46,7 @@ class Verifone(private val context: Context) : PlatformSdk {
                 deviceService?.let {
                     isBoundDS = true
                     deviceInfo = it.getDeviceInfo()
+                    printer = it.getPrinter()
                 }
             } catch (e: RemoteException) {
                 e.printStackTrace()
@@ -128,13 +131,14 @@ class Verifone(private val context: Context) : PlatformSdk {
             "imei" to deviceService?.getDeviceInfo()?.getIMEI(),
             "manufacturer" to "Verifone",
             "model" to deviceService?.getDeviceInfo()?.getModel(),
-            "osVersion" to "OS Version: ${Build.VERSION.SDK_INT} (API Level: ${Build.VERSION.RELEASE})",
+            "osVersion" to "OS Version: ${Build.VERSION.RELEASE} (API Level: ${Build.VERSION.SDK_INT})",
             "sdkVersion" to Build.VERSION.SDK_INT.toString(),
             "ram" to deviceService?.getDeviceInfo()?.getRamAvailable(),
             "rom" to deviceService?.getDeviceInfo()?.getRomAvailable(),
             "firmware" to deviceService?.getDeviceInfo()?.getFirmwareVersion(),
             "batteryTemp" to "$batteryTemp°C",
-            "networkType" to HelperUtil.getConnectionType(context)
+            "networkType" to HelperUtil.getConnectionType(context),
+            "printer" to getPrinterStatus()
         )
     }
 
@@ -194,6 +198,7 @@ class Verifone(private val context: Context) : PlatformSdk {
         return try {
             suspendCancellableCoroutine<Boolean> { continuation ->
                 val uninstallAppObserver = object : IAppDeleteObserver.Stub() {
+
                     override fun onDeleteFinished(packageName: String, returnCode: Int) {
                         if (returnCode == 0) {
                             continuation.resume(true)
@@ -217,5 +222,53 @@ class Verifone(private val context: Context) : PlatformSdk {
             Log.d(TAG, "Exception captureScreen : ${e.message}")
             null
         }
+    }
+
+    private fun getPrinterStatus(): String {
+        val status: Int? = printer?.getStatus()
+        var result = "N/A"
+        when (status!!) {
+            0x00 -> {
+                result = "Printer OK"
+            }
+
+            0xF0 -> {
+                result = "Paper out"
+            }
+
+            0xF1 -> {
+                result = "No Content"
+            }
+
+            0xF2 -> {
+                result = "Printer Error"
+            }
+
+            0xF3 -> {
+                result = "Over Heat"
+            }
+
+            0xF6 -> {
+                result = "No Black Mark"
+            }
+
+            0xF7 -> {
+                result = "Printer Busy"
+            }
+
+            0xFB -> {
+                result = "Moto Error"
+            }
+
+            0xE1 -> {
+                result = "Printer Battery Low"
+            }
+
+            0xE2 -> {
+                result = "No TTF"
+            }
+        }
+
+        return result
     }
 }

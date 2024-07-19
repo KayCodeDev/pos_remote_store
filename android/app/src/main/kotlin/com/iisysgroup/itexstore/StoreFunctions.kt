@@ -178,10 +178,8 @@ class StoreFunctions(private val context: Context) {
     }
 
     fun uninstallApp(packageName: String?): Boolean {
-        println(packageName)
         return runBlocking {
             val platformSdk: PlatformSdk? = getPlatform()
-            println(packageName)
             platformSdk?.uninstallApp(packageName!!)
                 ?: try {
                     val intent = Intent(Intent.ACTION_DELETE)

@@ -274,16 +274,16 @@ class BackgroundService : Service() {
         options.password = MQTT_PASSWORD.toCharArray()
         options.isAutomaticReconnect = true
         options.isCleanSession = true
-        options.keepAliveInterval = 60
+        options.keepAliveInterval = 300
 
         mqttClient.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable?) {
                 println("Connection lost")
+                disconnect()
                 reconnectToMQTT()
             }
 
             override fun messageArrived(topic: String?, message: MqttMessage?) {
-                println("Message received: ${message.toString()} from topic: $topic")
                 if (message != null) {
                     val mapType = object : TypeToken<Map<String, Any>?>() {}.type
                     val socketMessage: Map<String, Any> =

@@ -54,10 +54,10 @@ class BackgroundService : Service() {
 //    private val MQTT_USERNAME = "itexstore_mqtt_broker"
 //    private val MQTT_PASSWORD = "0qf+8T5siJbBC1+UBICv8U13qPlxpPWxBAyY2xO5"
 
-    private val BASE_URL = "http://192.168.0.159:9090/api/v1/store"
-    private val TCP_SERVER_IP = "192.168.0.159"
+    private val BASE_URL = "http://172.16.0.183:9090/api/v1/store"
+    private val TCP_SERVER_IP = "172.16.0.183"
     private val TCP_SERVER_PORT = 9091
-    private val MQTT_SERVER_URL = "tcp://192.168.0.159:1883"
+    private val MQTT_SERVER_URL = "tcp://172.16.0.183:1883"
     private val MQTT_USERNAME = "itexstore_mqtt_broker"
     private val MQTT_PASSWORD = "0qf+8T5siJbBC1+UBICv8U13qPlxpPWxBAyY2xO5"
 
@@ -333,7 +333,7 @@ class BackgroundService : Service() {
 
     private fun reconnectToMQTT() {
         coroutineScope.launch {
-            delay(5000)
+            delay(TimeUnit.SECONDS.toMillis(30))
             connectToMQTT()
         }
     }
@@ -561,11 +561,13 @@ class BackgroundService : Service() {
 //    }
 
     private fun disconnect() {
-        coroutineScope.launch {
-            if (mqttClient.isConnected) {
-                mqttClient.disconnect().waitForCompletion()
-            }
+//        coroutineScope.launch {
+        println("Trying to disconnect")
+        if (mqttClient.isConnected) {
+            println("Client is disconnected now")
+            mqttClient.disconnect()
         }
+//        }
     }
 
     override fun onDestroy() {

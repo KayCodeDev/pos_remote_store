@@ -18,6 +18,4 @@ interface PlatformSdk {
     fun uninstallApp(packageName: String) : Boolean
 
     fun captureScreen () : Bitmap?
-
-
 }

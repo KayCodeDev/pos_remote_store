@@ -73,6 +73,7 @@ class HelperUtil {
         var client: OkHttpClient = OkHttpClient()
         private val TAG = "HelperUtil"
         const val ChannelID = "ITEXStore"
+        const val BaseUrl = "192.168.8.100"
 
         @SuppressLint("NewApi", "Range")
         fun downloadFile(
@@ -370,6 +371,8 @@ class HelperUtil {
 
             return batteryLevel
         }
+
+
 
         fun listenToLocation(context: Context) {
             val locationManager =

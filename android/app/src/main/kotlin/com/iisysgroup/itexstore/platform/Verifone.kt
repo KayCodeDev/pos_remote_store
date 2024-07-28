@@ -100,12 +100,12 @@ class Verifone(private val context: Context) : PlatformSdk {
     }
 
     fun unbindServices() {
-        if (isBoundDS) {
-            context.unbindService(serviceConnectionDS)
-        }
-        if (isBoundSM) {
-            context.unbindService(serviceConnectionSM)
-        }
+//        if (isBoundDS) {
+        context.unbindService(serviceConnectionDS)
+//        }
+//        if (isBoundSM) {
+        context.unbindService(serviceConnectionSM)
+//        }
     }
 
     override fun getSerialNumber(): String? {
@@ -199,7 +199,7 @@ class Verifone(private val context: Context) : PlatformSdk {
             suspendCancellableCoroutine<Boolean> { continuation ->
                 val uninstallAppObserver = object : IAppDeleteObserver.Stub() {
 
-                    override fun onDeleteFinished(packageName: String, returnCode: Int) {
+                    override fun onDeleteFinished(packageName: String?, returnCode: Int) {
                         if (returnCode == 0) {
                             continuation.resume(true)
                         } else {

@@ -11,7 +11,7 @@ import com.nexgo.oaf.apiv3.DeviceEngine
 import com.nexgo.oaf.apiv3.DeviceInfo
 import com.nexgo.oaf.apiv3.OnAppOperatListener
 import com.nexgo.oaf.apiv3.platform.Platform
-import java.util.TimeZone
+import com.nexgo.oaf.apiv3.SdkResult;
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -55,7 +55,8 @@ class Nexgo(private val context: Context) : PlatformSdk {
             "rom" to HelperUtil.getAvailableRom().toString(),
             "firmware" to deviceInfo?.getFirmWareVer(),
             "batteryTemp" to HelperUtil.getBatteryTemperature(context).toString() + "°C",
-            "networkType" to HelperUtil.getConnectionType(context)
+            "networkType" to HelperUtil.getConnectionType(context),
+            "printer" to getPrinterStatus()
         )
     }
 
@@ -134,5 +135,31 @@ class Nexgo(private val context: Context) : PlatformSdk {
     override fun captureScreen(): Bitmap? {
         Log.d(TAG, "captureScreen not implemented")
         return null
+    }
+
+    private fun getPrinterStatus(): String {
+        val status: Int? = deviceEngine?.getPrinter()?.getStatus()
+
+        var result = "N/A"
+        when (status!!) {
+            SdkResult.Success -> {
+                result = "Printer OK"
+            }
+
+            SdkResult.Printer_PaperLack -> {
+                result = "Paper out"
+            }
+//
+//            SdkResult.Printer_Too_Hot -> {
+//                result = "Over Heat"
+//            }
+
+            SdkResult.Fail -> {
+                result = "Other Error"
+            }
+
+        }
+
+        return result
     }
 }

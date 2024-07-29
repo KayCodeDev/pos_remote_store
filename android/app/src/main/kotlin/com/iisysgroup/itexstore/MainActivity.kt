@@ -14,7 +14,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity(){
+class MainActivity : FlutterActivity() {
     private val CHANNEL = "itexstore_methods"
     private lateinit var storeFunctions: StoreFunctions
     private val TAG = "MainActivity"
@@ -31,18 +31,12 @@ class MainActivity: FlutterActivity(){
                 "initBackgroundService" -> {
                     try {
                         val serviceIntent = Intent(this, BackgroundService::class.java)
-                        if(!HelperUtil.isServiceRunning(BackgroundService::class.java, this)) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                this.startForegroundService(serviceIntent)
-                            } else {
-                                this.startService(serviceIntent)
-                            }
-                            val networkMonitor = NetworkMonitor(this)
-                            networkMonitor.register()
-                            result.success(true)
-                        }else{
-                            result.success(true)
-                        }
+                        stopService(serviceIntent)
+                        startService(serviceIntent)
+                        val networkMonitor = NetworkMonitor(this)
+                        networkMonitor.register()
+                        result.success(true)
+
                     } catch (e: Exception) {
                         Log.d(TAG, "Exception on initBackgroundService: ${e.message}")
                         result.success(false)
@@ -121,8 +115,6 @@ class MainActivity: FlutterActivity(){
     }
 
 
-
-
     private fun requestSmartPermissions(result: MethodChannel.Result) {
         val permissions = SmartPermission(this).permissionList
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -135,7 +127,6 @@ class MainActivity: FlutterActivity(){
         if (permissionsToRequest.isNotEmpty()) {
             Log.d(TAG, "Requesting permissions: $permissionsToRequest")
             ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), 1)
-            println(permissionsToRequest)
             result.success(permissionsToRequest.first())
         } else {
             Log.d(TAG, "All permissions granted")

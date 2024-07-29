@@ -72,6 +72,7 @@ class HelperUtil {
         var client: OkHttpClient = OkHttpClient()
         private val TAG = "HelperUtil"
         const val ChannelID = "ITEXStore"
+        const val BaseUrl = "store-api.itexapp.com"
 
         @SuppressLint("NewApi", "Range")
         fun downloadFile(

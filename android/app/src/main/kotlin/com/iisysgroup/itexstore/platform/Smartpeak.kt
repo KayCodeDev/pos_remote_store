@@ -52,15 +52,15 @@ class Smartpeak(private val context: Context) : PlatformSdk {
             "rom" to HelperUtil.getAvailableRom().toString(),
             "firmware" to ServiceManager.getInstence().getDeviceinfo().getSystemVersion(),
             "batteryTemp" to HelperUtil.getBatteryTemperature(context).toString() + "°C",
-            "networkType" to HelperUtil.getConnectionType(context)
+            "networkType" to HelperUtil.getConnectionType(context),
+            "printer" to getPrinterStatus()
+
         )
     }
 
     override fun installApp(path: String, packageName: String): Boolean {
         return try {
-//            val file = File(path)
             val uri =
-//                FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
                 Uri.fromFile(File(path))
 
             val intent = Intent("android.intent.action.VIEW.HIDE")
@@ -73,25 +73,6 @@ class Smartpeak(private val context: Context) : PlatformSdk {
             } else {
                 context.startService(intent)
             }
-
-//            val intent = Intent(context, MainActivity::class.java).apply {
-//                action = "android.intent.action.VIEW.HIDE"
-//                data = uri
-//                type = "application/vnd.android.package-archive"
-//                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//            }
-
-//            val intent = Intent(context, MainActivity::class.java)
-//            intent.action = "android.intent.action.VIEW.HIDE"
-//            intent.setDataAndType(
-//                uri, "application/vnd.android.package-archive"
-//            )
-//
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                context.startForegroundService(intent)
-//            } else {
-//                context.startService(intent)
-//            }
             true
         } catch (e: Exception) {
             println(e)
@@ -152,5 +133,16 @@ class Smartpeak(private val context: Context) : PlatformSdk {
     override fun captureScreen(): Bitmap? {
         Log.d(TAG, "captureScreen not implemented")
         return null
+    }
+
+
+    private fun getPrinterStatus(): String {
+       val printerOk: Boolean = ServiceManager.getInstence().getPrinter().queryIfHavePaper()
+
+        return if(printerOk){
+            "Printer OK"
+        }else{
+            "Paper out"
+        }
     }
 }

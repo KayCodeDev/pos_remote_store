@@ -7,7 +7,6 @@ import android.os.Build
 import android.util.Log
 
 class BroadcastListener : BroadcastReceiver() {
-
     override fun onReceive(context: Context, intent: Intent) {
         val serviceIntent = Intent(context, BackgroundService::class.java)
         context.stopService(serviceIntent)

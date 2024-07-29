@@ -29,7 +29,6 @@ class NettySocketHandler(
 
     override fun channelRead0(ctx: ChannelHandlerContext, msg: String) {
         try {
-            Log.d("Message Receiveed", msg)
             val mapType = object : TypeToken<Map<String, Any>?>() {}.type
             val socketMessage: Map<String, Any> = Gson().fromJson(msg, mapType)
             val tasks = socketMessage["tasks"]

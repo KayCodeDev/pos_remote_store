@@ -14,13 +14,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import androidx.core.app.NotificationCompat
 import com.iisysgroup.itexstore.utils.HelperUtil
-import com.iisysgroup.itexstore.utils.MqttClient
+//import com.iisysgroup.itexstore.utils.MqttClient
 import com.iisysgroup.itexstore.utils.NettyClient
 import com.iisysgroup.itexstore.utils.TaskHandler
 import kotlin.random.Random
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
-import org.eclipse.paho.client.mqttv3.*
+//import org.eclipse.paho.client.mqttv3.*
 import kotlinx.coroutines.*
 
 @TargetApi(Build.VERSION_CODES.O)
@@ -32,7 +32,7 @@ class BackgroundService : Service() {
     private lateinit var context: Context
     private lateinit var storeFunctions: StoreFunctions
     private lateinit var nettyClient: NettyClient
-    private lateinit var mqttClient: MqttClient
+//    private lateinit var mqttClient: MqttClient
 
     private val runnableForSync: Runnable by lazy {
         Runnable {
@@ -49,11 +49,11 @@ class BackgroundService : Service() {
         Runnable {
             GlobalScope.launch(Dispatchers.IO) {
                 delay(TimeUnit.SECONDS.toMillis(15))
-//                nettyClient = NettyClient(storeFunctions, context)
-                mqttClient = MqttClient(storeFunctions, context)
+                nettyClient = NettyClient(storeFunctions, context)
+//                mqttClient = MqttClient(storeFunctions, context)
 
-//                nettyClient.start()
-                mqttClient.start()
+                nettyClient.start()
+//                mqttClient.start()
 
             }
             handler.postDelayed(runnableForConnectivity, TimeUnit.MINUTES.toMillis(10))
@@ -108,7 +108,7 @@ class BackgroundService : Service() {
         handler.removeCallbacks(runnableForSync)
         handler.removeCallbacks(runnableForConnectivity)
         storeFunctions.closeService()
-//        nettyClient.stop()
-        mqttClient.stop()
+        nettyClient.stop()
+//        mqttClient.stop()
     }
 }

@@ -9,14 +9,16 @@ import android.os.Build
 import android.os.IBinder
 import android.os.RemoteException
 import android.util.Log
+import android.util.Printer
 import com.iisysgroup.itexstore.utils.HelperUtil
 import com.topwise.cloudpos.aidl.AidlDeviceService
 import com.topwise.cloudpos.aidl.system.AidlSystem
+import com.topwise.cloudpos.aidl.printer.AidlPrinter
 import com.topwise.cloudpos.aidl.system.InstallAppObserver
 import com.topwise.cloudpos.aidl.system.UninstallAppObserver
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import java.util.TimeZone
+import com.topwise.cloudpos.data.PrinterConstant.PrinterState
 
 class Topwise(private val context: Context) : PlatformSdk {
     private val TAG = "Topwise"
@@ -26,14 +28,14 @@ class Topwise(private val context: Context) : PlatformSdk {
 
     private var aidlDeviceService: AidlDeviceService? = null
     private var aidlSystem: AidlSystem? = null
+    private var aidlPrinter: AidlPrinter? = null
     private var isServiceBound = false
-
-    // private var serviceLatch = CountDownLatch(1)
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             aidlDeviceService = AidlDeviceService.Stub.asInterface(service)
             aidlSystem = AidlSystem.Stub.asInterface(aidlDeviceService?.getSystemService())
+            aidlPrinter = AidlPrinter.Stub.asInterface(aidlDeviceService?.getPrinter())
             isServiceBound = true
             // serviceLatch.countDown()
         }
@@ -87,7 +89,8 @@ class Topwise(private val context: Context) : PlatformSdk {
             "rom" to HelperUtil.getAvailableRom().toString(),
             "firmware" to Build.VERSION.RELEASE,
             "batteryTemp" to HelperUtil.getBatteryTemperature(context).toString() + "°C",
-            "networkType" to HelperUtil.getConnectionType(context)
+            "networkType" to HelperUtil.getConnectionType(context),
+            "printer" to getPrinterStatus()
         )
     }
 
@@ -124,8 +127,8 @@ class Topwise(private val context: Context) : PlatformSdk {
 
     override fun setTimeZone(tz: String): Boolean {
         return try {
-            TimeZone.setDefault(TimeZone.getTimeZone(tz))
-            true
+            Log.d(TAG, "setTimeZone not implemented")
+            false
         } catch (e: RemoteException) {
             Log.d(TAG, "Exception setTimeZone : ${e.message}")
             false
@@ -164,4 +167,45 @@ class Topwise(private val context: Context) : PlatformSdk {
         return null
     }
 
+    private fun getPrinterStatus(): String {
+        try {
+            val status: Int? = aidlPrinter?.getPrinterState()
+            var result = "N/A"
+            when (status!!) {
+                PrinterState.PRINTER_STATE_NORMAL -> {
+                    result = "Printer OK"
+                }
+
+                PrinterState.PRINTER_STATE_NOPAPER -> {
+                    result = "Paper out"
+                }
+
+                PrinterState.PRINTER_STATE_NOT_OPEN -> {
+                    result = "No Content"
+                }
+
+                PrinterState.PRINTER_STATE_HIGHTEMP -> {
+                    result = "Over Heat"
+                }
+
+
+                PrinterState.PRINTER_STATE_DEV_ERROR -> {
+                    result = "Printer Error"
+                }
+
+
+                PrinterState.PRINTER_STATE_LOWVOL_ERROR -> {
+                    result = "Printer Battery Low"
+                }
+
+                PrinterState.PRINTER_STATE_UNKNOWN -> {
+                    result = "Unknown State"
+                }
+            }
+
+            return result
+        } catch (e: RemoteException) {
+            return "N/A"
+        }
+    }
 }

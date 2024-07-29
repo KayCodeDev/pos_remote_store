@@ -104,24 +104,32 @@ class StoreFunctions(private val context: Context) {
     }
 
     fun getInstalledApps(
-        excludeSystemApps: Boolean, withIcon: Boolean, packageNamePrefix: String
+        excludeSystemApps: Boolean,
+        withIcon: Boolean,
+        packageNamePrefix: String
     ): List<Map<String, Any?>> {
         val packageManager = packageManager
         var installedApps = packageManager.getInstalledApplications(0)
         installedApps = packageManager.getInstalledApplications(0)
-        if (excludeSystemApps) installedApps = installedApps.filter { app ->
-            !HelperUtil.isSystemApp(
-                packageManager, app.packageName
-            )
-        }
-        if (packageNamePrefix.isNotEmpty()) installedApps = installedApps.filter { app ->
-            app.packageName.startsWith(
-                packageNamePrefix.lowercase(ENGLISH)
-            )
-        }
+        if (excludeSystemApps)
+            installedApps =
+                installedApps.filter { app ->
+                    !HelperUtil.isSystemApp(
+                        packageManager,
+                        app.packageName
+                    )
+                }
+        if (packageNamePrefix.isNotEmpty())
+            installedApps = installedApps.filter { app ->
+                app.packageName.startsWith(
+                    packageNamePrefix.lowercase(ENGLISH)
+                )
+            }
         return installedApps.map { app ->
             HelperUtil.convertAppToMap(
-                packageManager, app, withIcon
+                packageManager,
+                app,
+                withIcon
             )
         }
     }
@@ -172,33 +180,37 @@ class StoreFunctions(private val context: Context) {
     fun uninstallApp(packageName: String?): Boolean {
         return runBlocking {
             val platformSdk: PlatformSdk? = getPlatform()
-
-            platformSdk?.uninstallApp(packageName!!) ?: try {
-                val intent = Intent(Intent.ACTION_DELETE)
-                intent.data = Uri.parse("package:$packageName")
-                context.startActivity(intent)
-                true
-            } catch (e: Exception) {
-                false
-            }
+            platformSdk?.uninstallApp(packageName!!)
+                ?: try {
+                    val intent = Intent(Intent.ACTION_DELETE)
+                    intent.data = Uri.parse("package:$packageName")
+                    context.startActivity(intent)
+                    true
+                } catch (e: Exception) {
+                    false
+                }
         }
     }
 
     fun sendParameters(context: Context, params: Map<String, Any?>): Boolean {
-        val intent = Intent()
-        val packageName = params["packageName"] as String
-        intent.component = ComponentName(packageName, "$packageName.ITEXStoreParams")
+        if(params["packageName"] != null) {
+            val intent = Intent()
+            val packageName = params["packageName"] as String
+            intent.component = ComponentName(packageName, "$packageName.ITEXStoreParams")
 
-        for (param in params.entries.iterator()) {
-            intent.putExtra(param.key, param.value as String)
-        }
+            for (param in params.entries.iterator()) {
+                intent.putExtra(param.key, param.value as String)
+            }
 
-        return try {
-            val componentName = context.startService(intent)
-            componentName != null
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
+            return try {
+                val componentName = context.startService(intent)
+                componentName != null
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
+        }else{
+            return false
         }
     }
 

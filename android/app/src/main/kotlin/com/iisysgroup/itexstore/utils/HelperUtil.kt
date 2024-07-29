@@ -32,7 +32,7 @@ import android.os.Build.VERSION_CODES.P
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
-//import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
@@ -62,6 +62,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.os.Bundle
+import android.os.CancellationSignal
 import android.telephony.TelephonyManager
 import kotlin.random.Random
 
@@ -72,6 +73,7 @@ class HelperUtil {
         var client: OkHttpClient = OkHttpClient()
         private val TAG = "HelperUtil"
         const val ChannelID = "ITEXStore"
+        const val BaseUrl = "store-api.itexapp.com"
 
         @SuppressLint("NewApi", "Range")
         fun downloadFile(
@@ -96,6 +98,14 @@ class HelperUtil {
                 Environment.DIRECTORY_DOWNLOADS,
                 fileNamePath
             )
+
+//            val downloadDir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "Download")
+//            if (!downloadDir.exists()) {
+//                downloadDir.mkdirs()
+//            }
+//            val file = File(downloadDir, fileNamePath)
+//            val destinationUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+//            request.setDestinationUri(destinationUri)
 
             val downloadId = downloadManager.enqueue(request)
 
@@ -370,6 +380,8 @@ class HelperUtil {
             return batteryLevel
         }
 
+
+
         fun listenToLocation(context: Context) {
             val locationManager =
                 context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -409,8 +421,8 @@ class HelperUtil {
                         isGpsEnabled -> {
                             locationManager.requestLocationUpdates(
                                 LocationManager.GPS_PROVIDER,
-                                18 * 60 * 1000L,
-                                1f,
+                                10 * 60 * 1000L,
+                                10f,
                                 locationListener
                             )
                         }
@@ -419,7 +431,7 @@ class HelperUtil {
                             locationManager.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
                                 10 * 60 * 1000L,
-                                1f,
+                                10f,
                                 locationListener
                             )
                         }
@@ -506,16 +518,10 @@ class HelperUtil {
                 "com.qrd",
                 "com.socsi",
                 "com.qti",
-                "com.sprd",
-                "com.paxdroid",
-                "com.unisoc",
-                "com.spreadtrum",
-                "com.pax.AR8_base_display",
-                "com.pax.ipp",
-                "com.pax.daemon",
-                "com.pax.webview",
-                "com.pax.otaupdate",
-                "com.pax.sdl"
+                "jp.co.omronsoft.openwnn",
+                "jp.co.omronsoft.openwnn",
+                "com.svox.pico",
+                "com.oma.drm"
             )
             return system.any { packageName.contains(it) }
         }

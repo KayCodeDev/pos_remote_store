@@ -89,7 +89,6 @@ class StoreFunctions(private val context: Context) {
 
     fun captureScreen(): Bitmap? {
         return getPlatform()?.captureScreen()
-
     }
 
     fun pushMessage(message: String): Boolean {

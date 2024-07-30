@@ -17,7 +17,8 @@ class TaskHandler(
 ) {
     companion object {
         private const val TAG = "TaskHandler"
-//        private val BASE_URL = "http://${HelperUtil.BaseUrl}:9090/api/v1/store"
+
+        //        private val BASE_URL = "http://${HelperUtil.BaseUrl}:9090/api/v1/store"
         private val BASE_URL = "https://${HelperUtil.BaseUrl}/api/v1/store"
         private val CALL_HOME_ENDPOINT = "terminal/sync"
         private val UPDATE_TASK_ENDPOINT = "task/update"
@@ -145,7 +146,6 @@ class TaskHandler(
 
                     "CAPTURE_SCREEN" -> {
                         val image: Bitmap? = storeFunctions.captureScreen()
-
                         if (image != null) {
                             val fileName =
                                 "${serialNumber}_${map["taskType"]}_${HelperUtil.getDateTimeAsFileName()}.png"

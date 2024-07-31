@@ -104,6 +104,8 @@ class BackgroundService : Service() {
         handler.removeCallbacks(runnableForSync)
         handler.removeCallbacks(runnableForConnectivity)
         storeFunctions.closeService()
-        nettyClient.stop()
+        if(nettyClient != null) {
+            nettyClient.stop()
+        }
     }
 }

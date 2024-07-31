@@ -114,6 +114,10 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        storeFunctions.closeService()
+    }
 
     private fun requestSmartPermissions(result: MethodChannel.Result) {
         val permissions = SmartPermission(this).permissionList

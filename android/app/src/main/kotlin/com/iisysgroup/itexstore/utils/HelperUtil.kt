@@ -62,6 +62,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.os.Bundle
+import android.os.CancellationSignal
 import android.telephony.TelephonyManager
 import kotlin.random.Random
 
@@ -72,6 +73,7 @@ class HelperUtil {
         var client: OkHttpClient = OkHttpClient()
         private val TAG = "HelperUtil"
         const val ChannelID = "ITEXStore"
+        const val BaseUrl = "store-api.itexapp.com"
 
         @SuppressLint("NewApi", "Range")
         fun downloadFile(
@@ -370,6 +372,8 @@ class HelperUtil {
             return batteryLevel
         }
 
+
+
         fun listenToLocation(context: Context) {
             val locationManager =
                 context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -409,7 +413,7 @@ class HelperUtil {
                         isGpsEnabled -> {
                             locationManager.requestLocationUpdates(
                                 LocationManager.GPS_PROVIDER,
-                                18 * 60 * 1000L,
+                                10 * 60 * 1000L,
                                 10f,
                                 locationListener
                             )
@@ -418,7 +422,7 @@ class HelperUtil {
                         isNetworkEnabled -> {
                             locationManager.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
-                                18 * 60 * 1000L,
+                                10 * 60 * 1000L,
                                 10f,
                                 locationListener
                             )
@@ -489,33 +493,16 @@ class HelperUtil {
         @TargetApi(Build.VERSION_CODES.CUPCAKE)
         fun isSystemApp(packageManager: PackageManager, packageName: String): Boolean {
             val system = arrayOf(
-                "org.codeaurora.bluetooth",
-                "com.qapp.secprotect",
-                "org.codeaurora.ims",
-                "org.codeaurora.btmultisim",
-                "com.oma.drm.server",
-                "socsi.middleware.apkverifyservice",
-                "com.qualcomm",
-                "com.android",
+                "com.zebra.sdl",
+                "com.morefun",
+                "com.horizonpay.mdm.mdmdaemon",
                 "com.google",
-                "com.verifone",
-                "com.example",
-                "com.qcom",
+                "com.dsi.ant.server",
+                "com.horizonpay.smartpossdk.sdkimpl",
+                "org.codeaurora.snapcam",
                 "android",
-                "com.quicinc",
-                "com.qrd",
-                "com.socsi",
-                "com.qti",
-                "com.sprd",
-                "com.paxdroid",
-                "com.unisoc",
-                "com.spreadtrum",
-                "com.pax.AR8_base_display",
-                "com.pax.ipp",
-                "com.pax.daemon",
-                "com.pax.webview",
-                "com.pax.otaupdate",
-                "com.pax.sdl"
+                "com.qualcomm",
+                "com.quicinc"
             )
             return system.any { packageName.contains(it) }
         }

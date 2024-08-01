@@ -9,19 +9,22 @@ import android.os.RemoteException
 import android.util.Log
 import com.horizonpay.smartpossdk.PosAidlDeviceServiceUtil
 import com.horizonpay.smartpossdk.aidl.IAidlDevice
+import com.horizonpay.smartpossdk.aidl.printer.IAidlPrinter
+import com.horizonpay.smartpossdk.data.PrinterConst.State
 import com.iisysgroup.itexstore.utils.HelperUtil
-import java.util.TimeZone
 
 class Horizon(private val context: Context) : PlatformSdk {
     private val TAG = "Horizon"
     private var aidlDevice: IAidlDevice? = null
+    private var printer: IAidlPrinter? = null
 
-     fun bindService() {
+    fun bindService() {
         PosAidlDeviceServiceUtil.connectDeviceService(
             context,
             object : PosAidlDeviceServiceUtil.DeviceServiceListen {
                 override fun onConnected(device: IAidlDevice) {
                     aidlDevice = device
+                    printer = device.getPrinter()
                     Log.e(TAG, "connected")
                     try {
                         aidlDevice?.asBinder()?.linkToDeath(deathRecipient, 0)
@@ -55,6 +58,10 @@ class Horizon(private val context: Context) : PlatformSdk {
             bindService()
         }
     }
+    fun unbindService()
+    {
+
+    }
 
     override fun getSerialNumber(): String? {
         return try {
@@ -71,16 +78,16 @@ class Horizon(private val context: Context) : PlatformSdk {
             "serialNumber" to getSerialNumber(),
             "batteryLevel" to HelperUtil.getBatteryLevel(context).toString(),
             "imei" to getSerialNumber(),
-//            "manufacturer" to aidlDevice?.getSysHandler()?.getEquipmentManufacturers(),
             "manufacturer" to "HorizonPay",
             "model" to aidlDevice?.getSysHandler()?.getModel(),
-            "osVersion" to "OS Version: ${Build.VERSION.SDK_INT} (API Level: ${Build.VERSION.RELEASE})",
+            "osVersion" to "OS Version: ${Build.VERSION.RELEASE} (API Level: ${Build.VERSION.SDK_INT})",
             "sdkVersion" to Build.VERSION.SDK_INT.toString(),
             "ram" to HelperUtil.getAvailableRam(context).toString(),
             "rom" to HelperUtil.getAvailableRom().toString(),
             "firmware" to aidlDevice?.getSysHandler()?.getFiremware()!!,
             "batteryTemp" to HelperUtil.getBatteryTemperature(context).toString() + "°C",
-            "networkType" to HelperUtil.getConnectionType(context)
+            "networkType" to HelperUtil.getConnectionType(context),
+            "printer" to getPrinterStatus()
         )
     }
 
@@ -117,7 +124,7 @@ class Horizon(private val context: Context) : PlatformSdk {
     }
 
     override fun shutdownDevice(): Boolean {
-        Log.d(TAG, "shutdownDevice not implemented, rather ebooting ")
+        Log.d(TAG, "shutdownDevice not implemented")
         return rebootDevice()
     }
 
@@ -134,5 +141,43 @@ class Horizon(private val context: Context) : PlatformSdk {
     override fun captureScreen(): Bitmap? {
         Log.d(TAG, "captureScreen not implemented")
         return null
+    }
+
+    private fun getPrinterStatus(): String {
+        var result = "N/A"
+
+        try {
+            val status: Int? = printer?.getPrinterState()
+            when (status!!) {
+                State.PRINTER_STATE_NORMAL -> {
+                    result = "Printer OK"
+                }
+
+                State.PRINTER_STATE_NOPAPER -> {
+                    result = "Paper out"
+                }
+
+                State.PRINTER_STATE_DEV_ERROR -> {
+                    result = "Printer Error"
+                }
+
+                State.PRINTER_STATE_HIGHTEMP -> {
+                    result = "Over Heat"
+                }
+
+                State.PRINTER_STATE_BUSY -> {
+                    result = "Printer Busy"
+                }
+
+                State.PRINTER_STATE_NOT_OPEN -> {
+                    result = "Moto Error"
+                }
+            }
+        } catch (e: RemoteException) {
+            result = "Unknown"
+        }
+
+        return result
+
     }
 }

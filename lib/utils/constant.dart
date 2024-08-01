@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 const kAppName = "ITEXStore";
 const kDatabaseName = "ITEXStore_DBv1.db";
-// const kBaseEndpoint = "https://store-api.itexapp.com";
-// const kWSBaseEndpoint = "wss://store-api.itexapp.com/api/ws";
+const kBaseEndpoint = "https://store-api.itexapp.com";
+const kWSBaseEndpoint = "wss://store-api.itexapp.com/api/ws";
 
-const kBaseEndpoint = "http://54.203.193.56:9090";
-const kWSBaseEndpoint = "ws://54.203.193.56:9090/api/ws";
+// const kBaseEndpoint = "http://54.203.193.56:9090";
+// const kWSBaseEndpoint = "ws://54.203.193.56:9090/api/ws";
 
-// const kBaseEndpoint = "http://192.168.181.37:9090";
-// const kWSBaseEndpoint = "ws://192.168.181.37:9090/api/ws";
+// const kBaseEndpoint = "http://192.168.8.100:9090";
+// const kWSBaseEndpoint = "ws://192.168.8.100:9090/api/ws";
 
 const Color kBaseColor = Color(0xff002A4C);
 const Color kBaseGreenColor = Color(0xff39bd7c);

@@ -25,6 +25,7 @@ class NetworkMonitor(private val context: Context) {
 
             if (hasInternet) {
                 Log.d(TAG, "Internet available")
+//                if (!HelperUtil.isServiceRunning(BackgroundService::class.java, context) ) {
                 if(!thereIsInternet){
                     Log.d(TAG, "Stop and starting a new instance of ITEXStore")
                     val serviceIntent = Intent(context, BackgroundService::class.java)

@@ -1,28 +1,12 @@
-#=== PAX Rules ===#
--keep class com.pax.dal.** {
-    <fields>;
-    <methods>;
+#=== NETTY Rules ===#
+-keepclassmembernames class io.netty.buffer.AbstractByteBufAllocator {
+    *;
 }
 
--keep class com.pax.nep.** {
-    <fields>;
-    <methods>;
+-keepclassmembernames class io.netty.buffer.AdvancedLeakAwareByteBuf {
+    *;
 }
 
--keep class com.pax.neptunelite.** {
-    <fields>;
-    <methods>;
+-keep public class io.netty.util.ReferenceCountUtil {
+    *;
 }
-
--keep class com.pax.neptuneliteapi.** {
-    <fields>;
-    <methods>;
-}
-
-#Nexgo Rules
-#-keep class com.xinguodu.ddiinterface.**{*;}
-#-keep class com.nexgo.oaf.smartpos.jni.SmartPOSJni{*;}
-#-keep class com.nexgo.oaf.smartpos.DeviceAPI {*;}
-#-keep class com.nexgo.oaf.smartpos.OtherAPI {*;}
-#-keep class com.nexgo.oaf.smartpos.PeripheralAPI {*;}
-#-keep class com.nexgo.oaf.smartpos.apiv3.DeviceEngineImpl {*;}

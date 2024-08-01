@@ -50,11 +50,7 @@ class BackgroundService : Service() {
             GlobalScope.launch(Dispatchers.IO) {
                 delay(TimeUnit.SECONDS.toMillis(15))
                 nettyClient = NettyClient(storeFunctions, context)
-//                mqttClient = MqttClient(storeFunctions, context)
-
                 nettyClient.start()
-//                mqttClient.start()
-
             }
             handler.postDelayed(runnableForConnectivity, TimeUnit.MINUTES.toMillis(10))
         }
@@ -108,7 +104,8 @@ class BackgroundService : Service() {
         handler.removeCallbacks(runnableForSync)
         handler.removeCallbacks(runnableForConnectivity)
         storeFunctions.closeService()
-        nettyClient.stop()
-//        mqttClient.stop()
+        if(nettyClient != null){
+            nettyClient.stop()
+        }
     }
 }

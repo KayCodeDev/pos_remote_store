@@ -15,8 +15,8 @@ import com.iisysgroup.itexstore.utils.HelperUtil
 import com.morefun.yapi.engine.DeviceInfoConstrants
 import com.morefun.yapi.engine.DeviceServiceEngine
 import com.morefun.yapi.engine.OnUninstallAppListener
-import java.util.TimeZone
-
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 class Morefun(private val context: Context) : PlatformSdk {
     private val TAG = "Morefun"
@@ -72,6 +72,7 @@ class Morefun(private val context: Context) : PlatformSdk {
 
     override fun getSerialNumber(): String? {
         return try {
+            println(devInfo()?.getString(DeviceInfoConstrants.COMMOM_SN))
             devInfo()?.getString(DeviceInfoConstrants.COMMOM_SN)
         } catch (e: Exception) {
             Log.d(TAG, "Exception getSerialNumber : ${e.message}")
@@ -120,8 +121,7 @@ class Morefun(private val context: Context) : PlatformSdk {
 
     override fun setTimeZone(tz: String): Boolean {
         return try {
-            TimeZone.setDefault(TimeZone.getTimeZone(tz))
-            true
+            false
         } catch (e: RemoteException) {
             Log.d(TAG, "Exception setTimeZone: ${e.message}")
             false
@@ -140,16 +140,22 @@ class Morefun(private val context: Context) : PlatformSdk {
         }
     }
 
-    override fun uninstallApp(packageName: String): Boolean {
+    override suspend fun uninstallApp(packageName: String): Boolean {
         return try {
+            suspendCancellableCoroutine<Boolean> { continuation ->
 
-            val onUninstallAppListener = object : OnUninstallAppListener.Stub() {
-                override fun onUninstallAppResult(code: Int) {
-                    Log.d(TAG, "App uninstalled with code: $code")
+                val onUninstallAppListener = object : OnUninstallAppListener.Stub() {
+                    override fun onUninstallAppResult(code: Int) {
+                        Log.d(TAG, "App uninstalled with code: $code")
+                        if (code == 0) {
+                            continuation.resume(true)
+                        } else {
+                            continuation.resume(false)
+                        }
+                    }
                 }
+                deviceServiceEngine?.uninstallApp(packageName, onUninstallAppListener)
             }
-            deviceServiceEngine?.uninstallApp(packageName, onUninstallAppListener)
-            true
         } catch (e: Exception) {
             Log.d(TAG, "Exception uninstallApp : ${e.message}")
             false

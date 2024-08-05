@@ -14,7 +14,6 @@ import android.os.Build.VERSION_CODES
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import android.util.Log
 import com.iisysgroup.itexstore.platform.Morefun
-import com.iisysgroup.itexstore.platform.Pax
 import com.iisysgroup.itexstore.platform.PlatformSdk
 import com.iisysgroup.itexstore.utils.HelperUtil
 import kotlinx.coroutines.runBlocking
@@ -177,36 +176,39 @@ class StoreFunctions(private val context: Context) {
     }
 
     fun uninstallApp(packageName: String?): Boolean {
-
-        val platformSdk: PlatformSdk? = getPlatform()
-
-        return platformSdk?.uninstallApp(packageName!!)
-            ?: try {
-                val intent = Intent(Intent.ACTION_DELETE)
-                intent.data = Uri.parse("package:$packageName")
-                context.startActivity(intent)
-                true
-            } catch (e: Exception) {
-                false
-            }
-
+        return runBlocking {
+            val platformSdk: PlatformSdk? = getPlatform()
+            platformSdk?.uninstallApp(packageName!!)
+                ?: try {
+                    val intent = Intent(Intent.ACTION_DELETE)
+                    intent.data = Uri.parse("package:$packageName")
+                    context.startActivity(intent)
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+        }
     }
 
     fun sendParameters(context: Context, params: Map<String, Any?>): Boolean {
-        val intent = Intent()
-        val packageName = params["packageName"] as String
-        intent.component = ComponentName(packageName, "$packageName.ITEXStoreParams")
+        if (params["packageName"] != null) {
+            val intent = Intent()
+            val packageName = params["packageName"] as String
+            intent.component = ComponentName(packageName, "$packageName.ITEXStoreParams")
 
-        for (param in params.entries.iterator()) {
-            intent.putExtra(param.key, param.value as String)
-        }
+            for (param in params.entries.iterator()) {
+                intent.putExtra(param.key, param.value as String)
+            }
 
-        return try {
-            val componentName = context.startService(intent)
-            componentName != null
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
+            return try {
+                val componentName = context.startService(intent)
+                componentName != null
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
+        } else {
+            return false
         }
     }
 

@@ -73,6 +73,7 @@ class HelperUtil {
         private val TAG = "HelperUtil"
         const val ChannelID = "ITEXStore"
         const val BaseUrl = "store-api.itexapp.com"
+//        const val BaseUrl = "192.168.8.100"
 
         @SuppressLint("NewApi", "Range")
         fun downloadFile(

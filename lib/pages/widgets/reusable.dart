@@ -95,7 +95,10 @@ Widget fullScreenShoot(List<AppScreenShot> screenShots, BuildContext context) {
   double screenWidth = screenSize.width;
   double screenHeight = screenSize.height;
   return Column(children: [
-    AppBar(),
+    AppBar(
+      backgroundColor: Colors.black87,
+      iconTheme: Theme.of(context).iconTheme.copyWith(color: Colors.white),
+    ),
     Expanded(
         child: GestureDetector(
       onTap: () {

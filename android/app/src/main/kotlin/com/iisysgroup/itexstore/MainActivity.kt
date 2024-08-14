@@ -8,12 +8,13 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.iisysgroup.itexstore.platform.subs.SmartPermission
 import com.iisysgroup.itexstore.utils.HelperUtil
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity(){
+class MainActivity : FlutterActivity() {
     private val CHANNEL = "itexstore_methods"
     private lateinit var storeFunctions: StoreFunctions
     private val TAG = "MainActivity"
@@ -30,16 +31,12 @@ class MainActivity: FlutterActivity(){
                 "initBackgroundService" -> {
                     try {
                         val serviceIntent = Intent(this, BackgroundService::class.java)
-                        if(!HelperUtil.isServiceRunning(BackgroundService::class.java, this)) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                this.startForegroundService(serviceIntent)
-                            } else {
-                                this.startService(serviceIntent)
-                            }
-                            result.success(true)
-                        }else{
-                            result.success(true)
-                        }
+                        stopService(serviceIntent)
+                        startService(serviceIntent)
+                        val networkMonitor = NetworkMonitor(this)
+                        networkMonitor.register()
+                        result.success(true)
+
                     } catch (e: Exception) {
                         Log.d(TAG, "Exception on initBackgroundService: ${e.message}")
                         result.success(false)
@@ -105,9 +102,10 @@ class MainActivity: FlutterActivity(){
                     result.success(storeFunctions.installApp(path, packageName))
                 }
 
-                "requestLocationPermission" -> {
-                    requestLocationPermission(result)
+                "requestSmartPermissions" -> {
+                    requestSmartPermissions(result)
                 }
+
 
                 else -> {
                     result.notImplemented()
@@ -116,23 +114,29 @@ class MainActivity: FlutterActivity(){
         }
     }
 
-
-    private fun requestLocationPermission(result: MethodChannel.Result) {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            result.success(true)
-        } else {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                1
-            )
-            result.success(false)
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        storeFunctions.closeService()
     }
 
+
+    private fun requestSmartPermissions(result: MethodChannel.Result) {
+        val permissions = SmartPermission(this).permissionList
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            permissions.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+//        }
+        val permissionsToRequest = permissions.filter { p ->
+            ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (permissionsToRequest.isNotEmpty()) {
+            Log.d(TAG, "Requesting permissions: $permissionsToRequest")
+            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), 1)
+            result.success(permissionsToRequest.first())
+        } else {
+            Log.d(TAG, "All permissions granted")
+            result.success(null)
+        }
+    }
 
 }

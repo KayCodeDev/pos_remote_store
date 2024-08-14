@@ -21,22 +21,23 @@ class _SettingPageState extends State<SettingPage> {
           appBar: AppBar(
             backgroundColor: Colors.white,
             automaticallyImplyLeading: false,
-            title: const Text("Setting"
-          ),
+            title: const Text("Setting"),
           ),
           body: _buildBody(gp),
         ));
   }
 
-  Widget _buildBody(GlobalProvider gp){
-    return ListView(children: [
-      ListTile(
-        onTap: (){
-          goto.openBottomSheet(const AboutSheet(), height: 500);
-        },
-        title: const Text("About Store"),
-        trailing: const Icon(Icons.arrow_forward_ios_outlined, size: 15),
-      )
-    ],);
+  Widget _buildBody(GlobalProvider gp) {
+    return ListView(
+      children: [
+        ListTile(
+          onTap: () {
+            goto.openBottomSheet(AboutSheet(gp: gp), height: 500);
+          },
+          title: const Text("About Store"),
+          trailing: const Icon(Icons.arrow_forward_ios_outlined, size: 15),
+        )
+      ],
+    );
   }
 }

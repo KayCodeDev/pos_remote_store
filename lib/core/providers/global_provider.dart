@@ -48,6 +48,10 @@ class GlobalProvider extends ChangeNotifier {
 
   bool get isDownloading => _isDownloading;
 
+  bool _showInitErrorButton = false;
+
+  bool get showInitErrorButton => _showInitErrorButton;
+
   bool _isInstalling = false;
 
   bool get isInstalling => _isInstalling;
@@ -122,6 +126,50 @@ class GlobalProvider extends ChangeNotifier {
   void setLoading(bool val) {
     _isLoading = val;
     notifyListeners();
+  }
+
+  void setShowInitErrorButton(bool val) {
+    _showInitErrorButton = val;
+    notifyListeners();
+  }
+
+  void clearErrorMessage() {
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+  globalInit() async {
+    StoreMethod.requestSmartPermissions().then((result) async {
+      if (result == null) {
+        setShowInitErrorButton(false);
+        clearErrorMessage();
+        await StoreMethod.initBackgroundService();
+        startWebsocket();
+        startService();
+      } else {
+        handleError({
+          "message": result.isEmpty
+              ? "Error requesting permissions"
+              : "${result.replaceAll("android.permission.", "")} permission is required"
+        });
+        setShowInitErrorButton(true);
+      }
+    });
+  }
+
+  startService() async {
+    setLoading(true);
+    await initState();
+
+    setLoading(false);
+    if (errorMessage == null) {
+      Map<String, dynamic> storeExtra = {
+        "sdk": deviceInfo!.sdkVersion,
+        "canRemote": int.parse(deviceInfo!.sdkVersion!) >= 24
+      };
+
+      goto.go(RouterPaths.store, args: storeExtra);
+    }
   }
 
   Future<void> getData() async {
@@ -303,14 +351,16 @@ class GlobalProvider extends ChangeNotifier {
             return e;
           }).toList();
 
-
           _storeList.clear();
           _storeList.addAll(updatedApp);
 
           _searchableStoreList.clear();
           _searchableStoreList.addAll(updatedApp);
 
-          _updateCount = updatedApp.where((a) => a.action == AppAction.update).toList().length;
+          _updateCount = updatedApp
+              .where((a) => a.action == AppAction.update)
+              .toList()
+              .length;
 
           notifyListeners();
 
@@ -375,6 +425,10 @@ class GlobalProvider extends ChangeNotifier {
       goto.openSnackBar(response['message']);
     } else {
       _errorMessage = response['message'];
+      if (response['message'].toString().toLowerCase() ==
+          "no internet connection") {
+        _showInitErrorButton = true;
+      }
     }
     setLoading(false);
   }
@@ -428,7 +482,16 @@ class GlobalProvider extends ChangeNotifier {
   }
 
   void _onConnect(StompFrame frame) {
-    // debugPrint('Connected: ${frame.headers}');
+    if (_deviceInfo != null) {
+      stompClient!.subscribe(
+          destination: '/topic/sync_terminal_${_deviceInfo!.serialNumber}',
+          callback: (StompFrame frame) {
+            if (frame.body != null) {
+              Map<String, dynamic> wsMessage = json.decode(frame.body!);
+              _wsActionHandler(wsMessage);
+            }
+          });
+    }
     if (_developer != null) {
       stompClient!.subscribe(
           destination: '/topic/notify_developer_${_developer!.uuid}',
@@ -443,10 +506,14 @@ class GlobalProvider extends ChangeNotifier {
   }
 
   void _wsActionHandler(Map<String, dynamic> socketMessage) {
+    print(socketMessage);
     String action = socketMessage['action'];
     switch (action) {
       case "new_event":
         getData();
+        break;
+      case "sync_terminal":
+        globalInit();
         break;
       default:
         null;

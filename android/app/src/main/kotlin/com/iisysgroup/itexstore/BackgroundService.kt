@@ -32,7 +32,6 @@ class BackgroundService : Service() {
     private lateinit var context: Context
     private lateinit var storeFunctions: StoreFunctions
     private lateinit var nettyClient: NettyClient
-//    private lateinit var mqttClient: MqttClient
 
     private val runnableForSync: Runnable by lazy {
         Runnable {
@@ -104,7 +103,7 @@ class BackgroundService : Service() {
         handler.removeCallbacks(runnableForSync)
         handler.removeCallbacks(runnableForConnectivity)
         storeFunctions.closeService()
-        if(nettyClient != null){
+        if(::nettyClient.isInitialized) {
             nettyClient.stop()
         }
     }

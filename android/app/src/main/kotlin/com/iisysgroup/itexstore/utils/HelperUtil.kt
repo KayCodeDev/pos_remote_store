@@ -513,9 +513,27 @@ class HelperUtil {
                 "jp.co.omronsoft.openwnn",
                 "jp.co.omronsoft.openwnn",
                 "com.svox.pico",
-                "com.oma.drm"
+                "com.oma.drm",
+                "com.sprd.quickcamera",
+                "com.spreadtrum.proxy.nfwlocation",
+                "com.sprd.omacp",
+                "com.iflytek.speechcloud",
+                "com.sprd.firewall",
+                "com.sprd.engineermode",
+                "addon.sprd.downloadprovider",
+                "addon.sprd.downloadprovider",
+                "com.sprd.cameracalibration",
+                "com.sprd.autoslt",
+                "com.sprd.cameraipcontrol",
+                "com.sprd.uplmnsettings",
+                "com.unisoc.launcher.customization",
+                "com.spreadtrum.ims",
+                "com.spreadtrum.vce",
+                "com.sprd.powersavemodelauncher",
+                "com.sprd.providers.photos",
+                "com.spreadtrum.sgps"
             )
-            return system.any { packageName.contains(it) }
+            return system.any { packageName.startsWith(it) }
         }
 
         fun isServiceRunning(serviceClass: Class<*>, context: Context): Boolean {

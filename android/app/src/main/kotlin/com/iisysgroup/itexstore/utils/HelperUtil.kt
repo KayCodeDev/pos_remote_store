@@ -519,7 +519,7 @@ class HelperUtil {
                 "com.pax.otaupdate",
                 "com.pax.sdl"
             )
-            return system.any { packageName.contains(it) }
+            return system.any { packageName.startsWith(it) }
         }
 
         fun isServiceRunning(serviceClass: Class<*>, context: Context): Boolean {

@@ -509,15 +509,8 @@ class HelperUtil {
                 "com.socsi",
                 "com.qti",
                 "com.sprd",
-                "com.paxdroid",
                 "com.unisoc",
                 "com.spreadtrum",
-                "com.pax.AR8_base_display",
-                "com.pax.ipp",
-                "com.pax.daemon",
-                "com.pax.webview",
-                "com.pax.otaupdate",
-                "com.pax.sdl"
             )
             return system.any { packageName.contains(it) }
         }

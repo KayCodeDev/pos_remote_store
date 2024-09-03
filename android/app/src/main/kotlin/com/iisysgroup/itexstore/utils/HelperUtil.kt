@@ -512,7 +512,7 @@ class HelperUtil {
                 "com.unisoc",
                 "com.spreadtrum",
             )
-            return system.any { packageName.contains(it) }
+            return system.any { packageName.startsWith(it) }
         }
 
         fun isServiceRunning(serviceClass: Class<*>, context: Context): Boolean {

@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -67,6 +68,7 @@ class BackgroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE)
+        Log.d(TAG, "Starting background service")
         HelperUtil.listenToLocation(context)
         handler.post(runnableForConnectivity)
         handler.post(runnableForSync)
@@ -104,7 +106,7 @@ class BackgroundService : Service() {
         handler.removeCallbacks(runnableForSync)
         handler.removeCallbacks(runnableForConnectivity)
         storeFunctions.closeService()
-        if(nettyClient != null) {
+        if(::nettyClient.isInitialized) {
             nettyClient.stop()
         }
     }

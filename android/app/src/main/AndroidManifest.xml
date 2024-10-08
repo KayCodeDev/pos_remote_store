@@ -26,6 +26,8 @@
             android:enabled="true"
             android:exported="true">
         </service>
+
+
         <receiver
             android:name=".BroadcastListener"
             android:enabled="true"

@@ -60,10 +60,10 @@ class Morefun(private val context: Context) : PlatformSdk {
     }
 
     fun unbindService() {
-        if (isServiceBound) {
+//        if (isServiceBound) {
             context.unbindService(serviceConnection)
-            isServiceBound = false
-        }
+//            isServiceBound = false
+//        }
     }
 
     private fun devInfo(): Bundle? {

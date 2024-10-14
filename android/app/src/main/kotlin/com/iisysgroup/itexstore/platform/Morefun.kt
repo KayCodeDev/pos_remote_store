@@ -56,12 +56,16 @@ class Morefun(private val context: Context) : PlatformSdk {
         val intent = Intent()
         intent.action = SERVICE_ACTION
         intent.setPackage(SERVICE_PACKAGE)
-        context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        Log.d(TAG, "Binding the MoreFun Service")
+        val bind: Boolean = context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        Log.d(TAG, "Morefun bind is $bind")
     }
 
     fun unbindService() {
 //        if (isServiceBound) {
-            context.unbindService(serviceConnection)
+        Log.d(TAG, "Unbinding Morefun service")
+        context.unbindService(serviceConnection)
+
 //            isServiceBound = false
 //        }
     }
@@ -72,7 +76,6 @@ class Morefun(private val context: Context) : PlatformSdk {
 
     override fun getSerialNumber(): String? {
         return try {
-            println(devInfo()?.getString(DeviceInfoConstrants.COMMOM_SN))
             devInfo()?.getString(DeviceInfoConstrants.COMMOM_SN)
         } catch (e: Exception) {
             Log.d(TAG, "Exception getSerialNumber : ${e.message}")
@@ -81,6 +84,7 @@ class Morefun(private val context: Context) : PlatformSdk {
     }
 
     override fun getTerminalInfo(): Map<String, String?> {
+        Log.d(TAG, devInfo()?.getString(DeviceInfoConstrants.COMMOM_SN).toString())
         return mapOf(
             "serialNumber" to devInfo()?.getString(DeviceInfoConstrants.COMMOM_SN),
             "batteryLevel" to HelperUtil.getBatteryLevel(context).toString(),

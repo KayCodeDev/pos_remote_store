@@ -5,7 +5,11 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.NonNull
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.PowerManager
+import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.iisysgroup.itexstore.platform.subs.SmartPermission
@@ -35,6 +39,17 @@ class MainActivity : FlutterActivity() {
                         startService(serviceIntent)
                         val networkMonitor = NetworkMonitor(this)
                         networkMonitor.register()
+
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                            val packageName = "com.iisysgroup.itexstore"
+//                            val pm = getSystemService(PowerManager::class.java)
+//                            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+//                                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+//                                intent.data = Uri.parse("package:$packageName")
+//                                startActivity(intent)
+//                            }
+//                        }
+
                         result.success(true)
 
                     } catch (e: Exception) {

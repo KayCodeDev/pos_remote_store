@@ -17,7 +17,12 @@
         android:icon="@mipmap/ic_launcher">
         <service
             android:name=".BackgroundService"
-            android:foregroundServiceType="location|dataSync|mediaPlayback" />
+            android:enabled="true"
+            android:exported="true">
+                <intent-filter>
+                    <action android:name="KEEP_ALIVE_ACTION_NAME" />
+                </intent-filter>
+        </service>
         <receiver
             android:name=".BroadcastListerner"
             android:enabled="true"

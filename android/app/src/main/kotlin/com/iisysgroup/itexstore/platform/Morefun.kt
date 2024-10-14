@@ -27,6 +27,7 @@ class Morefun(private val context: Context) : PlatformSdk {
 
 
     private val serviceConnection = object : ServiceConnection {
+
         override fun onServiceDisconnected(name: ComponentName?) {
             deviceServiceEngine = null
             Log.e(TAG, "======onServiceDisconnected======")

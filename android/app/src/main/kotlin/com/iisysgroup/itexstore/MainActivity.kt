@@ -30,9 +30,9 @@ class MainActivity : FlutterActivity() {
             when (call.method) {
                 "initBackgroundService" -> {
                     try {
-                        val serviceIntent = Intent(this, BackgroundService::class.java)
-                        stopService(serviceIntent)
-                        startService(serviceIntent)
+//                        val serviceIntent = Intent(this, BackgroundService::class.java)
+//                        stopService(serviceIntent)
+//                        startService(serviceIntent)
                         val networkMonitor = NetworkMonitor(this)
                         networkMonitor.register()
                         result.success(true)

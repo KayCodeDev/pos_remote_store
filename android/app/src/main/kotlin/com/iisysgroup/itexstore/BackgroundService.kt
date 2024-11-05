@@ -33,6 +33,7 @@ class BackgroundService : Service() {
     private lateinit var context: Context
     private lateinit var storeFunctions: StoreFunctions
     private lateinit var nettyClient: NettyClient
+    private var isRunning: Boolean = false
 
     private val runnableForSync: Runnable by lazy {
         Runnable {
@@ -67,13 +68,17 @@ class BackgroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE)
-        Log.d(TAG, "Starting background service")
-        HelperUtil.listenToLocation(context)
-        handler.post(runnableForConnectivity)
-        handler.post(runnableForSync)
-        startForegroundService()
-        return START_STICKY
+        if (!isRunning) {
+            InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE)
+            HelperUtil.listenToLocation(context)
+            handler.post(runnableForConnectivity)
+            handler.post(runnableForSync)
+            startForegroundService()
+            isRunning = true
+            return START_STICKY
+        }else{
+            return 1
+        }
     }
 
     private fun startForegroundService() {
@@ -103,11 +108,13 @@ class BackgroundService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(runnableForSync)
-        handler.removeCallbacks(runnableForConnectivity)
-        storeFunctions.closeService()
-        if(::nettyClient.isInitialized) {
-            nettyClient.stop()
+        if (!isRunning) {
+            handler.removeCallbacks(runnableForSync)
+            handler.removeCallbacks(runnableForConnectivity)
+            storeFunctions.closeService()
+            if (::nettyClient.isInitialized) {
+                nettyClient.stop()
+            }
         }
     }
 }

@@ -1,30 +1,33 @@
 package com.iisysgroup.itexstore.utils
 
+import android.annotation.TargetApi
 import android.graphics.Bitmap
 import android.util.Log
 import com.iisysgroup.itexstore.StoreFunctions
 import java.io.File
 import android.app.*
 import android.content.Context
+import android.os.Build
+import java.util.Base64
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.*
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+//import com.google.gson.reflect.TypeToken
 
 class TaskHandler(
     private val storeFunctions: StoreFunctions,
-    private val context: Context
+    private val context: Context,
+    private val mqttMobileClient: MqttMobileClient
 ) {
     companion object {
         private const val TAG = "TaskHandler"
-
-        //        private val BASE_URL = "http://${HelperUtil.BaseUrl}:9090/api/v1/store"
-        private val BASE_URL = "https://${HelperUtil.BaseUrl}/api/v1/store"
-        private val CALL_HOME_ENDPOINT = "terminal/sync"
-        private val UPDATE_TASK_ENDPOINT = "task/update"
-        private val NOTIFY_DOWNLOAD_ENDPOINT = "notify/download"
-        private const val TOKEN =
-            "q3QreaNLqJzSp5SGVw/dUH/zMQlVo1HthfXkkGS1iP1xKWe2WwLPOFd4PErm/makjhsE6nBxDMETeCY2CBZ81dlBiFn7CVCSridhn/BQwo7L2ZT9gZRV8RbyV9/IH4GZ+UZYHg=="
+//        private val BASE_URL = "http://${HelperUtil.BaseUrl}:9090/api/v1/store"
+//        private val BASE_URL = "https://${HelperUtil.BaseUrl}/api/v1/store"
+//        private val CALL_HOME_ENDPOINT = "terminal/sync"
+//        private val UPDATE_TASK_ENDPOINT = "task/update"
+//        private val NOTIFY_DOWNLOAD_ENDPOINT = "notify/download"
+//        private const val TOKEN =
+//            "q3QreaNLqJzSp5SGVw/dUH/zMQlVo1HthfXkkGS1iP1xKWe2WwLPOFd4PErm/makjhsE6nBxDMETeCY2CBZ81dlBiFn7CVCSridhn/BQwo7L2ZT9gZRV8RbyV9/IH4GZ+UZYHg=="
 
     }
 
@@ -38,25 +41,31 @@ class TaskHandler(
                     excludeSystemApps = true, withIcon = false, packageNamePrefix = ""
                 )
 
+                val serialNumber: String? = storeFunctions.getSN()
+
                 val payload: Map<String, Any?> = mapOf(
-                    "deviceInfo" to info, "installedApp" to installedApps
+                    "event" to "terminalSync",
+                    "serialNumber" to serialNumber,
+                    "deviceInfo" to info,
+                    "installedApp" to installedApps
                 )
 
                 val payloadString: String = Gson().toJson(payload)
 
-                val url = "$BASE_URL/$CALL_HOME_ENDPOINT"
-                val serialNumber: String? = storeFunctions.getSN()
-                val response: Map<String, Any>? =
-                    HelperUtil.sendPost(url, payloadString, TOKEN, serialNumber!!)
-
-                val tasks = response?.get("tasks")
-                if (tasks != null && tasks is List<*> && tasks.isNotEmpty() && tasks.all { it is Map<*, *> }) {
-                    handleServerTask(
-                        tasks as List<Map<String, Any>>, "call_home"
-                    )
-                } else {
-
-                }
+                mqttMobileClient.publish(payloadString)
+//                val url = "$BASE_URL/$CALL_HOME_ENDPOINT"
+//
+//                val response: Map<String, Any>? =
+//                    HelperUtil.sendPost(url, payloadString, TOKEN, serialNumber!!)
+//
+//                val tasks = response?.get("tasks")
+//                if (tasks != null && tasks is List<*> && tasks.isNotEmpty() && tasks.all { it is Map<*, *> }) {
+//                    handleServerTask(
+//                        tasks as List<Map<String, Any>>, "call_home"
+//                    )
+//                } else {
+//
+//                }
 //            publishMessage("itx/terminal/sync/${info["serialNumber"]}", payloadString);
             } catch (e: Exception) {
                 println(e)
@@ -73,6 +82,7 @@ class TaskHandler(
             var imageFile: File? = null
             var result: Boolean = false
             for (map in tasks!!) {
+                println(map)
                 when (map["taskType"]) {
                     "PUSH_APP" -> {
                         val version: Map<String, Any?>? = (map["appVersion"] as? Map<String, Any?>)
@@ -128,6 +138,7 @@ class TaskHandler(
 
                     "PUSH_MESSAGE" -> {
                         val pushMessage: String = map["message"].toString()
+                        Log.d(TAG, pushMessage)
                         result = storeFunctions.pushMessage(pushMessage)
                     }
 
@@ -146,6 +157,7 @@ class TaskHandler(
 
                     "CAPTURE_SCREEN" -> {
                         val image: Bitmap? = storeFunctions.captureScreen()
+
                         if (image != null) {
                             val fileName =
                                 "${serialNumber}_${map["taskType"]}_${HelperUtil.getDateTimeAsFileName()}.png"
@@ -201,10 +213,21 @@ class TaskHandler(
 
     private fun reportDownload(appUuid: String, versionUuid: String) {
         coroutineScope.launch {
+            Log.d(TAG, "Reporting download completion")
             try {
-                val url = "$BASE_URL/$NOTIFY_DOWNLOAD_ENDPOINT/$appUuid/$versionUuid"
+//                val url = "$BASE_URL/$NOTIFY_DOWNLOAD_ENDPOINT/$appUuid/$versionUuid"
                 val serialNumber: String? = storeFunctions.getSN()
-                HelperUtil.sendGet(url, TOKEN, serialNumber!!)
+//                HelperUtil.sendGet(url, TOKEN, serialNumber!!)
+                val payload: Map<String, Any?> = mapOf(
+                    "event" to "reportDownload",
+                    "serialNumber" to serialNumber,
+                    "appUuid" to appUuid,
+                    "versionUuid" to versionUuid
+                )
+
+                val payloadString: String = Gson().toJson(payload)
+
+                mqttMobileClient.publish(payloadString)
             } catch (e: Exception) {
                 println(e)
                 Log.e(TAG, "Exception reportDownload: ${e.message}")
@@ -213,20 +236,33 @@ class TaskHandler(
 
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
     private fun updateTask(
         serialNumber: String, task: Map<String, Any>, status: String, message: String, file: File?
     ) {
         coroutineScope.launch {
             try {
-                val request = mapOf(
+                var encodedFile : String? = null
+
+                if(file != null && file.isFile) {
+                    val fileBytes = file.readBytes()
+                    encodedFile = Base64.getEncoder().encodeToString(fileBytes)
+                }
+
+                val payload = mapOf(
+                    "event" to "updateTask",
                     "serialNumber" to serialNumber,
                     "taskId" to task["taskId"].toString(),
                     "status" to status,
-                    "message" to message
+                    "message" to message,
+                    "file" to encodedFile
                 )
 
-                val url = "$BASE_URL/$UPDATE_TASK_ENDPOINT"
-                HelperUtil.sendForm(url, request, file, TOKEN, serialNumber)
+//                val url = "$BASE_URL/$UPDATE_TASK_ENDPOINT"
+//                HelperUtil.sendForm(url, payload, file, TOKEN, serialNumber)
+                val payloadString: String = Gson().toJson(payload)
+
+                mqttMobileClient.publish(payloadString)
             } catch (e: Exception) {
                 println(e)
                 Log.e(TAG, "Exception updateTask: ${e.message}")

@@ -31,6 +31,8 @@ class BackgroundService : Service() {
     private lateinit var context: Context
     private lateinit var storeFunctions: StoreFunctions
     private lateinit var taskHandler: TaskHandler
+    private lateinit var mqttMobileClient : MqttMobileClient
+
     private var isRunning: Boolean = false
 
     private val runnableForSync: Runnable by lazy {
@@ -59,7 +61,7 @@ class BackgroundService : Service() {
             HelperUtil.listenToLocation(context)
             startForegroundService()
 
-            val mqttMobileClient = MqttMobileClient(storeFunctions, context)
+            mqttMobileClient = MqttMobileClient(storeFunctions, context)
             taskHandler = TaskHandler(storeFunctions, context, mqttMobileClient)
 
             handler.post(runnableForSync)
@@ -102,5 +104,8 @@ class BackgroundService : Service() {
         super.onDestroy()
         handler.removeCallbacks(runnableForSync)
         storeFunctions.closeService()
+        if(::mqttMobileClient.isInitialized) {
+            mqttMobileClient.disconnect()
+        }
     }
 }

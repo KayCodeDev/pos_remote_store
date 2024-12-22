@@ -21,8 +21,6 @@ import kotlin.random.Random
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.*
-import io.netty.util.internal.logging.InternalLoggerFactory;
-import io.netty.util.internal.logging.JdkLoggerFactory;
 
 @TargetApi(Build.VERSION_CODES.O)
 class BackgroundService : Service() {
@@ -57,7 +55,6 @@ class BackgroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE)
         HelperUtil.listenToLocation(context)
         startForegroundService()
 

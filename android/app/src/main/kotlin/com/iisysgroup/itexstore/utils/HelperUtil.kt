@@ -72,6 +72,8 @@ class HelperUtil {
         var client: OkHttpClient = OkHttpClient()
         private val TAG = "HelperUtil"
         const val ChannelID = "ITEXStore"
+        //        const val BaseUrl = "store-api.itexapp.com"
+        const val BaseUrl = "54.203.193.56"
 
         @SuppressLint("NewApi", "Range")
         fun downloadFile(
@@ -409,7 +411,7 @@ class HelperUtil {
                         isGpsEnabled -> {
                             locationManager.requestLocationUpdates(
                                 LocationManager.GPS_PROVIDER,
-                                5 * 60 * 1000L,
+                                18 * 60 * 1000L,
                                 10f,
                                 locationListener
                             )
@@ -418,7 +420,7 @@ class HelperUtil {
                         isNetworkEnabled -> {
                             locationManager.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
-                                5 * 60 * 1000L,
+                                18 * 60 * 1000L,
                                 10f,
                                 locationListener
                             )
@@ -489,13 +491,27 @@ class HelperUtil {
         @TargetApi(Build.VERSION_CODES.CUPCAKE)
         fun isSystemApp(packageManager: PackageManager, packageName: String): Boolean {
             val system = arrayOf(
-                "com.dsi.ant.server",
-                "org.codeaurora.snapcam",
-                "com.oma.drm",
-                "jp.co.omronsoft.openwnn",
-                "com.sunyard"
+                "org.codeaurora.bluetooth",
+                "com.qapp.secprotect",
+                "org.codeaurora.ims",
+                "org.codeaurora.btmultisim",
+                "com.oma.drm.server",
+                "socsi.middleware.apkverifyservice",
+                "com.qualcomm",
+                "com.android",
+                "com.google",
+                "com.example",
+                "com.qcom",
+                "android",
+                "com.quicinc",
+                "com.qrd",
+                "com.socsi",
+                "com.qti",
+                "com.sprd",
+                "com.unisoc",
+                "com.spreadtrum",
             )
-            return system.any { packageName.contains(it) }
+            return system.any { packageName.startsWith(it) }
         }
 
         fun isServiceRunning(serviceClass: Class<*>, context: Context): Boolean {
@@ -576,6 +592,7 @@ class HelperUtil {
                     return Gson().fromJson(responseBody, mapType)
                 }
             } catch (e: IOException) {
+                println(e)
                 Log.d(TAG, "Exception sending request : ${e.message}")
             }
             return null

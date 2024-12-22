@@ -8,7 +8,7 @@ import java.io.File
 import android.app.*
 import android.content.Context
 import android.os.Build
-import java.util.Base64
+import android.util.Base64
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.*
 import com.google.gson.Gson
@@ -21,13 +21,14 @@ class TaskHandler(
 ) {
     companion object {
         private const val TAG = "TaskHandler"
-//        private val BASE_URL = "http://${HelperUtil.BaseUrl}:9090/api/v1/store"
+        private val BASE_URL = "http://${HelperUtil.BaseUrl}:9090/api/v1/store"
 //        private val BASE_URL = "https://${HelperUtil.BaseUrl}/api/v1/store"
 //        private val CALL_HOME_ENDPOINT = "terminal/sync"
 //        private val UPDATE_TASK_ENDPOINT = "task/update"
 //        private val NOTIFY_DOWNLOAD_ENDPOINT = "notify/download"
-//        private const val TOKEN =
-//            "q3QreaNLqJzSp5SGVw/dUH/zMQlVo1HthfXkkGS1iP1xKWe2WwLPOFd4PErm/makjhsE6nBxDMETeCY2CBZ81dlBiFn7CVCSridhn/BQwo7L2ZT9gZRV8RbyV9/IH4GZ+UZYHg=="
+        private val TASK_FILE_UPLOAD = "task/upload"
+        private const val TOKEN =
+            "q3QreaNLqJzSp5SGVw/dUH/zMQlVo1HthfXkkGS1iP1xKWe2WwLPOFd4PErm/makjhsE6nBxDMETeCY2CBZ81dlBiFn7CVCSridhn/BQwo7L2ZT9gZRV8RbyV9/IH4GZ+UZYHg=="
 
     }
 
@@ -242,11 +243,23 @@ class TaskHandler(
     ) {
         coroutineScope.launch {
             try {
-                var encodedFile : String? = null
+                var fileUrl : String? = null
 
                 if(file != null && file.isFile) {
-                    val fileBytes = file.readBytes()
-                    encodedFile = Base64.getEncoder().encodeToString(fileBytes)
+                    val uploadRequest = mapOf(
+                        "serialNumber" to serialNumber,
+                        "taskId" to task["taskId"].toString(),
+                    );
+
+                    val url = "$BASE_URL/$TASK_FILE_UPLOAD"
+                    val response: Map<String, Any>? =   HelperUtil.sendForm(url, uploadRequest, file, TOKEN, serialNumber)
+
+                    fileUrl = if (response != null && response.containsKey("data")){
+                        val upload  = response["data"] as Map<*, *>
+                        upload["uploadUrl"].toString()
+                    }else{
+                        null
+                    }
                 }
 
                 val payload = mapOf(
@@ -255,7 +268,7 @@ class TaskHandler(
                     "taskId" to task["taskId"].toString(),
                     "status" to status,
                     "message" to message,
-                    "file" to encodedFile
+                    "file" to fileUrl
                 )
 
 //                val url = "$BASE_URL/$UPDATE_TASK_ENDPOINT"

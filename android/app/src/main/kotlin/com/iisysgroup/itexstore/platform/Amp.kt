@@ -10,6 +10,7 @@ import com.pos.device.SDKManager
 import com.pos.device.SDKManagerCallback
 import com.pos.device.sys.SystemManager
 import com.pos.device.config.DevConfig
+import com.pos.device.printer.Printer
 import com.pos.device.rtc.RealTimeClock
 
 class Amp(private val context: Context) : PlatformSdk {
@@ -63,7 +64,8 @@ class Amp(private val context: Context) : PlatformSdk {
             "rom" to HelperUtil.getAvailableRom().toString(),
             "firmware" to DevConfig.getFirmwareVersion(),
             "batteryTemp" to HelperUtil.getBatteryTemperature(context).toString() + "°C",
-            "networkType" to HelperUtil.getConnectionType(context)
+            "networkType" to HelperUtil.getConnectionType(context),
+            "printer" to getPrinterStatus()
         )
     }
 
@@ -121,6 +123,38 @@ class Amp(private val context: Context) : PlatformSdk {
     override fun captureScreen(): Bitmap? {
         Log.d(TAG, "captureScreen not implemented")
         return null
+    }
+
+    private fun getPrinterStatus(): String {
+        val status: Int? = Printer.getStatus()!!
+        var result = "N/A"
+        when (status!!) {
+            Printer.PRINTER_OK -> {
+                result = "Printer OK"
+            }
+
+            Printer.PRINTER_STATUS_PAPER_LACK -> {
+                result = "Paper out"
+            }
+
+            Printer.PRINTER_TASKS_FULL -> {
+                result = "Printer Error"
+            }
+
+            Printer.PRINTER_STATUS_HIGHT_TEMP -> {
+                result = "Over Heat"
+            }
+
+            Printer.PRINTER_STATUS_BUSY -> {
+                result = "Printer Busy"
+            }
+
+            Printer.PRINTER_STATUS_NO_BATTERY -> {
+                result = "Printer Battery Low"
+            }
+        }
+
+        return result
     }
 
 }

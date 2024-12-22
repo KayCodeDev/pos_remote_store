@@ -119,7 +119,6 @@ class TaskHandler(
 
                     "PUSH_MESSAGE" -> {
                         val pushMessage: String = map["message"].toString()
-                        Log.d(TAG, pushMessage)
                         result = storeFunctions.pushMessage(pushMessage)
                     }
 

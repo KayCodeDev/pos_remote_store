@@ -53,7 +53,6 @@ class MqttMobileClient(
                 val mapType = object : TypeToken<Map<String, Any>?>() {}.type
                 val message: Map<String, Any> = Gson().fromJson(message?.toString(), mapType)
                 val tasks = message["tasks"]
-                println(tasks)
                 if (tasks is List<*> && tasks.isNotEmpty() && tasks.all { it is Map<*, *> }) {
                     scope.launch {
                         try {
@@ -139,6 +138,7 @@ class MqttMobileClient(
             return
         }
 
+        client?.disconnect()
         client?.close()
         val newClient = MqttClient(MQTT_SERVER_URL, MQTT_CLIENTID+"_"+sn, null)
         client = newClient

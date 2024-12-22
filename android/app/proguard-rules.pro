@@ -1,12 +1,7 @@
-#=== NETTY Rules ===#
--keepclassmembernames class io.netty.buffer.AbstractByteBufAllocator {
-    *;
-}
+# Keep Paho MQTT v3 classes
+-keep class org.eclipse.paho.client.mqttv3.** { *; }
 
--keepclassmembernames class io.netty.buffer.AdvancedLeakAwareByteBuf {
-    *;
-}
+# Keep Paho Android Service classes
+-keep class org.eclipse.paho.android.service.** { *; }
 
--keep public class io.netty.util.ReferenceCountUtil {
-    *;
-}
+-keep class org.eclipse.paho.** { *;

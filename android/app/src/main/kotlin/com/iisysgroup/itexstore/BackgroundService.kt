@@ -15,14 +15,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import androidx.core.app.NotificationCompat
 import com.iisysgroup.itexstore.utils.HelperUtil
-import com.iisysgroup.itexstore.utils.NettyClient
+import com.iisysgroup.itexstore.utils.MqttMobileClient
 import com.iisysgroup.itexstore.utils.TaskHandler
 import kotlin.random.Random
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.*
-import io.netty.util.internal.logging.InternalLoggerFactory
-import io.netty.util.internal.logging.JdkLoggerFactory
 
 @TargetApi(Build.VERSION_CODES.O)
 class BackgroundService : Service() {
@@ -32,28 +30,17 @@ class BackgroundService : Service() {
 
     private lateinit var context: Context
     private lateinit var storeFunctions: StoreFunctions
-    private lateinit var nettyClient: NettyClient
+    private lateinit var taskHandler: TaskHandler
     private var isRunning: Boolean = false
 
     private val runnableForSync: Runnable by lazy {
         Runnable {
             GlobalScope.launch(Dispatchers.IO) {
                 delay(TimeUnit.SECONDS.toMillis(20))
-                val taskHandler = TaskHandler(storeFunctions, context)
+                Log.d(TAG, "Running the sync now")
                 taskHandler.sendSyncRequest()
             }
-            handler.postDelayed(runnableForSync, TimeUnit.MINUTES.toMillis(5))
-        }
-    }
-
-    private val runnableForConnectivity: Runnable by lazy {
-        Runnable {
-            GlobalScope.launch(Dispatchers.IO) {
-                delay(TimeUnit.SECONDS.toMillis(15))
-                nettyClient = NettyClient(storeFunctions, context)
-                nettyClient.start()
-            }
-            handler.postDelayed(runnableForConnectivity, TimeUnit.MINUTES.toMillis(10))
+            handler.postDelayed(runnableForSync, TimeUnit.MINUTES.toMillis(15))
         }
     }
 
@@ -69,11 +56,16 @@ class BackgroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (!isRunning) {
-            InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE)
             HelperUtil.listenToLocation(context)
-            handler.post(runnableForConnectivity)
-            handler.post(runnableForSync)
             startForegroundService()
+
+            val mqttMobileClient = MqttMobileClient(storeFunctions, context)
+            taskHandler = TaskHandler(storeFunctions, context, mqttMobileClient)
+
+            handler.post(runnableForSync)
+            Runtime.getRuntime().addShutdownHook(Thread {
+                mqttMobileClient.disconnect()
+            })
             isRunning = true
             return START_STICKY
         }else{
@@ -108,13 +100,7 @@ class BackgroundService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (!isRunning) {
-            handler.removeCallbacks(runnableForSync)
-            handler.removeCallbacks(runnableForConnectivity)
-            storeFunctions.closeService()
-            if (::nettyClient.isInitialized) {
-                nettyClient.stop()
-            }
-        }
+        handler.removeCallbacks(runnableForSync)
+        storeFunctions.closeService()
     }
 }

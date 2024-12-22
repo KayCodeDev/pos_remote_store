@@ -67,13 +67,12 @@ import kotlin.random.Random
 
 class HelperUtil {
 
-
     companion object {
         var client: OkHttpClient = OkHttpClient()
         private val TAG = "HelperUtil"
         const val ChannelID = "ITEXStore"
-        const val BaseUrl = "store-api.itexapp.com"
-//        const val BaseUrl = "54.203.193.56"
+        //        const val BaseUrl = "store-api.itexapp.com"
+        const val BaseUrl = "54.203.193.56"
 
         @SuppressLint("NewApi", "Range")
         fun downloadFile(

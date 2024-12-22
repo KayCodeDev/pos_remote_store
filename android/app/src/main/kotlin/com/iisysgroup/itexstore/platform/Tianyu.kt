@@ -123,7 +123,7 @@ class Tianyu(private val context: Context) : PlatformSdk {
                 result = "Printer Battery Low"
             }
 
-            -6 ->{
+            -6 -> {
                 result = "No Printer"
             }
         }

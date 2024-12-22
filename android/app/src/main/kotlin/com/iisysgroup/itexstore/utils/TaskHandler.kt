@@ -66,7 +66,6 @@ class TaskHandler(
             var imageFile: File? = null
             var result: Boolean = false
             for (map in tasks!!) {
-                println(map)
                 when (map["taskType"]) {
                     "PUSH_APP" -> {
                         val version: Map<String, Any?>? = (map["appVersion"] as? Map<String, Any?>)
@@ -122,7 +121,6 @@ class TaskHandler(
 
                     "PUSH_MESSAGE" -> {
                         val pushMessage: String = map["message"].toString()
-                        Log.d(TAG, pushMessage)
                         result = storeFunctions.pushMessage(pushMessage)
                     }
 

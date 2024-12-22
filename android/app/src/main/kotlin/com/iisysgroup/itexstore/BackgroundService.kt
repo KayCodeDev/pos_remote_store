@@ -16,13 +16,10 @@ import kotlinx.coroutines.launch
 import androidx.core.app.NotificationCompat
 import com.iisysgroup.itexstore.utils.HelperUtil
 import com.iisysgroup.itexstore.utils.MqttMobileClient
-//import com.iisysgroup.itexstore.utils.MqttClient
-//import com.iisysgroup.itexstore.utils.NettyClient
 import com.iisysgroup.itexstore.utils.TaskHandler
 import kotlin.random.Random
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.delay
-//import org.eclipse.paho.client.mqttv3.*
 import kotlinx.coroutines.*
 
 @TargetApi(Build.VERSION_CODES.O)
@@ -33,7 +30,6 @@ class BackgroundService : Service() {
 
     private lateinit var context: Context
     private lateinit var storeFunctions: StoreFunctions
-    //    private lateinit var nettyClient: NettyClient
     private lateinit var taskHandler: TaskHandler
 
     private val runnableForSync: Runnable by lazy {
@@ -46,17 +42,6 @@ class BackgroundService : Service() {
             handler.postDelayed(runnableForSync, TimeUnit.MINUTES.toMillis(2))
         }
     }
-//
-//    private val runnableForConnectivity: Runnable by lazy {
-//        Runnable {
-//            GlobalScope.launch(Dispatchers.IO) {
-//                delay(TimeUnit.SECONDS.toMillis(15))
-//                nettyClient = NettyClient(storeFunctions, context)
-//                nettyClient.start()
-//            }
-//            handler.postDelayed(runnableForConnectivity, TimeUnit.MINUTES.toMillis(10))
-//        }
-//    }
 
     override fun onCreate() {
         super.onCreate()
@@ -72,8 +57,6 @@ class BackgroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         HelperUtil.listenToLocation(context)
         startForegroundService()
-
-//        handler.post(runnableForConnectivity)
 
         val mqttMobileClient   = MqttMobileClient(storeFunctions, context)
         taskHandler = TaskHandler(storeFunctions, context, mqttMobileClient)
@@ -113,12 +96,7 @@ class BackgroundService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(runnableForSync)
-//        handler.removeCallbacks(runnableForConnectivity)
         storeFunctions.closeService()
-
-//        if(nettyClient != null) {
-//            nettyClient.stop()
-//        }
 
     }
 }

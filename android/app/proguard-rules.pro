@@ -61,15 +61,23 @@
 -keep class com.whty.smartpos.tysmartposapi.utils.** {*;}
 -keep class com.whty.smartpos.emv.function.* {*;}
 
-#=== NETTY Rules ===#
--keepclassmembernames class io.netty.buffer.AbstractByteBufAllocator {
-    *;
-}
+##=== NETTY Rules ===#
+#-keepclassmembernames class io.netty.buffer.AbstractByteBufAllocator {
+#    *;
+#}
+#
+#-keepclassmembernames class io.netty.buffer.AdvancedLeakAwareByteBuf {
+#    *;
+#}
+#
+#-keep public class io.netty.util.ReferenceCountUtil {
+#    *;
+#}
 
--keepclassmembernames class io.netty.buffer.AdvancedLeakAwareByteBuf {
-    *;
-}
+# Keep Paho MQTT v3 classes
+-keep class org.eclipse.paho.client.mqttv3.** { *; }
 
--keep public class io.netty.util.ReferenceCountUtil {
-    *;
-}
+# Keep Paho Android Service classes
+-keep class org.eclipse.paho.android.service.** { *; }
+
+-keep class org.eclipse.paho.** { *; }

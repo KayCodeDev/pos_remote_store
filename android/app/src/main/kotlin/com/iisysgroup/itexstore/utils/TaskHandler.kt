@@ -8,11 +8,9 @@ import java.io.File
 import android.app.*
 import android.content.Context
 import android.os.Build
-import java.util.Base64
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.*
 import com.google.gson.Gson
-//import com.google.gson.reflect.TypeToken
 
 class TaskHandler(
     private val storeFunctions: StoreFunctions,
@@ -21,13 +19,11 @@ class TaskHandler(
 ) {
     companion object {
         private const val TAG = "TaskHandler"
-//        private val BASE_URL = "http://${HelperUtil.BaseUrl}:9090/api/v1/store"
-//        private val BASE_URL = "https://${HelperUtil.BaseUrl}/api/v1/store"
-//        private val CALL_HOME_ENDPOINT = "terminal/sync"
-//        private val UPDATE_TASK_ENDPOINT = "task/update"
-//        private val NOTIFY_DOWNLOAD_ENDPOINT = "notify/download"
-//        private const val TOKEN =
-//            "q3QreaNLqJzSp5SGVw/dUH/zMQlVo1HthfXkkGS1iP1xKWe2WwLPOFd4PErm/makjhsE6nBxDMETeCY2CBZ81dlBiFn7CVCSridhn/BQwo7L2ZT9gZRV8RbyV9/IH4GZ+UZYHg=="
+        private val BASE_URL = "http://${HelperUtil.BaseUrl}:9090/api/v1/store"
+        //        private val BASE_URL = "https://${HelperUtil.BaseUrl}/api/v1/store"
+        private val TASK_FILE_UPLOAD = "task/upload"
+        private const val TOKEN =
+            "q3QreaNLqJzSp5SGVw/dUH/zMQlVo1HthfXkkGS1iP1xKWe2WwLPOFd4PErm/makjhsE6nBxDMETeCY2CBZ81dlBiFn7CVCSridhn/BQwo7L2ZT9gZRV8RbyV9/IH4GZ+UZYHg=="
 
     }
 
@@ -53,20 +49,6 @@ class TaskHandler(
                 val payloadString: String = Gson().toJson(payload)
 
                 mqttMobileClient.publish(payloadString)
-//                val url = "$BASE_URL/$CALL_HOME_ENDPOINT"
-//
-//                val response: Map<String, Any>? =
-//                    HelperUtil.sendPost(url, payloadString, TOKEN, serialNumber!!)
-//
-//                val tasks = response?.get("tasks")
-//                if (tasks != null && tasks is List<*> && tasks.isNotEmpty() && tasks.all { it is Map<*, *> }) {
-//                    handleServerTask(
-//                        tasks as List<Map<String, Any>>, "call_home"
-//                    )
-//                } else {
-//
-//                }
-//            publishMessage("itx/terminal/sync/${info["serialNumber"]}", payloadString);
             } catch (e: Exception) {
                 println(e)
                 Log.e(TAG, "Exception: ${e.message}")
@@ -82,7 +64,6 @@ class TaskHandler(
             var imageFile: File? = null
             var result: Boolean = false
             for (map in tasks!!) {
-                println(map)
                 when (map["taskType"]) {
                     "PUSH_APP" -> {
                         val version: Map<String, Any?>? = (map["appVersion"] as? Map<String, Any?>)
@@ -215,9 +196,7 @@ class TaskHandler(
         coroutineScope.launch {
             Log.d(TAG, "Reporting download completion")
             try {
-//                val url = "$BASE_URL/$NOTIFY_DOWNLOAD_ENDPOINT/$appUuid/$versionUuid"
                 val serialNumber: String? = storeFunctions.getSN()
-//                HelperUtil.sendGet(url, TOKEN, serialNumber!!)
                 val payload: Map<String, Any?> = mapOf(
                     "event" to "reportDownload",
                     "serialNumber" to serialNumber,
@@ -242,11 +221,23 @@ class TaskHandler(
     ) {
         coroutineScope.launch {
             try {
-                var encodedFile : String? = null
+                var fileUrl : String? = null
 
                 if(file != null && file.isFile) {
-                    val fileBytes = file.readBytes()
-                     encodedFile = Base64.getEncoder().encodeToString(fileBytes)
+                    val uploadRequest = mapOf(
+                        "serialNumber" to serialNumber,
+                        "taskId" to task["taskId"].toString(),
+                    );
+
+                    val url = "$BASE_URL/$TASK_FILE_UPLOAD"
+                    val response: Map<String, Any>? =   HelperUtil.sendForm(url, uploadRequest, file, TOKEN, serialNumber)
+
+                    fileUrl = if (response != null && response.containsKey("data")){
+                        val upload  = response["data"] as Map<*, *>
+                        upload["uploadUrl"].toString()
+                    }else{
+                        null
+                    }
                 }
 
                 val payload = mapOf(
@@ -255,11 +246,9 @@ class TaskHandler(
                     "taskId" to task["taskId"].toString(),
                     "status" to status,
                     "message" to message,
-                    "file" to encodedFile
+                    "file" to fileUrl
                 )
 
-//                val url = "$BASE_URL/$UPDATE_TASK_ENDPOINT"
-//                HelperUtil.sendForm(url, payload, file, TOKEN, serialNumber)
                 val payloadString: String = Gson().toJson(payload)
 
                 mqttMobileClient.publish(payloadString)

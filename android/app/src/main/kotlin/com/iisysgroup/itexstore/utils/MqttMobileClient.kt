@@ -11,20 +11,20 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 class MqttMobileClient(
-                       private val storeFunctions: StoreFunctions,
-                       private val context: Context
+    private val storeFunctions: StoreFunctions,
+    private val context: Context
 ): LifecycleObserver {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     companion object {
         private const val TAG = "MqttClient"
         private const val MQTT_SERVER_URL = "tcp://54.201.8.27:1883"
-        private const val MQTT_CLIENTID = "ItexStoreMQTTClient"
+        private const val MQTT_CLIENTID = "ItexStoreAgentMQTTClient"
         private const val MQTT_USERNAME= "itex-mqtt-broker"
         private const val MQTT_PASSWORD= "0qf+8T5siJbBC1+UBICv8U13qPlxpPWxBAyY2xO5"
         private const val MQTT_CS = false
         private const val MQTT_CT = 10
-        private const val MQTT_KAI = 30
+        private const val MQTT_KAI = 3600
         private const val MQTT_MIF = 10
         private const val MQTT_IRDMs = 5000
         private const val MQTT_MRA: Int = 10
@@ -132,8 +132,15 @@ class MqttMobileClient(
             return
         }
 
+        val sn: String? = storeFunctions.getSN()
+
+        if (sn == null) {
+            Log.e(TAG,"Device not supported")
+            return
+        }
+
         client?.close()
-        val newClient = MqttClient(MQTT_SERVER_URL, MQTT_CLIENTID, null)
+        val newClient = MqttClient(MQTT_SERVER_URL, MQTT_CLIENTID+"_"+sn, null)
         client = newClient
 
         val options = MqttConnectOptions().apply {
@@ -150,7 +157,7 @@ class MqttMobileClient(
         newClient.connect(options)
         Log.d(TAG, "Connected to MQTT broker: $MQTT_SERVER_URL")
 
-       val sn: String? = storeFunctions.getSN()
+
         if (sn != null) {
             subscribe("itexstore/mqtt/terminal/$sn")
         } else {
@@ -184,7 +191,7 @@ class MqttMobileClient(
     /**
      * Subscribe to a topic.
      */
-  private fun subscribe(topic: String, qos: Int = 1) {
+    private fun subscribe(topic: String, qos: Int = 1) {
         scope.launch {
             if (!ensureConnected()) {
                 Log.w(TAG,"Attempted to subscribe to $topic but client is not connected.")

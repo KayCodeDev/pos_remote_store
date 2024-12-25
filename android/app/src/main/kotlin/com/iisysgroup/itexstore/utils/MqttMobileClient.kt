@@ -139,6 +139,7 @@ class MqttMobileClient(
             return
         }
 
+        client?.disconnect()
         client?.close()
         val newClient = MqttClient(MQTT_SERVER_URL, MQTT_CLIENTID+"_"+sn, null)
         client = newClient

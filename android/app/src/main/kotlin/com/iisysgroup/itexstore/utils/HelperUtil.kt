@@ -82,55 +82,69 @@ class HelperUtil {
             fileName: String,
             fileNamePath: String
         ): String? {
-            val downloadManager =
-                context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            val uri = Uri.parse(fileUrl)
-            val notificationId = generateNotificationId()
+Log.d(TAG, "Ablout to download file")
+            try {
+                val downloadManager =
+                    context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                val uri = Uri.parse(fileUrl)
+                val notificationId = generateNotificationId()
 
-            val request = DownloadManager.Request(uri)
-            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-            request.setAllowedOverRoaming(false)
-            request.setTitle("ITEX Store Push")
-            request.setDescription("Downloading $fileName")
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-            request.setDestinationInExternalFilesDir(
-                context,
-                Environment.DIRECTORY_DOWNLOADS,
-                fileNamePath
-            )
+                val request = DownloadManager.Request(uri)
+                request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+                request.setAllowedOverRoaming(false)
+                request.setTitle("ITEX Store Push")
+                request.setDescription("Downloading $fileName")
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+                request.setDestinationInExternalFilesDir(
+                    context,
+                    Environment.DIRECTORY_DOWNLOADS,
+                    fileNamePath
+                )
 
-            val downloadId = downloadManager.enqueue(request)
+                val downloadId = downloadManager.enqueue(request)
 
-            val query = DownloadManager.Query().setFilterById(downloadId)
-            var isDownloadCompleted = false
-            var filePath: String? = null
+                val query = DownloadManager.Query().setFilterById(downloadId)
+                var isDownloadCompleted = false
+                var filePath: String? = null
 
-            while (!isDownloadCompleted) {
-                val cursor = downloadManager.query(query)
-                if (cursor.moveToFirst()) {
-                    when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
-                        DownloadManager.STATUS_SUCCESSFUL -> {
-                            isDownloadCompleted = true
-                            filePath =
-                                cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
-                                    .replace("file://", "")
-                            cancelProgressNotification(context, notificationId)
-                        }
 
-                        DownloadManager.STATUS_FAILED -> {
-                            isDownloadCompleted = true
-                            val reason =
-                                cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON))
-                            cancelProgressNotification(context, notificationId)
-                            Toast.makeText(context, "Download failed: $reason", Toast.LENGTH_SHORT)
-                                .show()
+
+                while (!isDownloadCompleted) {
+                    val cursor = downloadManager.query(query)
+                    if (cursor.moveToFirst()) {
+                        when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
+                            DownloadManager.STATUS_SUCCESSFUL -> {
+                                Log.d(TAG, "DownloadManager.STATUS_SUCCESSFUL: "+DownloadManager.STATUS_SUCCESSFUL)
+                                isDownloadCompleted = true
+                                filePath =
+                                    cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
+                                        .replace("file://", "")
+                                cancelProgressNotification(context, notificationId)
+                            }
+
+                            DownloadManager.STATUS_FAILED -> {
+                                Log.d(TAG, "DownloadManager.STATUS_FAILED: "+DownloadManager.STATUS_FAILED)
+                                isDownloadCompleted = true
+                                val reason =
+                                    cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON))
+                                cancelProgressNotification(context, notificationId)
+                                Toast.makeText(
+                                    context,
+                                    "Download failed: $reason",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
                         }
                     }
+                    cursor.close()
                 }
-                cursor.close()
-            }
 
-            return filePath
+                return filePath
+            }catch (e: Exception){
+                Log.e(TAG, e.toString())
+                return null
+            }
         }
 
         fun sendGet(url: String, token: String, serialNumber: String): Map<String, Any>? {

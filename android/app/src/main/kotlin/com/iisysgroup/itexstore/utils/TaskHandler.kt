@@ -87,6 +87,7 @@ class TaskHandler(
                             val path: String? = HelperUtil.downloadFile(
                                 context, downloadUrl!!, fileName, fileNamePath
                             )
+                            Log.d(TAG, path!!)
                             result = if (path != null) {
                                 val apk: File = File(path)
                                 if (apk.exists()) {

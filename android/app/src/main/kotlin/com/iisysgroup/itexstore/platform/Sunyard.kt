@@ -130,18 +130,37 @@ class Sunyard(private val context: Context) : PlatformSdk {
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+//    override fun uninstallApp(packageName: String): Boolean {
+//        return try {
+//            val packageURI: Uri = Uri.parse("package:$packageName")
+//            val intent = Intent(Intent.ACTION_DELETE, packageURI)
+//            intent.putExtra(Intent.EXTRA_RETURN_RESULT, true)
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                context.startForegroundService(intent)
+//            } else {
+//                context.startService(intent)
+//            }
+//            true
+//        } catch (e: RemoteException) {
+//            Log.d(TAG, "Exception uninstallApp: ${e.message}")
+//            false
+//        }
+//    }
+
     override fun uninstallApp(packageName: String): Boolean {
         return try {
             val packageURI: Uri = Uri.parse("package:$packageName")
             val intent = Intent(Intent.ACTION_DELETE, packageURI)
             intent.putExtra(Intent.EXTRA_RETURN_RESULT, true)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
+
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             } else {
-                context.startService(intent)
+                Log.d(TAG, "No activity found to handle uninstall intent")
+                return false
             }
             true
-        } catch (e: RemoteException) {
+        } catch (e: Exception) {
             Log.d(TAG, "Exception uninstallApp: ${e.message}")
             false
         }

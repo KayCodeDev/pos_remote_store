@@ -19,8 +19,8 @@ class TaskHandler(
 ) {
     companion object {
         private const val TAG = "TaskHandler"
-        private val BASE_URL = "http://${HelperUtil.BaseUrl}:9090/api/v1/store"
-        //        private val BASE_URL = "https://${HelperUtil.BaseUrl}/api/v1/store"
+//        private val BASE_URL = "http://${HelperUtil.BaseUrl}:9090/api/v1/store"
+        private val BASE_URL = "https://${HelperUtil.BaseUrl}/api/v1/store"
         private val TASK_FILE_UPLOAD = "task/upload"
         private const val TOKEN =
             "q3QreaNLqJzSp5SGVw/dUH/zMQlVo1HthfXkkGS1iP1xKWe2WwLPOFd4PErm/makjhsE6nBxDMETeCY2CBZ81dlBiFn7CVCSridhn/BQwo7L2ZT9gZRV8RbyV9/IH4GZ+UZYHg=="

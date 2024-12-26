@@ -40,7 +40,7 @@ class BackgroundService : Service() {
                 Log.d(TAG, "Running the sync now")
                 taskHandler.sendSyncRequest()
             }
-            handler.postDelayed(runnableForSync, TimeUnit.MINUTES.toMillis(10))
+            handler.postDelayed(runnableForSync, TimeUnit.MINUTES.toMillis(15))
         }
     }
 

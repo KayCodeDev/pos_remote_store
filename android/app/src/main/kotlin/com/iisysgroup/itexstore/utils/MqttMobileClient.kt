@@ -18,7 +18,7 @@ class MqttMobileClient(
 
     companion object {
         private const val TAG = "MqttClient"
-        private const val MQTT_SERVER_URL = "tcp://54.201.8.27:1883"
+        private const val MQTT_SERVER_URL = "tcp://store-horizonpay.itexapp.com:1883"
         private const val MQTT_CLIENTID = "ItexStoreAgentMQTTClient"
         private const val MQTT_USERNAME= "itex-mqtt-broker"
         private const val MQTT_PASSWORD= "0qf+8T5siJbBC1+UBICv8U13qPlxpPWxBAyY2xO5"
@@ -28,7 +28,7 @@ class MqttMobileClient(
         private const val MQTT_MIF = 10
         private const val MQTT_IRDMs = 5000
         private const val MQTT_MRA: Int = 10
-        private const val MQTT_SERVER_TOPIC = "itexstore-mqtt-server-staging"
+        private const val MQTT_SERVER_TOPIC = "itexstore-mqtt-server-prod"
     }
 
     @Volatile

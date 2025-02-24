@@ -1,16 +1,20 @@
 # itexstore_agent
 
-ITEX Store Agent
+POS Remote Store
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This is a project that integrated seamlessly into 6 android POS OEM Terminal SDK
 
-A few resources to get you started if this is your first Flutter project:
+1. PAX
+2. Verifone
+3. Tianyu
+4. Nexgo
+5. Topwise
+6. MoreFun
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+To run app, provide the OEM SDK in the android/libs directory.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Build the app using while your POS device is connected to your computer
+
+ **flutter run** 

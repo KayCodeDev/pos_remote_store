@@ -4,7 +4,22 @@ POS Remote Store
 
 ## Getting Started
 
-This is a project that integrated seamlessly into 6 android POS OEM Terminal SDK
+# Tools Used
+Flutter
+Kotlin
+MQTT
+PAX SDK
+
+# Features/Functionalities
+Push App
+Push Notification
+Remote Configuration
+Reboot
+Shutdown
+Set Timezone
+Screen Capture
+
+**This is a project that integrated seamlessly into 6 android POS OEM Terminal SDK**
 
 1. PAX
 2. Verifone

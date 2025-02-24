@@ -18,3 +18,8 @@ To run app, provide the OEM SDK in the android/libs directory.
 Build the app using while your POS device is connected to your computer
 
  **flutter run** 
+
+
+Developed by 
+
+Kenneth Imadojemun https://linkedin.com/in/kenneth-osekhuemen-20801177/

@@ -11,13 +11,13 @@ MQTT
 PAX SDK
 
 # Features/Functionalities
-Push App
-Push Notification
-Remote Configuration
-Reboot
-Shutdown
-Set Timezone
-Screen Capture
+1. Push App
+2. Push Notification
+3. Remote Configuration
+4. Reboot
+5. Shutdown
+6. Set Timezone
+7. Screen Capture
 
 **This is a project that integrated seamlessly into 6 android POS OEM Terminal SDK**
 

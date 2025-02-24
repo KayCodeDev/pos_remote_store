@@ -18,7 +18,7 @@ class MqttMobileClient(
 
     companion object {
         private const val TAG = "MqttClient"
-        private const val MQTT_SERVER_URL = "tcp://54.201.8.27:1883"
+        private const val MQTT_SERVER_URL = "tcp://store-smartpeak.itexapp.com:1883"
         private const val MQTT_CLIENTID = "ItexStoreAgentMQTTClient"
         private const val MQTT_USERNAME= "itex-mqtt-broker"
         private const val MQTT_PASSWORD= "0qf+8T5siJbBC1+UBICv8U13qPlxpPWxBAyY2xO5"
@@ -28,7 +28,7 @@ class MqttMobileClient(
         private const val MQTT_MIF = 10
         private const val MQTT_IRDMs = 5000
         private const val MQTT_MRA: Int = 10
-        private const val MQTT_SERVER_TOPIC = "itexstore-mqtt-server-staging"
+        private const val MQTT_SERVER_TOPIC = "itexstore-mqtt-server-prod"
     }
 
     @Volatile
@@ -53,7 +53,6 @@ class MqttMobileClient(
                 val mapType = object : TypeToken<Map<String, Any>?>() {}.type
                 val message: Map<String, Any> = Gson().fromJson(message?.toString(), mapType)
                 val tasks = message["tasks"]
-                println(tasks)
                 if (tasks is List<*> && tasks.isNotEmpty() && tasks.all { it is Map<*, *> }) {
                     scope.launch {
                         try {
@@ -139,7 +138,9 @@ class MqttMobileClient(
             return
         }
 
+        client?.disconnect()
         client?.close()
+
         val newClient = MqttClient(MQTT_SERVER_URL, MQTT_CLIENTID+"_"+sn, null)
         client = newClient
 

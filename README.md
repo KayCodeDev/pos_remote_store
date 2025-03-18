@@ -1,40 +1,49 @@
-# itexstore_agent
+# POS Remote Store.
+A webservice and a TCP Socket services which bridge transaction TILL cash machines with Card Payment POS terminals for wireless POS payment integration
 
-POS Remote Store
+### Author
+# Kenneth I
 
-## Getting Started
+### Tech
 
-# Tools Used
-Flutter
-Kotlin
-MQTT
-PAX SDK
+This project uses a number of open source projects to work properly:
 
-# Features/Functionalities
-1. Push App
-2. Push Notification
-3. Remote Configuration
-4. Reboot
-5. Shutdown
-6. Set Timezone
-7. Screen Capture
+* [Flutter]
+* [Kotlin]
+* [MQTT]
+* [OEM SDKs]
 
-**This is a project that integrated seamlessly into 6 android POS OEM Terminal SDK**
+Store features and functionalities
+* Push App
+* Push Notification
+* Remote Configuration
+* Reboot
+* Shutdown
+* Set Timezone
+* Screen Capture
 
-1. PAX
-2. Verifone
-3. Tianyu
-4. Nexgo
-5. Topwise
-6. MoreFun
+OEM Terminals supported
+* PAX
+* Verifone
+* Tianyu
+* Nexgo
+* Topwise
+* MoreFun
 
-To run app, provide the OEM SDK in the android/libs directory.
+### Getting Started
 
-Build the app using while your POS device is connected to your computer
+``` sh
+# Clone this repo to your local machine using
+git clone [Project Repo]
 
- **flutter run** 
+# Get into the directory
+cd pos_remote_store
 
+# Install dependencies
+flutter pub get
 
-Developed by 
+# run app on simulator or physical device
+flutter run
+```
 
-Kenneth Imadojemun https://linkedin.com/in/kenneth-osekhuemen-20801177/
+**Enjoy :)**

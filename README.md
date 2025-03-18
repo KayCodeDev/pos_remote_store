@@ -1,5 +1,5 @@
 # POS Remote Store.
-A webservice and a TCP Socket services which bridge transaction TILL cash machines with Card Payment POS terminals for wireless POS payment integration
+An Android POS terminals App Store platform that supports multiple OEM Android POS Terminal device brands 
 
 ### Author
 # Kenneth I
